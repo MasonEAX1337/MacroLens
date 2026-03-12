@@ -1,0 +1,356 @@
+# MacroLens
+
+MacroLens is an AI-powered economic event explorer.
+
+It ingests economic and market datasets, detects unusual events in those datasets, finds related movements in other series, and presents an explanation workflow through a web UI.
+
+The core idea is simple:
+
+most charting tools show you that something moved.
+MacroLens tries to help you investigate why it might have moved.
+
+## System Pipeline
+
+```mermaid
+flowchart TD
+    A["Data Sources"] --> B["Ingestion Clients"]
+    B --> C["PostgreSQL"]
+    C --> D["Anomaly Detection"]
+    C --> E["Correlation Engine"]
+    C --> F["Explanation Engine"]
+    D --> G["FastAPI"]
+    E --> G
+    F --> G
+    G --> H["React UI"]
+```
+
+## Project Motivation
+
+MacroLens was built as a systems project around a question most charting tools do not try to answer: not just what moved in economic data, but what evidence might help explain why it moved.
+
+The project also intentionally explores a modern development workflow that combines traditional engineering with AI-assisted coding. The goal is not to treat AI as a code generator, but to use it inside a disciplined engineering process that still includes system design, explicit data pipelines, reproducible experiments, architectural decision records, structured debugging, and documentation.
+
+The repository therefore emphasizes not only the final implementation, but also the reasoning process behind it. Development logs, experiment records, decision records, and bug investigations are part of the project by design.
+
+## What MacroLens Does
+
+For each supported dataset, MacroLens can:
+
+- ingest historical data from external sources
+- normalize and store it in PostgreSQL
+- detect anomalies with rolling z-score logic
+- compute lag-aware correlations against other datasets
+- generate explanation text from stored evidence
+- expose all of that through an API and frontend investigation interface
+
+## What Makes This Project Interesting
+
+This is not just a chart viewer.
+
+The system is built as an evidence pipeline:
+
+1. raw data is fetched from source APIs
+2. normalized data is stored in PostgreSQL
+3. anomalies are persisted as first-class events
+4. correlations are persisted as supporting evidence
+5. explanations are generated from stored system state
+6. the frontend lets a user inspect the result
+
+That makes the repo more than a frontend demo. The backend reasoning chain is the actual product.
+
+## Current Project Status
+
+MacroLens currently has a working end-to-end MVP slice.
+
+### Implemented
+
+- FastAPI backend
+- PostgreSQL schema
+- CoinGecko ingestion for Bitcoin
+- FRED ingestion for CPI, Federal Funds Rate, and WTI oil
+- rolling z-score anomaly detection
+- lag-aware correlation discovery on percent changes
+- explanation generation through a provider abstraction
+- React frontend connected to the live API
+
+### Current explanation model
+
+The current default explanation provider is `rules_based`.
+
+That means the pipeline is real and persisted, but the explainer is still a transitional implementation rather than a live OpenAI or Anthropic integration.
+
+### Not complete yet
+
+- live LLM-backed explanation provider
+- S&P 500 ingestion
+- deeper frontend interactions such as zooming and filtering
+- production deployment workflow
+
+## Current Datasets
+
+Implemented datasets:
+
+- Bitcoin Price
+- Consumer Price Index
+- Federal Funds Rate
+- WTI Oil Price
+
+Planned next dataset:
+
+- S&P 500 index
+
+## High-Level Architecture
+
+```text
+CoinGecko / FRED
+    -> ingestion clients
+    -> normalization
+    -> PostgreSQL
+    -> anomaly detection
+    -> correlation engine
+    -> explanation engine
+    -> FastAPI
+    -> React frontend
+```
+
+## Repository Structure
+
+```text
+MacroLens/
+  documentation/   product, architecture, decisions, bugs, experiments, logs
+  backend/         FastAPI app, services, provider clients, tests
+  frontend/        React app
+  database/        PostgreSQL schema
+  scripts/         ingestion entry points
+  docker-compose.yml
+  .env.example
+```
+
+## Prerequisites
+
+You should have the following installed:
+
+- Python 3.13 or compatible
+- Node.js and npm
+- Docker Desktop or another way to run PostgreSQL
+
+## Environment Setup
+
+Copy the environment template:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Important variables in `.env`:
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `FRED_API_KEY`: required for FRED datasets
+- `CORS_ALLOWED_ORIGINS`: frontend origins allowed to call the API
+- `EXPLANATION_PROVIDER`: currently defaults to `rules_based`
+- `EXPLANATION_MODEL`: provider/model label stored with generated explanations
+
+## Local Setup
+
+### 1. Create the Python virtual environment
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python -m pip install --upgrade pip
+.\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
+```
+
+Important:
+
+run the backend through the virtual environment. Do not use a global `uvicorn` install unless your venv is activated.
+
+### 2. Start PostgreSQL
+
+If you are using the included Docker Compose file:
+
+```powershell
+docker compose up -d db
+```
+
+### 3. Apply the schema
+
+If you are using the compose-managed container from this repo:
+
+```powershell
+docker exec -i macrolens-db psql -U postgres -d macrolens < database\schema.sql
+```
+
+If your container has a different name, adjust the container name accordingly.
+
+### 4. Install frontend dependencies
+
+```powershell
+cd frontend
+npm install
+cd ..
+```
+
+## Running the Project
+
+### Start the backend
+
+From the repo root:
+
+```powershell
+.\.venv\Scripts\python -m uvicorn app.main:app --reload --app-dir backend
+```
+
+Backend URLs:
+
+- API root: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### Load data into PostgreSQL
+
+From the repo root:
+
+```powershell
+.\.venv\Scripts\python scripts\ingest\run_ingestion.py --dataset bitcoin --dataset cpi --dataset fed_funds --dataset wti
+```
+
+What this command does:
+
+- fetches source data
+- refreshes stored rows for each selected dataset
+- runs anomaly detection
+- runs correlation computation
+- runs explanation generation
+
+Available dataset flags:
+
+- `bitcoin`
+- `cpi`
+- `fed_funds`
+- `wti`
+
+Optional ingestion flags:
+
+- `--skip-anomaly-detection`
+- `--skip-correlation`
+- `--skip-explanations`
+
+### Start the frontend
+
+From the repo root:
+
+```powershell
+npm run dev --prefix frontend
+```
+
+Frontend URL:
+
+- [http://localhost:5173](http://localhost:5173)
+
+The Vite config proxies `/api` requests to `http://127.0.0.1:8000`.
+
+## Typical Local Workflow
+
+1. start PostgreSQL
+2. start the backend
+3. run ingestion
+4. start the frontend
+5. open the UI and inspect datasets and anomalies
+
+## API Endpoints
+
+Current core endpoints:
+
+- `GET /api/v1/datasets`
+- `GET /api/v1/datasets/{id}/timeseries`
+- `GET /api/v1/datasets/{id}/anomalies`
+- `GET /api/v1/anomalies/{id}`
+
+The anomaly detail endpoint returns:
+
+- anomaly metadata
+- correlated datasets
+- generated explanations
+
+## Frontend Experience
+
+The current frontend supports:
+
+- dataset selection
+- live timeseries rendering
+- anomaly markers on the chart
+- anomaly selection from the chart or event list
+- detail panel with correlations and explanations
+
+The current design intent is:
+
+chart first, evidence second, explanation third
+
+## Running Tests
+
+### Backend tests
+
+From the repo root:
+
+```powershell
+$env:PYTHONPATH='backend'
+.\.venv\Scripts\python -m pytest backend\tests -q
+```
+
+### Frontend production build
+
+From the repo root:
+
+```powershell
+npm run build --prefix frontend
+```
+
+## Documentation
+
+The repository documentation is part of the engineering system, not an afterthought.
+
+See the [documentation](documentation/) folder for:
+
+- product docs
+- architecture docs
+- development logs
+- experiment records
+- decision records
+- bug investigations
+- research notes
+
+Useful entry points:
+
+- [MVP.md](documentation/MVP.md)
+- [DevelopmentPlan.md](documentation/DevelopmentPlan.md)
+- [system_overview.md](documentation/architecture/system_overview.md)
+
+## Current Limitations
+
+- explanations are still rules-based by default
+- correlations are useful but should not be interpreted as causal proof
+- mixed-frequency analysis is still coarse
+- current ingestion uses full refresh for implemented sources
+- there is no production deployment path yet
+
+## What To Build Next
+
+The next highest-value steps are:
+
+1. add a live LLM explanation provider behind the existing provider abstraction
+2. add S&P 500 ingestion
+3. improve the frontend with zooming, filtering, and provenance display
+4. add database-backed integration tests
+
+## Why This Repo Is Structured This Way
+
+The goal is to show system thinking, not just code volume.
+
+MacroLens is meant to demonstrate:
+
+- data pipeline design
+- anomaly detection reasoning
+- cross-dataset analysis
+- evidence-backed explanation generation
+- engineering documentation discipline
+
+That combination is the point of the project.
