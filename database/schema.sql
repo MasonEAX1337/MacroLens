@@ -61,6 +61,23 @@ CREATE TABLE IF NOT EXISTS explanations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS news_context (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    anomaly_id BIGINT NOT NULL REFERENCES anomalies(id) ON DELETE CASCADE,
+    provider TEXT NOT NULL,
+    article_url TEXT NOT NULL,
+    title TEXT NOT NULL,
+    domain TEXT,
+    language TEXT,
+    source_country TEXT,
+    published_at TIMESTAMPTZ,
+    search_query TEXT NOT NULL,
+    relevance_rank INTEGER NOT NULL DEFAULT 1,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_news_context_anomaly_provider_url UNIQUE (anomaly_id, provider, article_url)
+);
+
 CREATE INDEX IF NOT EXISTS idx_data_points_dataset_timestamp
     ON data_points (dataset_id, timestamp DESC);
 
@@ -72,3 +89,6 @@ CREATE INDEX IF NOT EXISTS idx_correlations_anomaly
 
 CREATE INDEX IF NOT EXISTS idx_explanations_anomaly_created
     ON explanations (anomaly_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_news_context_anomaly_rank
+    ON news_context (anomaly_id, relevance_rank ASC, published_at DESC);

@@ -28,6 +28,7 @@ The MVP includes:
 - PostgreSQL as the central evidence store
 - anomaly detection on normalized time series data
 - lag-aware correlation discovery around anomaly windows
+- article-context retrieval around anomaly windows
 - explanation generation from stored system evidence
 - a frontend investigation interface with chart markers and event details
 
@@ -46,21 +47,21 @@ As of March 12, 2026, the repository contains a working end-to-end vertical slic
 
 ### What is implemented
 
-- PostgreSQL schema with datasets, points, anomalies, correlations, explanations, and ingestion runs
-- data ingestion for Bitcoin, CPI, Federal Funds Rate, and WTI oil
+- PostgreSQL schema with datasets, points, anomalies, correlations, news context, explanations, and ingestion runs
+- data ingestion for Bitcoin, CPI, Federal Funds Rate, WTI oil, and S&P 500
 - rolling z-score anomaly detection with frequency-aware defaults
 - lag-aware correlation scoring on percent changes
+- persisted article-context retrieval through GDELT
 - explanation generation through a provider abstraction
 - FastAPI endpoints for datasets, timeseries, anomalies, and anomaly detail
-- React frontend that renders charts, anomaly markers, correlations, and explanations
+- React frontend that renders charts, anomaly markers, correlations, cited news context, and explanations
 
 ### What is not fully implemented yet
 
-- no live LLM provider is connected yet
-- the current explanation provider is rules-based, not OpenAI/Anthropic/local model backed
-- the S&P 500 dataset listed in the original plan is not implemented yet
-- frontend zooming and richer filtering are not implemented yet
-- explanation generation does not yet use external historical context or news evidence
+- the current default explanation provider is still rules-based
+- OpenAI-backed and Gemini-backed provider paths now exist and have been validated on live anomalies, but are not yet treated as production-ready defaults
+- frontend now supports range and anomaly filtering plus explanation regeneration, but still lacks dataset-comparison controls
+- the current news layer is keyword-based retrieval, so ranking quality and timing interpretation are still limited
 
 This distinction matters. The repo now proves the system shape, but not every promised enhancement.
 
@@ -72,10 +73,7 @@ This distinction matters. The repo now proves the system shape, but not every pr
 - CPI via FRED
 - Federal Funds Rate via FRED
 - WTI oil price via FRED
-
-### Planned but not yet implemented
-
-- S&P 500 index
+- S&P 500 index via FRED
 
 ## Core User Flow
 
@@ -87,6 +85,7 @@ This distinction matters. The repo now proves the system shape, but not every pr
 6. The system shows:
    - anomaly metadata
    - correlated datasets
+   - cited news context
    - generated explanation text
    - evidence-backed limitations of interpretation
 
@@ -98,6 +97,7 @@ Source APIs
   -> PostgreSQL
   -> anomaly detection
   -> correlation engine
+  -> news context retrieval
   -> explanation generation
   -> FastAPI
   -> React investigation UI
@@ -112,7 +112,8 @@ That means:
 1. data must be normalized before storage
 2. anomalies must be stored, not inferred live in the UI
 3. correlations must be persisted as evidence, not recomputed ad hoc for every click
-4. explanations must be downstream of stored facts
+4. contextual article evidence must be stored separately from statistical relationships
+5. explanations must be downstream of stored facts
 
 If any of those steps are skipped, the product becomes presentation without reasoning.
 
@@ -178,6 +179,20 @@ Key fields:
 - `generated_text`
 - `evidence`
 
+### `news_context`
+
+Stores article citations retrieved around an anomaly window.
+
+Key fields:
+
+- `anomaly_id`
+- `provider`
+- `article_url`
+- `title`
+- `published_at`
+- `search_query`
+- `relevance_rank`
+
 ## Detection Strategy
 
 The MVP anomaly detector uses rolling z-score logic.
@@ -227,10 +242,10 @@ the explainer should interpret evidence, not invent it.
 
 ### Planned upgrade
 
-- connect a live LLM provider
-- add prompt templating over structured evidence
-- add event context retrieval
-- support regeneration when evidence changes
+- continue comparative validation of OpenAI and Gemini provider paths
+- improve prompt templating over structured evidence
+- improve event context retrieval quality
+- support higher-quality regeneration when evidence changes
 
 ## Frontend Experience
 
@@ -241,18 +256,20 @@ chart first, evidence second, explanation third
 ### Current UI capabilities
 
 - dataset selector
+- date-window filter
+- severity filter
+- direction filter
 - timeseries chart
+- chart brush for local zooming
 - anomaly markers
 - anomaly list
-- detail panel with correlations and explanations
+- detail panel with correlations, cited news context, explanations, and evidence provenance
+- explanation regeneration trigger inside the event panel
 
 ### Missing but valuable next enhancements
 
-- brush/zoom on chart
-- date-range filtering
-- severity filtering
-- explanation regeneration trigger
-- explanation evidence view
+- explicit raw evidence view
+- cross-dataset comparison mode
 
 ## MVP Success Criteria
 
@@ -276,14 +293,15 @@ The project is close to MVP-complete in system shape, but not yet complete again
 
 ### Why it is not finished yet
 
-- the explainer is not yet backed by a live LLM
-- the initial dataset set is still incomplete
+- the explainer now supports live hosted providers, but trust still depends on prompt discipline and evaluation
+- the news layer now exists, but retrieval quality still needs improvement
 - some UX depth is still missing
 
 ## Hard Truths
 
 - A chart alone is not impressive.
 - Correlations without guardrails are dangerous.
+- Headlines without provenance are just another form of noise.
 - Explanations without grounded evidence are theater.
 - A rules-based explanation layer is honest but not the final differentiator.
 

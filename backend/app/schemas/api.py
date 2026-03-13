@@ -41,7 +41,20 @@ class ExplanationRecord(BaseModel):
     created_at: datetime
 
 
+class NewsContextRecord(BaseModel):
+    provider: str
+    article_url: str
+    title: str
+    domain: str | None = None
+    language: str | None = None
+    source_country: str | None = None
+    published_at: datetime | None = None
+    search_query: str
+    relevance_rank: int
+
+
 class AnomalyDetail(AnomalySummary):
     dataset_name: str
     correlations: list[CorrelationRecord]
     explanations: list[ExplanationRecord]
+    news_context: list[NewsContextRecord]

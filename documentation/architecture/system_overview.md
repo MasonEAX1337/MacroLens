@@ -19,6 +19,7 @@ CoinGecko / FRED
     -> PostgreSQL
     -> anomaly detection
     -> correlation engine
+    -> news context retrieval
     -> explanation generation
     -> FastAPI
     -> React frontend
@@ -58,13 +59,19 @@ For each anomaly, the system:
 - searches positive and negative lags
 - stores strongest relationships
 
-### 5. Explanation Generation
+### 5. News Context Retrieval
 
-The explanation layer reads stored anomaly and correlation evidence and generates persisted explanation text.
+For each anomaly, the system can retrieve article citations around the event window and store them in PostgreSQL.
 
-The current implementation uses a rules-based provider behind a provider abstraction. That keeps the architecture stable while the live LLM provider remains a planned upgrade.
+This is deliberately a separate evidence layer from correlations. News is contextual evidence, not another series to correlate numerically.
 
-### 6. Delivery
+### 6. Explanation Generation
+
+The explanation layer reads stored anomaly, correlation, and news-context evidence and generates persisted explanation text.
+
+The current implementation uses a provider abstraction with rules-based, OpenAI, and Gemini-backed generation paths. That keeps the architecture stable while explanation quality continues to be tuned.
+
+### 7. Delivery
 
 FastAPI exposes the evidence model through event-centric endpoints.
 
@@ -75,6 +82,7 @@ React consumes those endpoints and renders:
 - anomaly markers
 - event detail panel
 - correlations
+- stored news context
 - explanations
 
 ## Implemented Boundaries
@@ -92,7 +100,6 @@ React consumes those endpoints and renders:
 - real-time feeds
 - causal modeling
 - macroeconomic forecasting
-- news ingestion pipeline
 - user-specific workflows
 
 ## Why This Architecture Works
@@ -104,6 +111,7 @@ Every visible UI element is downstream of persisted system state:
 - the chart is backed by `data_points`
 - the anomaly markers are backed by `anomalies`
 - the related datasets are backed by `correlations`
+- the cited articles are backed by `news_context`
 - the explanation is backed by `explanations`
 
 That makes the system easier to reason about, test, and improve.
@@ -124,11 +132,13 @@ Lag-aware correlation improves usefulness but does not remove the risk of spurio
 
 The architecture must continue treating correlations as supporting evidence, not explanation certainty.
 
-### Explanation credibility risk
+### Context retrieval risk
 
-The provider abstraction is solid, but the current rules-based provider is still a transitional implementation.
+News retrieval increases explanatory power, but it introduces a new failure mode:
 
-The architecture is ready for a real LLM provider, but product credibility will rise substantially only after that change.
+irrelevant headlines can look authoritative if ranking quality is weak.
+
+That means provenance display and query quality now matter as much as transport.
 
 ## Current Maturity Assessment
 

@@ -16,6 +16,7 @@ As of March 12, 2026, the project has completed the first major system loop:
 - datasets can be ingested into PostgreSQL
 - anomalies can be detected and persisted
 - correlations can be computed and persisted
+- news context can be retrieved and persisted
 - explanations can be generated and persisted
 - the frontend can visualize timeseries and anomaly detail against the live API
 
@@ -25,15 +26,19 @@ As of March 12, 2026, the project has completed the first major system loop:
 - CPI
 - Federal Funds Rate
 - WTI oil
+- S&P 500
 
 ### Implemented interface
 
 - dataset selection
+- multi-dataset 3D constellation view
 - timeseries chart
 - anomaly markers
 - event detail panel
 - correlation display
+- news context display
 - explanation display
+- explanation regeneration from the event panel
 
 ### Important truth
 
@@ -41,8 +46,15 @@ The system is functionally coherent, but it is not yet finished.
 
 The two biggest gaps are:
 
-1. the explanation layer is still rules-based
-2. the dataset set is still thinner than the original product vision
+1. the hosted-provider path is usable, but not yet compared rigorously enough to justify a default change
+2. contextual retrieval quality is still noisier than the rest of the evidence pipeline
+3. the new multi-dataset visual layer is useful, but it introduced a frontend performance cost that should be managed intentionally
+
+One important milestone has now been cleared:
+
+- the project supports five meaningful datasets, including S&P 500
+- the hosted explanation path has been validated on live anomalies strongly enough to continue development without blocking on prompt work
+- the system now has both structured and contextual evidence classes
 
 ## First-Principles Breakdown
 
@@ -51,8 +63,9 @@ MacroLens reduces to five systems:
 1. data acquisition
 2. evidence storage
 3. event detection
-4. relationship and interpretation
-5. user investigation
+4. contextual retrieval
+5. relationship and interpretation
+6. user investigation
 
 The first pass of all five now exists.
 
@@ -89,6 +102,7 @@ Completed for current datasets.
 - FRED integration implemented
 - timestamp normalization implemented
 - full-refresh write strategy implemented for current sources
+- first-pass news retrieval implemented through GDELT
 
 ### Phase 4: Anomaly Detection
 
@@ -110,13 +124,16 @@ Completed for MVP.
 
 ### Phase 6: Explanation Engine
 
-Completed in provisional form.
+Completed in staged form.
 
 - provider abstraction implemented
 - rules-based provider implemented
+- OpenAI-backed provider path implemented
+- Gemini-backed provider path implemented
+- fallback behavior implemented
 - explanation persistence implemented
 
-This phase is technically complete for the system loop, but not complete for product ambition.
+This phase is technically complete for the system loop, but not complete for product ambition or operational confidence.
 
 ### Phase 7: API Layer
 
@@ -189,84 +206,49 @@ That choice created three benefits:
 
 The next phase should focus on value density, not surface area.
 
-### Priority 1: Replace the rules-based explanation provider with a live LLM provider
+### Priority 1: Compare and harden hosted explanation providers
 
-This is the highest leverage next step because it upgrades the most product-visible part of the system.
-
-#### Why this matters
-
-- the current rules-based output proves architecture but not differentiation
-- a grounded LLM explainer is closer to the actual product thesis
-- the provider boundary already exists, so the remaining work is targeted
+The explanation path is now usable, which changes the task. The problem is no longer basic integration. The problem is comparative judgment.
 
 #### Required work
 
-1. implement OpenAI or Anthropic provider class
-2. build structured prompt templates
-3. restrict output to supplied evidence
-4. store provider/model metadata
-5. support regeneration on demand
+1. run side-by-side evaluations of OpenAI and Gemini on the same anomaly set
+2. define an explanation quality rubric
+3. measure fallback behavior under missing-key and HTTP-failure conditions
+4. decide whether a hosted provider should become the default
+5. surface provider provenance more clearly in the UI
 
-#### Risks
+#### Main risk
 
-- hallucination
-- generic language
-- false certainty from weak correlations
+The danger is no longer that the provider fails to respond. The danger is that it responds fluently while overstating evidence.
 
-#### Guardrails
+### Priority 2: Improve news-context retrieval quality
 
-- keep the rules-based provider as fallback
-- include uncertainty instructions in prompts
-- keep evidence payloads explicit and inspectable
-
-### Priority 2: Add one more high-recognition market dataset
-
-The obvious candidate is S&P 500.
-
-#### Why this matters
-
-- it was part of the original product framing
-- it increases the credibility of cross-market analysis
-- it produces more intuitive event narratives for users
-
-#### Required work
-
-1. choose stable source
-2. add ingestion client
-3. normalize timestamps and frequency assumptions
-4. rerun pipeline
-5. validate new correlations
-
-### Priority 3: Improve the frontend investigation workflow
-
-The current UI works, but it is still a first-pass operator console rather than a polished investigation tool.
+The first news layer proves the evidence model, but it does not yet prove retrieval quality.
 
 #### Highest-value improvements
 
-- chart zoom or brush selection
-- anomaly severity filtering
-- date-range filtering
-- better visual distinction between positive and negative events
-- explanation regeneration control
-- evidence provenance display
+- better dataset-specific query templates
+- duplicate suppression across domains
+- better time-window interpretation in the UI and explainer
+- optional domain filtering or source weighting
 
-#### Why this matters
+#### Main risk
 
-If the user cannot interrogate the evidence easily, the intelligence value of the backend is partially wasted.
+Weak article ranking can make the product feel smarter while actually making it less trustworthy.
 
-### Priority 4: Add backend integration tests against the live database
+### Priority 3: Continue deepening the frontend investigation workflow
 
-Current tests are useful but still too centered on unit behavior.
+The frontend is now materially better than the original MVP shell, but it still stops short of full investigative usefulness.
 
-#### Additions needed
+#### Highest-value improvements
 
-- API integration tests with seeded DB state
-- ingestion smoke tests against test database
-- anomaly persistence validation
-- correlation persistence validation
-- explanation persistence validation
+- richer comparison semantics in the constellation view
+- clearer selected-range feedback around the chart brush
+- anomaly clustering or bucketing for dense daily series
+- clearer evidence-provider comparison in the event panel
 
-### Priority 5: Add scheduled pipeline execution
+### Priority 4: Add scheduled pipeline execution
 
 The MVP currently runs through manual commands.
 
@@ -282,11 +264,10 @@ Do not overbuild orchestration yet.
 
 ## Recommended Build Order From Here
 
-1. implement live LLM provider integration
-2. add S&P 500 ingestion
-3. improve frontend interaction depth
-4. add DB-backed integration tests
-5. add scheduler and refresh workflow
+1. compare and harden hosted provider behavior
+2. improve news-context retrieval quality
+3. continue frontend investigation improvements
+4. add scheduler and refresh workflow
 
 This order keeps the work aligned with the product thesis.
 
@@ -298,48 +279,47 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 ### Sprint Deliverables
 
-1. live explanation provider
-2. one additional major dataset
-3. chart interaction improvements
-4. backend integration tests
+1. hosted-provider comparison pass
+2. news-context quality improvements
+3. targeted frontend follow-up work
+4. operational refresh workflow
 
 ### Suggested Task Breakdown
 
-#### Backend
+#### Evaluation
 
-- create `OpenAIExplanationProvider` or equivalent
-- add prompt builder module
-- add explanation regeneration endpoint or command
-- add dataset definition for S&P 500
+- compare Gemini and OpenAI outputs on the same anomaly sample
+- document provider selection criteria
+- decide whether the rules-based provider should remain the default
+
+#### Retrieval
+
+- tighten dataset-specific GDELT queries
+- document rate-limit behavior and retry policy
+- inspect retrieved articles for relevance drift
 
 #### Frontend
 
-- add chart brush/zoom
-- add anomaly list filtering
-- add explicit evidence/provenance section
-- add empty/error state refinement
-
-#### Testing
-
-- create DB seed fixture
-- add API integration suite
-- add explanation provider tests
+- add selected-range feedback around the chart brush
+- optimize and deepen the 3D constellation view
+- make provider comparison clearer inside the event panel
 
 ## Definition of MVP Completion
 
 MacroLens can be called MVP-complete when all of the following are true:
 
 1. at least five meaningful datasets are supported
-2. the explanation layer can run through a live LLM provider
+2. the explanation layer can run through a live LLM provider with acceptable grounding and fallback behavior
 3. the frontend supports interactive event investigation beyond static selection
 4. the backend has integration-level verification, not only unit tests
-5. the product can be refreshed repeatably with a documented operational workflow
+5. the product can retrieve and display contextual evidence with acceptable relevance quality
+6. the product can be refreshed repeatably with a documented operational workflow
 
 ## Hard Truths
 
 - The architecture is now real enough that the next mistakes will be judgment mistakes, not scaffolding mistakes.
 - Adding more code is no longer the main challenge. Choosing what not to add is.
 - The strongest thing in the repo right now is the evidence pipeline.
-- The weakest thing in the repo right now is that the final explanation layer still stops short of the intended intelligence experience.
+- The weakest thing in the repo right now is no longer the UI shell. It is the combination of limited integration-grade verification and noisy contextual retrieval.
 
 The next phase should deepen trust, not broaden complexity.

@@ -14,7 +14,8 @@ The UI is organized around a simple loop:
 2. inspect chart
 3. identify anomaly marker
 4. open event details
-5. review correlations and explanation
+5. review correlations, cited news, and explanation
+6. regenerate the explanation if the evidence or provider changes
 
 This is intentionally narrow. It keeps the interface centered on event investigation rather than dashboard sprawl.
 
@@ -23,12 +24,20 @@ This is intentionally narrow. It keeps the interface centered on event investiga
 The frontend currently includes:
 
 - dataset selector
+- date-window controls
+- anomaly severity and direction filters
+- multi-dataset 3D constellation surface
 - timeseries chart
+- chart brush for local zooming
 - anomaly markers on the chart
 - recent anomaly list
 - event detail panel
+- evidence provenance section
+- cited news context section
+- article timing badges
 - correlation cards
 - explanation cards
+- explanation regeneration control
 
 ## Data Dependencies
 
@@ -38,8 +47,13 @@ The UI depends on:
 - `GET /api/v1/datasets/{id}/timeseries`
 - `GET /api/v1/datasets/{id}/anomalies`
 - `GET /api/v1/anomalies/{id}`
+- `POST /api/v1/anomalies/{id}/regenerate-explanation`
 
 This is a strong MVP boundary because it keeps the UI data contract small and event-centric.
+
+The constellation view deliberately reuses the same endpoints rather than introducing a second API surface. It is a frontend composition of the existing dataset, timeseries, anomaly, and anomaly-detail contracts.
+
+It is also lazy-loaded and chunked separately from the main application shell. That is necessary because the visual gain from Three.js is real, but so is the payload cost.
 
 ## Design Direction
 
@@ -57,31 +71,30 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 ## Current Strengths
 
 - clear left-to-right investigation flow
+- global multi-dataset view now exists without breaking the focused single-series investigation flow
 - anomaly list and chart reinforce each other
 - evidence panel is easy to scan
 - frontend is wired to live backend data rather than placeholder content
 
 ## Current Weaknesses
 
-- no zooming or brush control
-- no anomaly filtering
+- no selected-range summary around the brush interaction
 - no loading skeletons
-- no explanation regeneration control
-- no explicit raw evidence view
+- no explicit raw evidence payload view
+- the 3D constellation adds a meaningful visual layer, but it also increases bundle size and needs performance discipline
 
 ## Next Improvements
 
 ### Highest-value
 
-- chart zoom and range selection
-- anomaly severity filtering
-- better visual distinction between positive and negative anomaly types
-- evidence provenance section in the detail panel
+- selected-range summary tied to the chart brush
+- richer comparison semantics inside the constellation view
+- explicit raw evidence payload view
 
 ### Second-order improvements
 
-- comparison mode between datasets
-- explanation refresh button
+- richer comparison mode between datasets
+- explanation history comparison across providers
 - anomaly clustering view
 
 ## Design Standard

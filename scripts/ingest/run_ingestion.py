@@ -13,6 +13,7 @@ from app.services.anomaly_detection import run_detection_for_dataset
 from app.services.correlation_engine import run_correlation_for_all_anomalies
 from app.services.explanations import run_explanations_for_all_anomalies
 from app.services.ingestion import create_ingestion_run, upsert_data_points, upsert_dataset
+from app.services.news_context import run_news_context_for_all_anomalies
 from app.services.providers.coingecko import BITCOIN_DATASET, CoinGeckoClient
 from app.services.providers.fred import FRED_SERIES, FredClient
 
@@ -62,9 +63,14 @@ def parse_args() -> argparse.Namespace:
         help="Load and detect anomalies without recomputing cross-dataset correlations.",
     )
     parser.add_argument(
+        "--skip-news-context",
+        action="store_true",
+        help="Load data, detect anomalies, and compute correlations without fetching stored news context.",
+    )
+    parser.add_argument(
         "--skip-explanations",
         action="store_true",
-        help="Load data, detect anomalies, and compute correlations without generating explanations.",
+        help="Load data, detect anomalies, compute correlations, and fetch news context without generating explanations.",
     )
     return parser.parse_args()
 
@@ -72,6 +78,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     run_correlation = not args.skip_correlation
+    run_news_context = not args.skip_news_context
     run_explanations = not args.skip_explanations
     for dataset_key in args.dataset:
         try:
@@ -90,6 +97,11 @@ def main() -> None:
         with SessionLocal.begin() as session:
             total_correlations = run_correlation_for_all_anomalies(session)
         print(f"correlations: stored {total_correlations} relationship rows")
+
+    if run_news_context:
+        with SessionLocal.begin() as session:
+            total_news_articles = run_news_context_for_all_anomalies(session)
+        print(f"news_context: stored {total_news_articles} article row(s)")
 
     if run_explanations:
         with SessionLocal.begin() as session:

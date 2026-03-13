@@ -40,6 +40,7 @@ For each supported dataset, MacroLens can:
 - normalize and store it in PostgreSQL
 - detect anomalies with rolling z-score logic
 - compute lag-aware correlations against other datasets
+- retrieve article context around anomaly windows
 - generate explanation text from stored evidence
 - expose all of that through an API and frontend investigation interface
 
@@ -53,8 +54,9 @@ The system is built as an evidence pipeline:
 2. normalized data is stored in PostgreSQL
 3. anomalies are persisted as first-class events
 4. correlations are persisted as supporting evidence
-5. explanations are generated from stored system state
-6. the frontend lets a user inspect the result
+5. article context is persisted as cited event evidence
+6. explanations are generated from stored system state
+7. the frontend lets a user inspect the result
 
 That makes the repo more than a frontend demo. The backend reasoning chain is the actual product.
 
@@ -67,9 +69,10 @@ MacroLens currently has a working end-to-end MVP slice.
 - FastAPI backend
 - PostgreSQL schema
 - CoinGecko ingestion for Bitcoin
-- FRED ingestion for CPI, Federal Funds Rate, and WTI oil
+- FRED ingestion for CPI, Federal Funds Rate, WTI oil, and S&P 500
 - rolling z-score anomaly detection
 - lag-aware correlation discovery on percent changes
+- stored news-context retrieval through GDELT
 - explanation generation through a provider abstraction
 - React frontend connected to the live API
 
@@ -77,13 +80,39 @@ MacroLens currently has a working end-to-end MVP slice.
 
 The current default explanation provider is `rules_based`.
 
-That means the pipeline is real and persisted, but the explainer is still a transitional implementation rather than a live OpenAI or Anthropic integration.
+MacroLens now also includes `openai` and `gemini` provider paths behind the same provider abstraction.
+
+That means:
+
+- the default local workflow remains deterministic and cheap
+- a live hosted model can be enabled through environment variables
+- the system keeps the rules-based provider as fallback
+
+The hosted-provider paths are implemented and have been validated on live anomalies, but they should still be treated as staged integrations rather than production-ready defaults. Prompt quality, comparative evaluation, and failure-handling polish are still part of the next phase.
+
+### Current news context model
+
+MacroLens now includes a first-pass news evidence layer.
+
+That layer:
+
+- retrieves article citations around an anomaly window
+- stores those articles separately from correlations
+- exposes them through the anomaly detail API
+- allows the explainer to use cited context instead of relying only on market-to-market relationships
+
+The first provider is GDELT DOC 2.0. This was chosen because it supports historical article search without adding another paid API key immediately.
+
+The current ranking pass also applies:
+
+- dataset-aware keyword queries
+- title-based relevance filtering
+- duplicate suppression
+- timing-aware ranking around the anomaly date
 
 ### Not complete yet
 
-- live LLM-backed explanation provider
-- S&P 500 ingestion
-- deeper frontend interactions such as zooming and filtering
+- comparison mode across datasets
 - production deployment workflow
 
 ## Current Datasets
@@ -94,10 +123,7 @@ Implemented datasets:
 - Consumer Price Index
 - Federal Funds Rate
 - WTI Oil Price
-
-Planned next dataset:
-
-- S&P 500 index
+- S&P 500 Index
 
 ## High-Level Architecture
 
@@ -108,6 +134,7 @@ CoinGecko / FRED
     -> PostgreSQL
     -> anomaly detection
     -> correlation engine
+    -> news context retrieval
     -> explanation engine
     -> FastAPI
     -> React frontend
@@ -147,8 +174,16 @@ Important variables in `.env`:
 - `DATABASE_URL`: PostgreSQL connection string
 - `FRED_API_KEY`: required for FRED datasets
 - `CORS_ALLOWED_ORIGINS`: frontend origins allowed to call the API
-- `EXPLANATION_PROVIDER`: currently defaults to `rules_based`
+- `EXPLANATION_PROVIDER`: `rules_based`, `openai`, or `gemini`
+- `EXPLANATION_FALLBACK_PROVIDER`: fallback provider if the primary provider fails
 - `EXPLANATION_MODEL`: provider/model label stored with generated explanations
+- `OPENAI_MODEL`: model used when `EXPLANATION_PROVIDER=openai`
+- `OPENAI_API_KEY`: required when using the OpenAI provider
+- `GEMINI_MODEL`: model used when `EXPLANATION_PROVIDER=gemini`
+- `GEMINI_API_KEY`: required when using the Gemini provider
+- `NEWS_CONTEXT_PROVIDER`: current news provider, default `gdelt`
+- `NEWS_CONTEXT_WINDOW_DAYS`: retrieval window around anomaly timestamps
+- `NEWS_CONTEXT_MAX_ARTICLES`: max stored articles per anomaly
 
 ## Local Setup
 
@@ -210,7 +245,7 @@ Backend URLs:
 From the repo root:
 
 ```powershell
-.\.venv\Scripts\python scripts\ingest\run_ingestion.py --dataset bitcoin --dataset cpi --dataset fed_funds --dataset wti
+.\.venv\Scripts\python scripts\ingest\run_ingestion.py --dataset bitcoin --dataset cpi --dataset fed_funds --dataset wti --dataset sp500
 ```
 
 What this command does:
@@ -219,6 +254,7 @@ What this command does:
 - refreshes stored rows for each selected dataset
 - runs anomaly detection
 - runs correlation computation
+- fetches and stores news context
 - runs explanation generation
 
 Available dataset flags:
@@ -227,12 +263,56 @@ Available dataset flags:
 - `cpi`
 - `fed_funds`
 - `wti`
+- `sp500`
 
 Optional ingestion flags:
 
 - `--skip-anomaly-detection`
 - `--skip-correlation`
+- `--skip-news-context`
 - `--skip-explanations`
+
+### Fetch news context without re-ingesting data
+
+If you want to backfill or refresh article context for stored anomalies:
+
+```powershell
+.\.venv\Scripts\python scripts\news\fetch_news_context.py
+```
+
+To fetch only one anomaly:
+
+```powershell
+.\.venv\Scripts\python scripts\news\fetch_news_context.py --anomaly-id 91
+```
+
+### Regenerate explanations without re-ingesting data
+
+If you change explanation provider settings and want to regenerate explanation text from existing stored anomalies:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\generate_explanations.py
+```
+
+To regenerate only one anomaly:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\generate_explanations.py --anomaly-id 91
+```
+
+### View stored explanations from PostgreSQL
+
+To inspect explanations without raw API output:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\view_explanations.py --anomaly-id 91
+```
+
+To compare only Gemini-generated explanations:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\view_explanations.py --provider gemini --limit 5
+```
 
 ### Start the frontend
 
@@ -264,11 +344,13 @@ Current core endpoints:
 - `GET /api/v1/datasets/{id}/timeseries`
 - `GET /api/v1/datasets/{id}/anomalies`
 - `GET /api/v1/anomalies/{id}`
+- `POST /api/v1/anomalies/{id}/regenerate-explanation`
 
 The anomaly detail endpoint returns:
 
 - anomaly metadata
 - correlated datasets
+- stored news context
 - generated explanations
 
 ## Frontend Experience
@@ -276,14 +358,28 @@ The anomaly detail endpoint returns:
 The current frontend supports:
 
 - dataset selection
+- date-window filtering
+- minimum-severity filtering
+- direction filtering
+- multi-dataset 3D constellation view
 - live timeseries rendering
+- chart brush for local zooming
 - anomaly markers on the chart
 - anomaly selection from the chart or event list
+- anomaly selection from the 3D constellation
+- evidence provenance in the event panel
+- cited news context in the event panel
+- article timing badges in the event panel
+- explanation regeneration from the event panel
 - detail panel with correlations and explanations
 
 The current design intent is:
 
 chart first, evidence second, explanation third
+
+The 3D constellation adds a second layer:
+
+macro field first, dataset investigation second, explanation third
 
 ## Running Tests
 
@@ -295,6 +391,8 @@ From the repo root:
 $env:PYTHONPATH='backend'
 .\.venv\Scripts\python -m pytest backend\tests -q
 ```
+
+This suite now includes Postgres-backed API integration tests. If PostgreSQL is not available locally, the integration subset will skip cleanly.
 
 ### Frontend production build
 
@@ -323,23 +421,26 @@ Useful entry points:
 - [MVP.md](documentation/MVP.md)
 - [DevelopmentPlan.md](documentation/DevelopmentPlan.md)
 - [system_overview.md](documentation/architecture/system_overview.md)
+- [news_context_engine.md](documentation/architecture/news_context_engine.md)
 
 ## Current Limitations
 
-- explanations are still rules-based by default
+- explanations are rules-based by default even though OpenAI-backed and Gemini-backed provider paths now exist
 - correlations are useful but should not be interpreted as causal proof
+- the first news provider is keyword-based retrieval, so relevance quality is still uneven
 - mixed-frequency analysis is still coarse
 - current ingestion uses full refresh for implemented sources
+- the new Three.js constellation view is visually stronger, but it increases frontend bundle weight and should be optimized if kept as a permanent default surface
 - there is no production deployment path yet
 
 ## What To Build Next
 
 The next highest-value steps are:
 
-1. add a live LLM explanation provider behind the existing provider abstraction
-2. add S&P 500 ingestion
-3. improve the frontend with zooming, filtering, and provenance display
-4. add database-backed integration tests
+1. evaluate OpenAI and Gemini explanation quality more systematically
+2. improve article ranking and filtering quality for news context
+3. optimize and deepen the new multi-dataset constellation view
+4. add a documented refresh and deployment workflow
 
 ## Why This Repo Is Structured This Way
 

@@ -30,6 +30,14 @@ FRED_SERIES: dict[str, DatasetDefinition] = {
         description="Crude Oil Prices: West Texas Intermediate.",
         frequency="daily",
     ),
+    "sp500": DatasetDefinition(
+        key="sp500",
+        name="S&P 500 Index",
+        symbol="SP500",
+        source="FRED",
+        description="S&P 500 stock market index.",
+        frequency="daily",
+    ),
 }
 
 

@@ -8,6 +8,7 @@ from app.schemas.api import (
     CorrelationRecord,
     DatasetSummary,
     ExplanationRecord,
+    NewsContextRecord,
     TimeSeriesPoint,
 )
 
@@ -94,12 +95,31 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
         ORDER BY created_at DESC
         """
     )
+    news_context_query = text(
+        """
+        SELECT
+            provider,
+            article_url,
+            title,
+            domain,
+            language,
+            source_country,
+            published_at,
+            search_query,
+            relevance_rank
+        FROM news_context
+        WHERE anomaly_id = :anomaly_id
+        ORDER BY relevance_rank ASC, published_at DESC, id ASC
+        """
+    )
 
     correlations = db.execute(correlation_query, {"anomaly_id": anomaly_id}).mappings().all()
     explanations = db.execute(explanation_query, {"anomaly_id": anomaly_id}).mappings().all()
+    news_context = db.execute(news_context_query, {"anomaly_id": anomaly_id}).mappings().all()
 
     return AnomalyDetail(
         **anomaly,
         correlations=[CorrelationRecord.model_validate(row) for row in correlations],
         explanations=[ExplanationRecord.model_validate(row) for row in explanations],
+        news_context=[NewsContextRecord.model_validate(row) for row in news_context],
     )

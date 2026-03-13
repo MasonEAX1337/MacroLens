@@ -32,3 +32,9 @@ export function fetchDatasetAnomalies(datasetId, limit = 100) {
 export function fetchAnomalyDetail(anomalyId) {
   return request(`/api/v1/anomalies/${anomalyId}`);
 }
+
+export function regenerateAnomalyExplanation(anomalyId) {
+  return request(`/api/v1/anomalies/${anomalyId}/regenerate-explanation`, {
+    method: "POST",
+  });
+}

@@ -12,12 +12,15 @@ The current implementation uses:
 
 - a provider abstraction
 - a rules-based provider
+- an OpenAI-backed provider path
+- a Gemini-backed provider path
+- provider fallback behavior
 - persisted evidence payloads
 - explanation storage in PostgreSQL
 
-This is a deliberate interim design.
+This is a deliberate staged design.
 
-It makes the pipeline complete while keeping the boundary ready for a live LLM provider.
+It makes the pipeline complete while keeping the boundary ready for higher-quality live LLM integration.
 
 ## Current Evidence Inputs
 
@@ -29,6 +32,7 @@ Each explanation is currently grounded in:
 - move direction
 - detection method
 - stored correlations
+- stored news context
 
 ## Why This Design Was Chosen
 
@@ -51,7 +55,7 @@ The provider abstraction solved that early.
 
 - language is repetitive
 - it lacks broader historical context
-- it does not synthesize external knowledge
+- news context quality is only as strong as retrieval quality
 - it does not feel meaningfully intelligent yet
 
 That is the honest limitation.
@@ -68,7 +72,7 @@ That is a real product step, even if the generation quality is still transitiona
 
 ### Near-term goal
 
-Implement a live LLM provider behind the existing abstraction.
+Validate and refine the implemented live OpenAI and Gemini provider paths behind the existing abstraction.
 
 ### Required pieces
 
@@ -77,6 +81,7 @@ Implement a live LLM provider behind the existing abstraction.
 - strong uncertainty instructions
 - response persistence
 - fallback to rules-based provider when unavailable
+- use cited article context without treating headlines as proof
 
 ### Important principle
 

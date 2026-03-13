@@ -1,8 +1,9 @@
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import Protocol
 
+import httpx
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -19,6 +20,19 @@ class CorrelationEvidence:
 
 
 @dataclass(frozen=True)
+class NewsContextEvidence:
+    provider: str
+    article_url: str
+    title: str
+    domain: str | None
+    language: str | None
+    source_country: str | None
+    published_at: datetime | None
+    search_query: str
+    relevance_rank: int
+
+
+@dataclass(frozen=True)
 class ExplanationContext:
     anomaly_id: int
     dataset_id: int
@@ -28,6 +42,7 @@ class ExplanationContext:
     direction: str | None
     detection_method: str
     correlations: list[CorrelationEvidence]
+    news_context: list[NewsContextEvidence]
 
 
 @dataclass(frozen=True)
@@ -44,6 +59,82 @@ class ExplanationProvider(Protocol):
 
     def generate(self, context: ExplanationContext) -> GeneratedExplanation:
         ...
+
+
+def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]:
+    return {
+        "dataset_name": context.dataset_name,
+        "timestamp": context.timestamp.isoformat(),
+        "severity_score": context.severity_score,
+        "direction": context.direction,
+        "detection_method": context.detection_method,
+        "correlations": [
+            {
+                "related_dataset_id": item.related_dataset_id,
+                "related_dataset_name": item.related_dataset_name,
+                "correlation_score": item.correlation_score,
+                "lag_days": item.lag_days,
+                "method": item.method,
+            }
+            for item in context.correlations
+        ],
+        "news_context": [
+            {
+                "provider": item.provider,
+                "article_url": item.article_url,
+                "title": item.title,
+                "domain": item.domain,
+                "language": item.language,
+                "source_country": item.source_country,
+                "published_at": item.published_at.isoformat() if item.published_at else None,
+                "timing_class": classify_article_timing(item.published_at, context.timestamp),
+                "timing_interpretation": describe_article_timing(item.published_at, context.timestamp),
+                "search_query": item.search_query,
+                "relevance_rank": item.relevance_rank,
+            }
+            for item in context.news_context
+        ],
+    }
+
+
+def describe_lag_days(lag_days: int) -> str:
+    if lag_days == 0:
+        return "moved on the same day as the anomaly"
+    if lag_days > 0:
+        return f"moved about {lag_days} day(s) after the anomaly"
+    return f"moved about {abs(lag_days)} day(s) before the anomaly"
+
+
+def classify_lag_days(lag_days: int) -> str:
+    if lag_days == 0:
+        return "concurrent"
+    if lag_days > 0:
+        return "lagging"
+    return "leading"
+
+
+def describe_article_timing(published_at: datetime | None, anomaly_timestamp: datetime) -> str:
+    if published_at is None:
+        return "at an unknown time relative to the anomaly"
+
+    day_offset = (published_at.date() - anomaly_timestamp.date()).days
+    if day_offset == 0:
+        return "on the same day as the anomaly"
+    if day_offset > 0:
+        return f"about {day_offset} day(s) after the anomaly"
+    return f"about {abs(day_offset)} day(s) before the anomaly"
+
+
+def classify_article_timing(published_at: datetime | None, anomaly_timestamp: datetime) -> str:
+    if published_at is None:
+        return "unknown"
+
+    day_offset = (published_at.date() - anomaly_timestamp.date()).days
+    if day_offset == 0:
+        return "concurrent"
+    if day_offset > 0:
+        return "lagging"
+    return "leading"
 
 
 class RulesBasedExplanationProvider:
@@ -74,40 +165,327 @@ class RulesBasedExplanationProvider:
             )
             uncertainty = "Confidence is limited because the event does not yet have strong supporting correlations."
 
+        if context.news_context:
+            top_article = context.news_context[0]
+            news_text = (
+                f"Stored news context in the event window included '{top_article.title}'"
+                f"{f' from {top_article.domain}' if top_article.domain else ''}, published "
+                f"{describe_article_timing(top_article.published_at, context.timestamp)}."
+            )
+        else:
+            news_text = "No supporting news context was stored for this anomaly."
+
         generated_text = (
             f"{context.dataset_name} showed an unusual {move_word} on {event_date} "
             f"with a severity score of {context.severity_score:.2f} using {context.detection_method} detection. "
-            f"{correlation_text} {uncertainty}"
+            f"{correlation_text} {news_text} {uncertainty}"
         )
         return GeneratedExplanation(
             provider=self.provider_name,
             model=self.model_name,
             generated_text=generated_text,
-            evidence={
-                "dataset_name": context.dataset_name,
-                "timestamp": context.timestamp.isoformat(),
-                "severity_score": context.severity_score,
-                "direction": context.direction,
-                "detection_method": context.detection_method,
-                "correlations": [
-                    {
-                        "related_dataset_id": item.related_dataset_id,
-                        "related_dataset_name": item.related_dataset_name,
-                        "correlation_score": item.correlation_score,
-                        "lag_days": item.lag_days,
-                        "method": item.method,
-                    }
-                    for item in context.correlations
-                ],
-            },
+            evidence=build_explanation_evidence(context),
         )
 
 
-def get_explanation_provider() -> ExplanationProvider:
-    provider_name = settings.explanation_provider.strip().lower()
-    if provider_name == "rules_based":
+def build_openai_instructions() -> str:
+    return (
+        "You explain macroeconomic anomalies using only the supplied evidence. "
+        "Write 3 to 4 concise sentences. "
+        "Do not claim causality as certainty. "
+        "Do not introduce outside facts that are not present in the evidence. "
+        "If the evidence is weak or correlations are sparse, say so clearly. "
+        "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
+    )
+
+
+def build_openai_input(context: ExplanationContext) -> str:
+    move_direction = context.direction or "unknown"
+    payload = {
+        "task": "Explain the likely drivers of this economic anomaly using only the supplied evidence.",
+        "event": {
+            "dataset_name": context.dataset_name,
+            "timestamp": context.timestamp.isoformat(),
+            "severity_score": context.severity_score,
+            "direction": move_direction,
+            "detection_method": context.detection_method,
+        },
+        "correlations": [
+            {
+                "related_dataset_name": item.related_dataset_name,
+                "correlation_score": round(item.correlation_score, 6),
+                "lag_days": item.lag_days,
+                "timing_class": classify_lag_days(item.lag_days),
+                "lag_interpretation": describe_lag_days(item.lag_days),
+                "method": item.method,
+            }
+            for item in context.correlations
+        ],
+        "news_context": [
+            {
+                "title": item.title,
+                "domain": item.domain,
+                "published_at": item.published_at.isoformat() if item.published_at else None,
+                "timing_class": classify_article_timing(item.published_at, context.timestamp),
+                "timing_interpretation": describe_article_timing(item.published_at, context.timestamp),
+                "language": item.language,
+                "source_country": item.source_country,
+                "search_query": item.search_query,
+                "provider": item.provider,
+                "article_url": item.article_url,
+            }
+            for item in context.news_context
+        ],
+        "output_requirements": [
+            "Use plain English.",
+            "Reference the strongest evidence.",
+            "State uncertainty when evidence is limited.",
+            "Do not mention unavailable news or events.",
+            "Respect the supplied lag interpretation exactly.",
+            "Do not present lagging evidence as a likely cause of the anomaly.",
+            "Prefer 'the strongest stored relationship was' over broad causal phrasing.",
+            "If stored news context exists, use it as contextual evidence and cite it by title or source.",
+            "Treat lagging news context as retrospective context, not proof of the original driver.",
+        ],
+    }
+    return json.dumps(payload, indent=2)
+
+
+def extract_openai_output_text(payload: dict[str, object]) -> str:
+    output_text = payload.get("output_text")
+    if isinstance(output_text, str) and output_text.strip():
+        return output_text.strip()
+
+    output = payload.get("output")
+    if isinstance(output, list):
+        chunks: list[str] = []
+        for item in output:
+            if not isinstance(item, dict):
+                continue
+            content = item.get("content")
+            if not isinstance(content, list):
+                continue
+            for content_item in content:
+                if not isinstance(content_item, dict):
+                    continue
+                if content_item.get("type") == "output_text":
+                    text_value = content_item.get("text")
+                    if isinstance(text_value, str) and text_value.strip():
+                        chunks.append(text_value.strip())
+        if chunks:
+            return "\n".join(chunks)
+
+    raise ValueError("OpenAI response did not contain output text.")
+
+
+def build_gemini_system_instruction() -> str:
+    return (
+        "Explain the supplied economic anomaly using only the provided evidence. "
+        "Write 3 to 4 concise sentences. "
+        "Reference the strongest supporting relationships. "
+        "Do not invent external events or facts. "
+        "Do not claim causality as certainty. "
+        "If the evidence is weak, state that clearly. "
+        "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
+    )
+
+
+def extract_gemini_output_text(payload: dict[str, object]) -> str:
+    candidates = payload.get("candidates")
+    if not isinstance(candidates, list) or not candidates:
+        raise ValueError("Gemini response did not contain candidates.")
+
+    texts: list[str] = []
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        content = candidate.get("content")
+        if not isinstance(content, dict):
+            continue
+        parts = content.get("parts")
+        if not isinstance(parts, list):
+            continue
+        for part in parts:
+            if not isinstance(part, dict):
+                continue
+            text_value = part.get("text")
+            if isinstance(text_value, str) and text_value.strip():
+                texts.append(text_value.strip())
+
+    if texts:
+        return "\n".join(texts)
+
+    raise ValueError("Gemini response did not contain text output.")
+
+
+class OpenAIExplanationProvider:
+    provider_name = "openai"
+
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str,
+        *,
+        base_url: str,
+        timeout_seconds: float,
+    ) -> None:
+        self.api_key = api_key
+        self.model_name = model_name
+        self.base_url = base_url.rstrip("/")
+        self.timeout_seconds = timeout_seconds
+
+    def generate(self, context: ExplanationContext) -> GeneratedExplanation:
+        if not self.api_key:
+            raise ValueError("OPENAI_API_KEY is required for the OpenAI explanation provider.")
+        response = httpx.post(
+            f"{self.base_url}/responses",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": self.model_name,
+                "instructions": build_openai_instructions(),
+                "input": build_openai_input(context),
+            },
+            timeout=self.timeout_seconds,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        generated_text = extract_openai_output_text(payload)
+        evidence = build_explanation_evidence(context)
+        evidence["generation_mode"] = "llm"
+        evidence["provider_response_id"] = payload.get("id")
+
+        return GeneratedExplanation(
+            provider=self.provider_name,
+            model=self.model_name,
+            generated_text=generated_text,
+            evidence=evidence,
+        )
+
+
+class GeminiExplanationProvider:
+    provider_name = "gemini"
+
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str,
+        *,
+        base_url: str,
+        timeout_seconds: float,
+    ) -> None:
+        self.api_key = api_key
+        self.model_name = model_name
+        self.base_url = base_url.rstrip("/")
+        self.timeout_seconds = timeout_seconds
+
+    def generate(self, context: ExplanationContext) -> GeneratedExplanation:
+        if not self.api_key:
+            raise ValueError("GEMINI_API_KEY is required for the Gemini explanation provider.")
+
+        response = httpx.post(
+            f"{self.base_url}/models/{self.model_name}:generateContent",
+            headers={
+                "x-goog-api-key": self.api_key,
+                "Content-Type": "application/json",
+            },
+            json={
+                "system_instruction": {
+                    "parts": [
+                        {
+                            "text": build_gemini_system_instruction(),
+                        }
+                    ]
+                },
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "text": build_openai_input(context),
+                            }
+                        ],
+                    }
+                ],
+            },
+            timeout=self.timeout_seconds,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        generated_text = extract_gemini_output_text(payload)
+        evidence = build_explanation_evidence(context)
+        evidence["generation_mode"] = "llm"
+        evidence["provider_response_id"] = payload.get("responseId")
+        evidence["provider_model_version"] = payload.get("modelVersion")
+        evidence["usage_metadata"] = payload.get("usageMetadata")
+
+        return GeneratedExplanation(
+            provider=self.provider_name,
+            model=self.model_name,
+            generated_text=generated_text,
+            evidence=evidence,
+        )
+
+
+class FallbackExplanationProvider:
+    def __init__(self, primary: ExplanationProvider, fallback: ExplanationProvider) -> None:
+        self.primary = primary
+        self.fallback = fallback
+        self.provider_name = primary.provider_name
+        self.model_name = primary.model_name
+
+    def generate(self, context: ExplanationContext) -> GeneratedExplanation:
+        try:
+            return self.primary.generate(context)
+        except Exception as exc:  # noqa: BLE001
+            fallback_result = self.fallback.generate(context)
+            fallback_evidence = dict(fallback_result.evidence)
+            fallback_evidence["fallback"] = {
+                "requested_provider": self.primary.provider_name,
+                "requested_model": self.primary.model_name,
+                "reason": type(exc).__name__,
+            }
+            return replace(fallback_result, evidence=fallback_evidence)
+
+
+def create_provider_by_name(provider_name: str) -> ExplanationProvider:
+    normalized = provider_name.strip().lower()
+    if normalized == "rules_based":
         return RulesBasedExplanationProvider(model_name=settings.explanation_model)
-    raise ValueError(f"Unsupported explanation provider: {settings.explanation_provider}")
+    if normalized == "openai":
+        return OpenAIExplanationProvider(
+            api_key=settings.openai_api_key,
+            model_name=settings.openai_model,
+            base_url=settings.openai_base_url,
+            timeout_seconds=settings.openai_timeout_seconds,
+        )
+    if normalized == "gemini":
+        return GeminiExplanationProvider(
+            api_key=settings.gemini_api_key,
+            model_name=settings.gemini_model,
+            base_url=settings.gemini_base_url,
+            timeout_seconds=settings.gemini_timeout_seconds,
+        )
+    raise ValueError(f"Unsupported explanation provider: {provider_name}")
+
+
+def get_explanation_provider() -> ExplanationProvider:
+    fallback_name = settings.explanation_fallback_provider.strip().lower()
+    primary = create_provider_by_name(settings.explanation_provider)
+
+    if (
+        settings.explanation_allow_fallback
+        and fallback_name
+        and fallback_name != settings.explanation_provider.strip().lower()
+    ):
+        fallback = create_provider_by_name(fallback_name)
+        return FallbackExplanationProvider(primary, fallback)
+
+    return primary
 
 
 def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext | None:
@@ -147,6 +525,26 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
     correlation_rows = db.execute(correlation_query, {"anomaly_id": anomaly_id}).mappings().all()
     correlations = [CorrelationEvidence(**row) for row in correlation_rows]
 
+    news_query = text(
+        """
+        SELECT
+            provider,
+            article_url,
+            title,
+            domain,
+            language,
+            source_country,
+            published_at,
+            search_query,
+            relevance_rank
+        FROM news_context
+        WHERE anomaly_id = :anomaly_id
+        ORDER BY relevance_rank ASC, published_at DESC, id ASC
+        """
+    )
+    news_rows = db.execute(news_query, {"anomaly_id": anomaly_id}).mappings().all()
+    news_context = [NewsContextEvidence(**row) for row in news_rows]
+
     return ExplanationContext(
         anomaly_id=int(anomaly["anomaly_id"]),
         dataset_id=int(anomaly["dataset_id"]),
@@ -156,6 +554,7 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
         direction=anomaly["direction"],
         detection_method=str(anomaly["detection_method"]),
         correlations=correlations,
+        news_context=news_context,
     )
 
 

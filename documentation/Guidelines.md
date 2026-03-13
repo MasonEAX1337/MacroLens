@@ -11,6 +11,16 @@ The goal is to make the repo answer four questions clearly:
 3. what was tried
 4. why were decisions made
 
+## Relationship to AGENTS.md
+
+`AGENTS.md` defines how coding agents should reason and operate in this repository.
+
+This file defines how project documentation should be structured, updated, and maintained.
+
+Agents should use both:
+- `AGENTS.md` for operating behavior
+- `documentation/Guidelines.md` for documentation standards
+
 ## Documentation Layers
 
 ### Product documentation

@@ -11,8 +11,22 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/macrolens"
     fred_api_key: str = ""
     explanation_provider: str = "rules_based"
+    explanation_fallback_provider: str = "rules_based"
+    explanation_allow_fallback: bool = True
     explanation_model: str = "macro-template-v1"
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_model: str = "gpt-5-mini"
+    openai_timeout_seconds: float = 30.0
     openai_api_key: str = ""
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta"
+    gemini_model: str = "gemini-3.1-flash-lite-preview"
+    gemini_timeout_seconds: float = 30.0
+    gemini_api_key: str = ""
+    news_context_provider: str = "gdelt"
+    news_context_window_days: int = 7
+    news_context_max_articles: int = 5
+    news_context_language: str = "English"
+    gdelt_base_url: str = "https://api.gdeltproject.org/api/v2/doc"
     anthropic_api_key: str = ""
 
     model_config = SettingsConfigDict(
