@@ -26,7 +26,11 @@ class Settings(BaseSettings):
     news_context_window_days: int = 7
     news_context_max_articles: int = 5
     news_context_language: str = "English"
+    anomaly_cluster_window_days: int = 7
     gdelt_base_url: str = "https://api.gdeltproject.org/api/v2/doc"
+    gdelt_min_interval_seconds: float = 8.0
+    gdelt_retry_attempts: int = 4
+    gdelt_retry_backoff_seconds: float = 8.0
     anthropic_api_key: str = ""
 
     model_config = SettingsConfigDict(

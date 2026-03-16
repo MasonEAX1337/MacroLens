@@ -14,7 +14,7 @@ The UI is organized around a simple loop:
 2. inspect chart
 3. identify anomaly marker
 4. open event details
-5. review correlations, cited news, and explanation
+5. review cluster context, propagation timeline, correlations, cited news, and explanation
 6. regenerate the explanation if the evidence or provider changes
 
 This is intentionally narrow. It keeps the interface centered on event investigation rather than dashboard sprawl.
@@ -32,6 +32,8 @@ The frontend currently includes:
 - anomaly markers on the chart
 - recent anomaly list
 - event detail panel
+- macro-event cluster section
+- propagation timeline section
 - evidence provenance section
 - cited news context section
 - article timing badges
@@ -82,6 +84,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - no loading skeletons
 - no explicit raw evidence payload view
 - the 3D constellation adds a meaningful visual layer, but it also increases bundle size and needs performance discipline
+- the propagation timeline is useful, but its score is still too compressed to explain itself fully
 
 ## Next Improvements
 
@@ -90,12 +93,13 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - selected-range summary tied to the chart brush
 - richer comparison semantics inside the constellation view
 - explicit raw evidence payload view
+- clearer propagation score decomposition
 
 ### Second-order improvements
 
 - richer comparison mode between datasets
 - explanation history comparison across providers
-- anomaly clustering view
+- propagation graph expansion beyond one click-ahead step
 
 ## Design Standard
 

@@ -22,12 +22,46 @@ DATASET_NEWS_TERMS: dict[str, list[str]] = {
     "SP500": ['"S&P 500"', '"stock market"', "equities"],
 }
 
+DATASET_NEWS_QUERY_OVERRIDES: dict[str, str] = {
+    "CSUSHPISA": '(("home prices" OR "house prices" OR "home values" OR "case shiller") AND (housing OR "real estate" OR homes))',
+    "MORTGAGE30US": '(("mortgage rates" OR mortgage OR refinancing OR refinance OR "home loans") AND (housing OR homebuyers OR affordability))',
+    "A229RX0": '((("disposable income" OR "personal income" OR "household income") AND (income OR households OR wages)) OR ("stimulus checks" OR stimulus OR "relief package" OR benefits OR paycheck))',
+}
+
 DATASET_TITLE_KEYWORDS: dict[str, list[str]] = {
     "BTC": ["bitcoin", "btc", "crypto"],
     "CPIAUCSL": ["inflation", "consumer price", "cpi"],
     "FEDFUNDS": ["federal reserve", "interest rate", "fed funds", "rate hike", "rate cut"],
     "DCOILWTICO": ["oil", "wti", "crude"],
     "SP500": ["s&p 500", "stock market", "stocks", "equities"],
+    "CSUSHPISA": [
+        "case shiller",
+        "home price",
+        "house price",
+        "housing market",
+        "home values",
+        "real estate",
+        "home sales",
+    ],
+    "MORTGAGE30US": [
+        "mortgage",
+        "mortgage rate",
+        "home loan",
+        "homebuyer",
+        "housing affordability",
+        "refinance",
+        "refinancing",
+    ],
+    "A229RX0": [
+        "disposable income",
+        "personal income",
+        "household income",
+        "consumer spending",
+        "stimulus",
+        "relief package",
+        "benefits",
+        "paycheck",
+    ],
 }
 
 
@@ -36,6 +70,7 @@ class NewsContextRequest:
     anomaly_id: int
     dataset_name: str
     dataset_symbol: str
+    dataset_frequency: str
     timestamp: datetime
 
 
@@ -53,11 +88,102 @@ class NewsArticleRecord:
     metadata: dict[str, object]
 
 
+@dataclass(frozen=True)
+class MacroTimelineEntry:
+    dataset_symbols: frozenset[str]
+    start_at: datetime
+    end_at: datetime
+    published_at: datetime
+    title: str
+    article_url: str
+    domain: str
+    search_query: str
+    metadata: dict[str, object]
+
+
+HOUSEHOLD_NEWS_SYMBOLS = {"CSUSHPISA", "MORTGAGE30US", "A229RX0"}
+
+
 class NewsContextProvider(Protocol):
     provider_name: str
 
     def fetch(self, request: NewsContextRequest) -> list[NewsArticleRecord]:
         ...
+
+
+def utc_datetime(
+    year: int,
+    month: int,
+    day: int,
+    hour: int = 0,
+    minute: int = 0,
+    second: int = 0,
+) -> datetime:
+    return datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+
+
+MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
+    MacroTimelineEntry(
+        dataset_symbols=frozenset({"CSUSHPISA", "MORTGAGE30US"}),
+        start_at=utc_datetime(2007, 1, 1),
+        end_at=utc_datetime(2010, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(2008, 9, 15),
+        title="Federal Reserve History: Subprime Mortgage Crisis",
+        article_url="https://www.federalreservehistory.org/essays/subprime-mortgage-crisis",
+        domain="federalreservehistory.org",
+        search_query="macro_timeline:subprime_mortgage_crisis",
+        metadata={
+            "timeline_id": "subprime_mortgage_crisis",
+            "coverage": "2007-2010 housing and mortgage stress",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        dataset_symbols=frozenset({"MORTGAGE30US"}),
+        start_at=utc_datetime(1979, 8, 1),
+        end_at=utc_datetime(1982, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(1979, 10, 6),
+        title="Federal Reserve History: The Great Inflation",
+        article_url="https://www.federalreservehistory.org/essays/great-inflation",
+        domain="federalreservehistory.org",
+        search_query="macro_timeline:great_inflation",
+        metadata={
+            "timeline_id": "great_inflation",
+            "coverage": "1979-1982 high-rate inflation regime",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        dataset_symbols=frozenset({"A229RX0"}),
+        start_at=utc_datetime(2020, 3, 1),
+        end_at=utc_datetime(2020, 6, 30, 23, 59, 59),
+        published_at=utc_datetime(2020, 3, 30),
+        title="IRS: Economic impact payments: What you need to know",
+        article_url="https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
+        domain="irs.gov",
+        search_query="macro_timeline:economic_impact_payments_2020",
+        metadata={
+            "timeline_id": "economic_impact_payments_2020",
+            "coverage": "2020 pandemic relief payments",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        dataset_symbols=frozenset({"A229RX0"}),
+        start_at=utc_datetime(2021, 3, 1),
+        end_at=utc_datetime(2021, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(2021, 3, 12),
+        title="IRS: Third-round Economic Impact Payments issued in 2021",
+        article_url="https://www.irs.gov/individuals/understanding-your-letter-6475",
+        domain="irs.gov",
+        search_query="macro_timeline:economic_impact_payments_2021",
+        metadata={
+            "timeline_id": "economic_impact_payments_2021",
+            "coverage": "2021 third-round and plus-up payments",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+)
 
 
 def ensure_utc(timestamp: datetime) -> datetime:
@@ -99,11 +225,24 @@ def classify_article_timing(published_at: datetime | None, anomaly_timestamp: da
 
 
 def article_matches_dataset(article: NewsArticleRecord, request: NewsContextRequest) -> bool:
+    return article_match_score(article, request) > 0
+
+
+def article_match_score(article: NewsArticleRecord, request: NewsContextRequest) -> int:
     keywords = DATASET_TITLE_KEYWORDS.get(request.dataset_symbol)
     if not keywords:
-        return True
+        return 1
     normalized_title = normalize_text(article.title)
-    return any(normalize_text(keyword) in normalized_title for keyword in keywords)
+    return sum(1 for keyword in keywords if normalize_text(keyword) in normalized_title)
+
+
+def get_effective_window_days(request: NewsContextRequest, base_window_days: int) -> int:
+    frequency = request.dataset_frequency.strip().lower()
+    if frequency == "monthly":
+        return max(base_window_days, 21)
+    if frequency == "weekly":
+        return max(base_window_days, 14)
+    return base_window_days
 
 
 def article_within_window(
@@ -116,7 +255,8 @@ def article_within_window(
     day_offset = compute_article_day_offset(article.published_at, request.timestamp)
     if day_offset is None:
         return False
-    return abs(day_offset) <= window_days + grace_days
+    effective_window_days = get_effective_window_days(request, window_days)
+    return abs(day_offset) <= effective_window_days + grace_days
 
 
 def rank_and_filter_articles(
@@ -139,17 +279,18 @@ def rank_and_filter_articles(
         seen_titles.add(title_key)
         filtered.append(article)
 
-    def sort_key(article: NewsArticleRecord) -> tuple[int, int, int]:
+    def sort_key(article: NewsArticleRecord) -> tuple[int, int, int, int]:
         day_offset = compute_article_day_offset(article.published_at, request.timestamp)
+        keyword_score = article_match_score(article, request)
         if day_offset is None:
-            return (3, 999, article.relevance_rank)
+            return (-keyword_score, 3, 999, article.relevance_rank)
         if day_offset < 0:
             timing_bucket = 0
         elif day_offset == 0:
             timing_bucket = 1
         else:
             timing_bucket = 2
-        return (timing_bucket, abs(day_offset), article.relevance_rank)
+        return (-keyword_score, timing_bucket, abs(day_offset), article.relevance_rank)
 
     ranked = sorted(filtered, key=sort_key)[:max_articles]
     return [
@@ -158,7 +299,7 @@ def rank_and_filter_articles(
     ]
 
 
-def wait_for_gdelt_rate_limit(min_interval_seconds: float = 5.1) -> None:
+def wait_for_gdelt_rate_limit(min_interval_seconds: float) -> None:
     global _LAST_GDELT_REQUEST_AT
 
     elapsed = time.monotonic() - _LAST_GDELT_REQUEST_AT
@@ -168,9 +309,59 @@ def wait_for_gdelt_rate_limit(min_interval_seconds: float = 5.1) -> None:
 
 
 def build_news_query(request: NewsContextRequest, language: str) -> str:
+    override = DATASET_NEWS_QUERY_OVERRIDES.get(request.dataset_symbol)
+    if override:
+        return f"{override} sourcelang:{language.lower()}"
     terms = DATASET_NEWS_TERMS.get(request.dataset_symbol, [f'"{request.dataset_name}"'])
     joined_terms = " OR ".join(terms)
     return f"({joined_terms}) sourcelang:{language.lower()}"
+
+
+def get_fetch_record_limit(max_articles: int) -> int:
+    return min(max(max_articles * 5, 10), 50)
+
+
+def get_news_context_status(
+    *,
+    dataset_symbol: str,
+    dataset_frequency: str,
+    has_articles: bool,
+    attempted_provider_names: list[str],
+    article_provider_names: list[str] | None = None,
+) -> dict[str, str]:
+    active_provider_names = article_provider_names if has_articles and article_provider_names else attempted_provider_names
+    provider_label = "+".join(active_provider_names) if active_provider_names else "unknown"
+    if has_articles:
+        if "macro_timeline" in active_provider_names and "gdelt" in active_provider_names:
+            note = "Stored citations are available from curated historical context and live article retrieval."
+        elif "macro_timeline" in active_provider_names:
+            note = "Stored citations are available from the curated macro timeline."
+        else:
+            note = "Stored citations are available for this anomaly."
+        return {
+            "provider": provider_label,
+            "status": "available",
+            "note": note,
+        }
+
+    normalized_frequency = dataset_frequency.strip().lower()
+    if dataset_symbol in HOUSEHOLD_NEWS_SYMBOLS:
+        return {
+            "provider": provider_label,
+            "status": "limited_coverage",
+            "note": "No citations were stored. Broad household macro topics are still weak with live retrieval, and curated timeline coverage is limited to selected historical regimes.",
+        }
+    if normalized_frequency in {"weekly", "monthly"}:
+        return {
+            "provider": provider_label,
+            "status": "limited_coverage",
+            "note": "No citations were stored. Slower weekly and monthly series often have weaker news alignment than daily market moves.",
+        }
+    return {
+        "provider": provider_label,
+        "status": "unavailable",
+        "note": "No citations were stored for this anomaly from the current news provider.",
+    }
 
 
 class GDELTNewsContextProvider:
@@ -192,12 +383,13 @@ class GDELTNewsContextProvider:
         self.timeout_seconds = timeout_seconds
 
     def fetch(self, request: NewsContextRequest) -> list[NewsArticleRecord]:
-        start = request.timestamp - timedelta(days=self.window_days)
-        end = request.timestamp + timedelta(days=self.window_days, hours=23, minutes=59, seconds=59)
+        effective_window_days = get_effective_window_days(request, self.window_days)
+        start = request.timestamp - timedelta(days=effective_window_days)
+        end = request.timestamp + timedelta(days=effective_window_days, hours=23, minutes=59, seconds=59)
         query = build_news_query(request, self.language)
         payload: dict[str, object] = {}
-        for attempt in range(2):
-            wait_for_gdelt_rate_limit()
+        for attempt in range(settings.gdelt_retry_attempts):
+            wait_for_gdelt_rate_limit(settings.gdelt_min_interval_seconds)
             response = httpx.get(
                 f"{self.base_url}/doc",
                 params={
@@ -205,7 +397,7 @@ class GDELTNewsContextProvider:
                     "mode": "ArtList",
                     "format": "json",
                     "sort": "datedesc",
-                    "maxrecords": self.max_articles,
+                    "maxrecords": get_fetch_record_limit(self.max_articles),
                     "startdatetime": format_gdelt_timestamp(start),
                     "enddatetime": format_gdelt_timestamp(end),
                 },
@@ -214,16 +406,19 @@ class GDELTNewsContextProvider:
             try:
                 response.raise_for_status()
             except httpx.HTTPStatusError:
-                if response.status_code == 429 and attempt == 0:
-                    time.sleep(5.1)
+                if response.status_code == 429 and attempt < settings.gdelt_retry_attempts - 1:
+                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
                     continue
                 return []
             try:
                 payload = response.json()
                 break
             except ValueError:
-                if "Please limit requests" in response.text and attempt == 0:
-                    time.sleep(5.1)
+                if (
+                    "Please limit requests" in response.text
+                    and attempt < settings.gdelt_retry_attempts - 1
+                ):
+                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
                     continue
                 return []
 
@@ -262,16 +457,81 @@ class GDELTNewsContextProvider:
         )
 
 
-def get_news_context_provider() -> NewsContextProvider:
+class MacroTimelineNewsContextProvider:
+    provider_name = "macro_timeline"
+
+    def __init__(self, *, max_articles: int) -> None:
+        self.max_articles = max_articles
+
+    def fetch(self, request: NewsContextRequest) -> list[NewsArticleRecord]:
+        matching_entries = [
+            entry
+            for entry in MACRO_TIMELINE_ENTRIES
+            if request.dataset_symbol in entry.dataset_symbols
+            and entry.start_at <= request.timestamp <= entry.end_at
+        ]
+        ranked_entries = sorted(
+            matching_entries,
+            key=lambda entry: (
+                abs((ensure_utc(entry.published_at).date() - ensure_utc(request.timestamp).date()).days),
+                entry.title,
+            ),
+        )[: self.max_articles]
+        return [
+            NewsArticleRecord(
+                provider=self.provider_name,
+                article_url=entry.article_url,
+                title=entry.title,
+                domain=entry.domain,
+                language="English",
+                source_country="United States",
+                published_at=entry.published_at,
+                search_query=entry.search_query,
+                relevance_rank=index,
+                metadata=entry.metadata,
+            )
+            for index, entry in enumerate(ranked_entries, start=1)
+        ]
+
+
+def build_gdelt_provider() -> NewsContextProvider:
+    return GDELTNewsContextProvider(
+        base_url=settings.gdelt_base_url,
+        window_days=settings.news_context_window_days,
+        max_articles=settings.news_context_max_articles,
+        language=settings.news_context_language,
+    )
+
+
+def build_macro_timeline_provider() -> NewsContextProvider:
+    return MacroTimelineNewsContextProvider(max_articles=settings.news_context_max_articles)
+
+
+def get_news_context_provider_names(request: NewsContextRequest) -> list[str]:
     provider_name = settings.news_context_provider.strip().lower()
     if provider_name == "gdelt":
-        return GDELTNewsContextProvider(
-            base_url=settings.gdelt_base_url,
-            window_days=settings.news_context_window_days,
-            max_articles=settings.news_context_max_articles,
-            language=settings.news_context_language,
-        )
+        if request.dataset_symbol in HOUSEHOLD_NEWS_SYMBOLS:
+            return ["gdelt", "macro_timeline"]
+        return ["gdelt"]
+    if provider_name == "macro_timeline":
+        return ["macro_timeline"]
+    if provider_name == "hybrid":
+        return ["gdelt", "macro_timeline"]
     raise ValueError(f"Unsupported news context provider: {settings.news_context_provider}")
+
+
+def get_news_context_providers(request: NewsContextRequest) -> list[NewsContextProvider]:
+    provider_names = get_news_context_provider_names(request)
+    providers: list[NewsContextProvider] = []
+    for provider_name in provider_names:
+        if provider_name == "gdelt":
+            providers.append(build_gdelt_provider())
+            continue
+        if provider_name == "macro_timeline":
+            providers.append(build_macro_timeline_provider())
+            continue
+        raise ValueError(f"Unsupported news context provider: {provider_name}")
+    return providers
 
 
 def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextRequest | None:
@@ -281,6 +541,7 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
             a.id AS anomaly_id,
             d.name AS dataset_name,
             d.symbol AS dataset_symbol,
+            d.frequency AS dataset_frequency,
             a.timestamp
         FROM anomalies AS a
         JOIN datasets AS d ON d.id = a.dataset_id
@@ -295,6 +556,7 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
         anomaly_id=int(row["anomaly_id"]),
         dataset_name=str(row["dataset_name"]),
         dataset_symbol=str(row["dataset_symbol"]),
+        dataset_frequency=str(row["dataset_frequency"]),
         timestamp=ensure_utc(row["timestamp"]),
     )
 
@@ -384,9 +646,11 @@ def run_news_context_for_anomaly(db: Session, anomaly_id: int) -> int:
     request = load_news_context_request(db, anomaly_id)
     if request is None:
         return 0
-    provider = get_news_context_provider()
-    articles = provider.fetch(request)
-    return replace_news_context(db, anomaly_id, provider.provider_name, articles)
+    inserted = 0
+    for provider in get_news_context_providers(request):
+        articles = provider.fetch(request)
+        inserted += replace_news_context(db, anomaly_id, provider.provider_name, articles)
+    return inserted
 
 
 def run_news_context_for_all_anomalies(db: Session) -> int:

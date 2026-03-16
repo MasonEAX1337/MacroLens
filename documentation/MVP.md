@@ -27,7 +27,9 @@ The MVP includes:
 - ingestion of a small, recognizable set of macro and market datasets
 - PostgreSQL as the central evidence store
 - anomaly detection on normalized time series data
+- persisted clustering of nearby anomalies into macro events
 - lag-aware correlation discovery around anomaly windows
+- propagation timelines between macro-event clusters
 - article-context retrieval around anomaly windows
 - explanation generation from stored system evidence
 - a frontend investigation interface with chart markers and event details
@@ -47,14 +49,17 @@ As of March 12, 2026, the repository contains a working end-to-end vertical slic
 
 ### What is implemented
 
-- PostgreSQL schema with datasets, points, anomalies, correlations, news context, explanations, and ingestion runs
+- PostgreSQL schema with datasets, points, anomalies, anomaly clusters, correlations, news context, explanations, and ingestion runs
 - data ingestion for Bitcoin, CPI, Federal Funds Rate, WTI oil, and S&P 500
+- data ingestion for a first household macro cluster: U.S. house prices, 30-year mortgage rates, and real disposable personal income per capita
 - rolling z-score anomaly detection with frequency-aware defaults
 - lag-aware correlation scoring on percent changes
 - persisted article-context retrieval through GDELT
 - explanation generation through a provider abstraction
 - FastAPI endpoints for datasets, timeseries, anomalies, and anomaly detail
 - React frontend that renders charts, anomaly markers, correlations, cited news context, and explanations
+- React frontend that also shows the macro-event cluster surrounding the selected anomaly
+- React frontend that now also shows suggested downstream propagation paths
 
 ### What is not fully implemented yet
 
@@ -74,6 +79,9 @@ This distinction matters. The repo now proves the system shape, but not every pr
 - Federal Funds Rate via FRED
 - WTI oil price via FRED
 - S&P 500 index via FRED
+- Case-Shiller U.S. National Home Price Index via FRED
+- 30-Year Fixed Rate Mortgage Average in the United States via FRED
+- Real Disposable Personal Income Per Capita via FRED
 
 ## Core User Flow
 
@@ -84,6 +92,8 @@ This distinction matters. The repo now proves the system shape, but not every pr
 5. The user selects an anomaly.
 6. The system shows:
    - anomaly metadata
+   - macro-event cluster membership
+   - suggested downstream propagation paths
    - correlated datasets
    - cited news context
    - generated explanation text
@@ -167,6 +177,19 @@ Key fields:
 - `lag_days`
 - `method`
 
+### `anomaly_clusters`
+
+Stores grouped macro events built from nearby anomalies.
+
+Key fields:
+
+- `start_timestamp`
+- `end_timestamp`
+- `anchor_timestamp`
+- `anomaly_count`
+- `dataset_count`
+- `peak_severity_score`
+
 ### `explanations`
 
 Stores generated explanation outputs plus evidence metadata.
@@ -210,6 +233,30 @@ The MVP anomaly detector uses rolling z-score logic.
 - low-frequency macro series need different thresholds than daily market series
 
 The current implementation partly addresses this by using frequency-aware defaults and collapsing adjacent flagged points into one event.
+
+## Propagation Strategy
+
+The MVP now includes a first propagation layer.
+
+It does not attempt causal inference.
+
+Instead it:
+
+1. starts from a persisted anomaly cluster
+2. looks at downstream lagged correlations from anomalies inside that cluster
+3. matches those lagged relationships to later anomalies in the related datasets
+4. groups those later anomalies by their target clusters
+5. surfaces the result as a suggested propagation timeline
+
+This is intentionally conservative.
+
+The system is saying:
+
+- these later clustered events are plausibly connected by stored lagged evidence
+
+It is not saying:
+
+- this cluster caused that cluster
 
 ## Correlation Strategy
 
@@ -263,7 +310,8 @@ chart first, evidence second, explanation third
 - chart brush for local zooming
 - anomaly markers
 - anomaly list
-- detail panel with correlations, cited news context, explanations, and evidence provenance
+- detail panel with macro-event clusters, correlations, cited news context, explanations, and evidence provenance
+- propagation timeline section with follow-on cluster navigation
 - explanation regeneration trigger inside the event panel
 
 ### Missing but valuable next enhancements
@@ -295,6 +343,8 @@ The project is close to MVP-complete in system shape, but not yet complete again
 
 - the explainer now supports live hosted providers, but trust still depends on prompt discipline and evaluation
 - the news layer now exists, but retrieval quality still needs improvement
+- anomaly clustering now exists, but it is still a time-window grouping rule rather than a richer causal-event model
+- propagation timelines now exist, but they are still derived from lagged evidence rather than causal proof
 - some UX depth is still missing
 
 ## Hard Truths

@@ -8,6 +8,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 from app.core.config import settings
+from app.services.clustering import run_clustering_for_all_anomalies
 from app.db.session import SessionLocal
 from app.services.anomaly_detection import run_detection_for_dataset
 from app.services.correlation_engine import run_correlation_for_all_anomalies
@@ -58,6 +59,11 @@ def parse_args() -> argparse.Namespace:
         help="Load raw data points without recomputing anomalies.",
     )
     parser.add_argument(
+        "--skip-clustering",
+        action="store_true",
+        help="Load and detect anomalies without recomputing anomaly clusters.",
+    )
+    parser.add_argument(
         "--skip-correlation",
         action="store_true",
         help="Load and detect anomalies without recomputing cross-dataset correlations.",
@@ -77,6 +83,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    run_clustering = not args.skip_clustering
     run_correlation = not args.skip_correlation
     run_news_context = not args.skip_news_context
     run_explanations = not args.skip_explanations
@@ -92,6 +99,14 @@ def main() -> None:
                 source = "CoinGecko" if dataset_key == "bitcoin" else "FRED"
                 create_ingestion_run(session, source, dataset_key, "failed", str(exc))
             raise
+
+    if run_clustering:
+        with SessionLocal.begin() as session:
+            clustering_result = run_clustering_for_all_anomalies(session)
+        print(
+            "clusters: stored "
+            f"{clustering_result.cluster_count} cluster row(s) covering {clustering_result.member_count} anomaly membership row(s)"
+        )
 
     if run_correlation:
         with SessionLocal.begin() as session:

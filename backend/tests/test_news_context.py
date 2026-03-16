@@ -4,8 +4,15 @@ import httpx
 
 from app.services.news_context import (
     GDELTNewsContextProvider,
+    MacroTimelineNewsContextProvider,
     NewsContextRequest,
+    NewsArticleRecord,
+    article_match_score,
     build_news_query,
+    get_fetch_record_limit,
+    get_effective_window_days,
+    get_news_context_provider_names,
+    get_news_context_status,
 )
 
 
@@ -14,6 +21,7 @@ def test_build_news_query_uses_dataset_specific_terms() -> None:
         anomaly_id=1,
         dataset_name="Bitcoin Price",
         dataset_symbol="BTC",
+        dataset_frequency="daily",
         timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
     )
 
@@ -21,6 +29,22 @@ def test_build_news_query_uses_dataset_specific_terms() -> None:
 
     assert '"bitcoin"' in query
     assert "btc" in query
+    assert "sourcelang:english" in query
+
+
+def test_build_news_query_uses_household_macro_terms() -> None:
+    request = NewsContextRequest(
+        anomaly_id=2,
+        dataset_name="30-Year Fixed Rate Mortgage Average in the United States",
+        dataset_symbol="MORTGAGE30US",
+        dataset_frequency="weekly",
+        timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+    )
+
+    query = build_news_query(request, "English")
+
+    assert '"mortgage rates"' in query
+    assert "affordability" in query
     assert "sourcelang:english" in query
 
 
@@ -67,13 +91,14 @@ def test_gdelt_provider_builds_expected_request(monkeypatch) -> None:
             anomaly_id=1,
             dataset_name="Bitcoin Price",
             dataset_symbol="BTC",
+            dataset_frequency="daily",
             timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
         )
     )
 
     assert captured["url"] == "https://api.gdeltproject.org/api/v2/doc/doc"
     assert captured["params"]["mode"] == "ArtList"
-    assert captured["params"]["maxrecords"] == 3
+    assert captured["params"]["maxrecords"] == 15
     assert captured["timeout"] == 11.0
     assert articles[0].title == "Bitcoin volatility jumps"
     assert articles[0].provider == "gdelt"
@@ -132,6 +157,7 @@ def test_gdelt_provider_filters_duplicates_and_off_topic_titles(monkeypatch) -> 
             anomaly_id=1,
             dataset_name="Bitcoin Price",
             dataset_symbol="BTC",
+            dataset_frequency="daily",
             timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
         )
     )
@@ -176,6 +202,7 @@ def test_gdelt_provider_filters_articles_outside_requested_window(monkeypatch) -
             anomaly_id=1,
             dataset_name="Bitcoin Price",
             dataset_symbol="BTC",
+            dataset_frequency="daily",
             timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
         )
     )
@@ -212,8 +239,134 @@ def test_gdelt_provider_returns_empty_list_after_rate_limit(monkeypatch) -> None
             anomaly_id=1,
             dataset_name="Bitcoin Price",
             dataset_symbol="BTC",
+            dataset_frequency="daily",
             timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
         )
     )
 
     assert articles == []
+
+
+def test_income_titles_can_match_broader_relief_language() -> None:
+    request = NewsContextRequest(
+        anomaly_id=210,
+        dataset_name="Real Disposable Personal Income Per Capita",
+        dataset_symbol="A229RX0",
+        dataset_frequency="monthly",
+        timestamp=datetime(2021, 3, 1, tzinfo=timezone.utc),
+    )
+
+    score = article_match_score(
+        NewsArticleRecord(
+            provider="gdelt",
+            article_url="https://example.com/stimulus",
+            title="When to expect stimulus checks and other benefits from relief package",
+            domain="example.com",
+            language="English",
+            source_country="United States",
+            published_at=datetime(2021, 3, 9, tzinfo=timezone.utc),
+            search_query="",
+            relevance_rank=1,
+            metadata={},
+        ),
+        request,
+    )
+
+    assert score >= 2
+
+
+def test_household_macro_uses_wider_frequency_aware_windows() -> None:
+    monthly_request = NewsContextRequest(
+        anomaly_id=210,
+        dataset_name="Real Disposable Personal Income Per Capita",
+        dataset_symbol="A229RX0",
+        dataset_frequency="monthly",
+        timestamp=datetime(2021, 3, 1, tzinfo=timezone.utc),
+    )
+    weekly_request = NewsContextRequest(
+        anomaly_id=189,
+        dataset_name="30-Year Fixed Rate Mortgage Average in the United States",
+        dataset_symbol="MORTGAGE30US",
+        dataset_frequency="weekly",
+        timestamp=datetime(2016, 11, 17, tzinfo=timezone.utc),
+    )
+
+    assert get_effective_window_days(monthly_request, 7) == 21
+    assert get_effective_window_days(weekly_request, 7) == 14
+
+
+def test_fetch_record_limit_requests_deeper_raw_pool() -> None:
+    assert get_fetch_record_limit(3) == 15
+    assert get_fetch_record_limit(5) == 25
+
+
+def test_macro_timeline_provider_returns_curated_household_context() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=209,
+            dataset_name="Real Disposable Personal Income Per Capita",
+            dataset_symbol="A229RX0",
+            dataset_frequency="monthly",
+            timestamp=datetime(2020, 4, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(articles) == 1
+    assert articles[0].provider == "macro_timeline"
+    assert "Economic impact payments" in articles[0].title
+    assert articles[0].domain == "irs.gov"
+
+
+def test_household_series_use_hybrid_provider_names_by_default() -> None:
+    request = NewsContextRequest(
+        anomaly_id=183,
+        dataset_name="Case-Shiller U.S. National Home Price Index",
+        dataset_symbol="CSUSHPISA",
+        dataset_frequency="monthly",
+        timestamp=datetime(2010, 2, 1, tzinfo=timezone.utc),
+    )
+
+    provider_names = get_news_context_provider_names(request)
+
+    assert provider_names == ["gdelt", "macro_timeline"]
+
+
+def test_non_household_series_keep_single_gdelt_provider_by_default() -> None:
+    request = NewsContextRequest(
+        anomaly_id=91,
+        dataset_name="Bitcoin Price",
+        dataset_symbol="BTC",
+        dataset_frequency="daily",
+        timestamp=datetime(2026, 2, 6, tzinfo=timezone.utc),
+    )
+
+    provider_names = get_news_context_provider_names(request)
+
+    assert provider_names == ["gdelt"]
+
+
+def test_news_context_status_reports_hybrid_provider_label_for_household_series() -> None:
+    status = get_news_context_status(
+        dataset_symbol="A229RX0",
+        dataset_frequency="monthly",
+        has_articles=False,
+        attempted_provider_names=["gdelt", "macro_timeline"],
+    )
+
+    assert status["provider"] == "gdelt+macro_timeline"
+    assert status["status"] == "limited_coverage"
+
+
+def test_news_context_status_reports_actual_article_provider_when_available() -> None:
+    status = get_news_context_status(
+        dataset_symbol="A229RX0",
+        dataset_frequency="monthly",
+        has_articles=True,
+        attempted_provider_names=["gdelt", "macro_timeline"],
+        article_provider_names=["macro_timeline"],
+    )
+
+    assert status["provider"] == "macro_timeline"
+    assert status["note"] == "Stored citations are available from the curated macro timeline."

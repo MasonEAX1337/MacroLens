@@ -16,6 +16,7 @@ As of March 12, 2026, the project has completed the first major system loop:
 - datasets can be ingested into PostgreSQL
 - anomalies can be detected and persisted
 - correlations can be computed and persisted
+- nearby anomalies can be grouped into persisted macro-event clusters
 - news context can be retrieved and persisted
 - explanations can be generated and persisted
 - the frontend can visualize timeseries and anomaly detail against the live API
@@ -27,6 +28,9 @@ As of March 12, 2026, the project has completed the first major system loop:
 - Federal Funds Rate
 - WTI oil
 - S&P 500
+- U.S. house prices
+- 30-year mortgage rate
+- real disposable personal income per capita
 
 ### Implemented interface
 
@@ -35,6 +39,8 @@ As of March 12, 2026, the project has completed the first major system loop:
 - timeseries chart
 - anomaly markers
 - event detail panel
+- macro-event cluster panel
+- propagation timeline panel
 - correlation display
 - news context display
 - explanation display
@@ -47,27 +53,28 @@ The system is functionally coherent, but it is not yet finished.
 The two biggest gaps are:
 
 1. the hosted-provider path is usable, but not yet compared rigorously enough to justify a default change
-2. contextual retrieval quality is still noisier than the rest of the evidence pipeline
-3. the new multi-dataset visual layer is useful, but it introduced a frontend performance cost that should be managed intentionally
+2. contextual retrieval now has a hybrid path, but curated macro-timeline coverage is still sparse
+3. propagation edges now exist, but they still need clearer evidence-strength decomposition and broader event coverage
 
 One important milestone has now been cleared:
 
-- the project supports five meaningful datasets, including S&P 500
+- the project supports a first household macro cluster in addition to the original market and policy series
 - the hosted explanation path has been validated on live anomalies strongly enough to continue development without blocking on prompt work
 - the system now has both structured and contextual evidence classes
 
 ## First-Principles Breakdown
 
-MacroLens reduces to five systems:
+MacroLens reduces to six systems:
 
 1. data acquisition
 2. evidence storage
 3. event detection
-4. contextual retrieval
-5. relationship and interpretation
-6. user investigation
+4. event grouping
+5. contextual retrieval
+6. relationship and interpretation
+7. user investigation
 
-The first pass of all five now exists.
+The first pass of all seven now exists.
 
 The next stage is quality:
 
@@ -222,22 +229,39 @@ The explanation path is now usable, which changes the task. The problem is no lo
 
 The danger is no longer that the provider fails to respond. The danger is that it responds fluently while overstating evidence.
 
-### Priority 2: Improve news-context retrieval quality
+### Priority 2: Deepen hybrid contextual evidence
 
-The first news layer proves the evidence model, but it does not yet prove retrieval quality.
+The first news layer proved the evidence model.
+The new macro-timeline layer fixed a real household gap.
+The remaining problem is now coverage quality rather than architecture.
 
 #### Highest-value improvements
 
-- better dataset-specific query templates
-- duplicate suppression across domains
+- expand curated macro-timeline coverage for additional policy and household regimes
+- improve live-retrieval quality where GDELT is still noisy
 - better time-window interpretation in the UI and explainer
-- optional domain filtering or source weighting
+- optional domain filtering or source weighting for live retrieval
 
 #### Main risk
 
-Weak article ranking can make the product feel smarter while actually making it less trustworthy.
+Weak contextual evidence can make the product feel smarter while actually making it less trustworthy.
 
-### Priority 3: Continue deepening the frontend investigation workflow
+### Priority 3: Strengthen propagation evidence scoring
+
+The first propagation layer is now implemented.
+The next quality step is to make edge strength easier to interpret and less arbitrary.
+
+#### Highest-value improvements
+
+- decompose edge strength into visible subcomponents
+- distinguish structural support from timing support
+- make weak paths easier to reject in the UI
+
+#### Main risk
+
+If the system shows propagation paths without enough score transparency, users will over-read weak links.
+
+### Priority 4: Continue deepening the frontend investigation workflow
 
 The frontend is now materially better than the original MVP shell, but it still stops short of full investigative usefulness.
 
@@ -248,7 +272,21 @@ The frontend is now materially better than the original MVP shell, but it still 
 - anomaly clustering or bucketing for dense daily series
 - clearer evidence-provider comparison in the event panel
 
-### Priority 4: Add scheduled pipeline execution
+### Priority 5: Add change-point detection alongside z-score
+
+The current event model is still built entirely on point anomalies.
+
+#### Highest-value improvements
+
+- detect regime shifts that z-score misses
+- store `change_point` events alongside `z_score` events
+- compare propagation behavior across point anomalies and regime anomalies
+
+#### Main risk
+
+Adding a second detector changes the meaning of an event, so the storage and UI boundaries must remain explicit.
+
+### Priority 6: Add scheduled pipeline execution
 
 The MVP currently runs through manual commands.
 
@@ -265,9 +303,11 @@ Do not overbuild orchestration yet.
 ## Recommended Build Order From Here
 
 1. compare and harden hosted provider behavior
-2. improve news-context retrieval quality
-3. continue frontend investigation improvements
-4. add scheduler and refresh workflow
+2. strengthen propagation evidence scoring
+3. deepen hybrid contextual evidence
+4. continue frontend investigation improvements
+5. add change-point detection alongside z-score
+6. add scheduler and refresh workflow
 
 This order keeps the work aligned with the product thesis.
 
@@ -297,6 +337,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 - tighten dataset-specific GDELT queries
 - document rate-limit behavior and retry policy
 - inspect retrieved articles for relevance drift
+- evaluate whether household macro terms need source weighting because they are broader and noisier than asset-specific queries
 
 #### Frontend
 

@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.services.news_context import HOUSEHOLD_NEWS_SYMBOLS
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,8 @@ class ExplanationContext:
     anomaly_id: int
     dataset_id: int
     dataset_name: str
+    dataset_symbol: str
+    dataset_frequency: str
     timestamp: datetime
     severity_score: float
     direction: str | None
@@ -64,6 +67,8 @@ class ExplanationProvider(Protocol):
 def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]:
     return {
         "dataset_name": context.dataset_name,
+        "dataset_symbol": context.dataset_symbol,
+        "dataset_frequency": context.dataset_frequency,
         "timestamp": context.timestamp.isoformat(),
         "severity_score": context.severity_score,
         "direction": context.direction,
@@ -173,7 +178,16 @@ class RulesBasedExplanationProvider:
                 f"{describe_article_timing(top_article.published_at, context.timestamp)}."
             )
         else:
-            news_text = "No supporting news context was stored for this anomaly."
+            if context.dataset_symbol in HOUSEHOLD_NEWS_SYMBOLS:
+                news_text = (
+                    "No supporting news context was stored for this anomaly, and broad household macro topics are still weak with the current news provider."
+                )
+            elif context.dataset_frequency in {"weekly", "monthly"}:
+                news_text = (
+                    "No supporting news context was stored for this anomaly, which is common for slower weekly and monthly series."
+                )
+            else:
+                news_text = "No supporting news context was stored for this anomaly."
 
         generated_text = (
             f"{context.dataset_name} showed an unusual {move_word} on {event_date} "
@@ -196,6 +210,7 @@ def build_openai_instructions() -> str:
         "Do not introduce outside facts that are not present in the evidence. "
         "If the evidence is weak or correlations are sparse, say so clearly. "
         "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "Treat macro_timeline items as broad historical background, not as the strongest direct evidence. "
         "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
     )
 
@@ -239,7 +254,7 @@ def build_openai_input(context: ExplanationContext) -> str:
         ],
         "output_requirements": [
             "Use plain English.",
-            "Reference the strongest evidence.",
+            "Reference the strongest stored correlation evidence first when correlations exist.",
             "State uncertainty when evidence is limited.",
             "Do not mention unavailable news or events.",
             "Respect the supplied lag interpretation exactly.",
@@ -247,6 +262,7 @@ def build_openai_input(context: ExplanationContext) -> str:
             "Prefer 'the strongest stored relationship was' over broad causal phrasing.",
             "If stored news context exists, use it as contextual evidence and cite it by title or source.",
             "Treat lagging news context as retrospective context, not proof of the original driver.",
+            "Treat macro_timeline items as historical regime context, not as the primary driver unless no stronger structured evidence exists.",
         ],
     }
     return json.dumps(payload, indent=2)
@@ -288,6 +304,7 @@ def build_gemini_system_instruction() -> str:
         "Do not claim causality as certainty. "
         "If the evidence is weak, state that clearly. "
         "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "Treat macro_timeline items as broad historical background, not as the strongest direct evidence. "
         "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
     )
 
@@ -495,6 +512,8 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             a.id AS anomaly_id,
             a.dataset_id,
             d.name AS dataset_name,
+            d.symbol AS dataset_symbol,
+            d.frequency AS dataset_frequency,
             a.timestamp,
             a.severity_score,
             a.direction,
@@ -539,7 +558,15 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             relevance_rank
         FROM news_context
         WHERE anomaly_id = :anomaly_id
-        ORDER BY relevance_rank ASC, published_at DESC, id ASC
+        ORDER BY
+            CASE provider
+                WHEN 'macro_timeline' THEN 0
+                WHEN 'gdelt' THEN 1
+                ELSE 2
+            END ASC,
+            relevance_rank ASC,
+            published_at DESC,
+            id ASC
         """
     )
     news_rows = db.execute(news_query, {"anomaly_id": anomaly_id}).mappings().all()
@@ -549,6 +576,8 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
         anomaly_id=int(anomaly["anomaly_id"]),
         dataset_id=int(anomaly["dataset_id"]),
         dataset_name=str(anomaly["dataset_name"]),
+        dataset_symbol=str(anomaly["dataset_symbol"]),
+        dataset_frequency=str(anomaly["dataset_frequency"]),
         timestamp=anomaly["timestamp"],
         severity_score=float(anomaly["severity_score"]),
         direction=anomaly["direction"],

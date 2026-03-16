@@ -18,6 +18,7 @@ CoinGecko / FRED
     -> normalization
     -> PostgreSQL
     -> anomaly detection
+    -> event clustering
     -> correlation engine
     -> news context retrieval
     -> explanation generation
@@ -50,7 +51,13 @@ Stored series are processed with rolling z-score logic using frequency-aware def
 
 Clustered flagged points are collapsed so that one event is represented as one anomaly when possible.
 
-### 4. Correlation Discovery
+### 4. Event Clustering
+
+Detected anomalies are grouped into persisted macro-event clusters.
+
+This gives the system an event envelope larger than a single anomaly and smaller than a causal story.
+
+### 5. Correlation Discovery
 
 For each anomaly, the system:
 
@@ -59,19 +66,29 @@ For each anomaly, the system:
 - searches positive and negative lags
 - stores strongest relationships
 
-### 5. News Context Retrieval
+### 6. Propagation Timeline Generation
+
+For a selected anomaly cluster, the system can derive suggested downstream cluster links by matching:
+
+- downstream lagged correlations
+- later anomalies in the related datasets
+- cluster membership on those later anomalies
+
+This produces a conservative propagation view rather than a causal graph.
+
+### 7. News Context Retrieval
 
 For each anomaly, the system can retrieve article citations around the event window and store them in PostgreSQL.
 
 This is deliberately a separate evidence layer from correlations. News is contextual evidence, not another series to correlate numerically.
 
-### 6. Explanation Generation
+### 8. Explanation Generation
 
 The explanation layer reads stored anomaly, correlation, and news-context evidence and generates persisted explanation text.
 
 The current implementation uses a provider abstraction with rules-based, OpenAI, and Gemini-backed generation paths. That keeps the architecture stable while explanation quality continues to be tuned.
 
-### 7. Delivery
+### 9. Delivery
 
 FastAPI exposes the evidence model through event-centric endpoints.
 
@@ -110,6 +127,7 @@ Every visible UI element is downstream of persisted system state:
 
 - the chart is backed by `data_points`
 - the anomaly markers are backed by `anomalies`
+- the macro-event envelopes are backed by `anomaly_clusters`
 - the related datasets are backed by `correlations`
 - the cited articles are backed by `news_context`
 - the explanation is backed by `explanations`

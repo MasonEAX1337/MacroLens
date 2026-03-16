@@ -41,6 +41,25 @@ CREATE TABLE IF NOT EXISTS anomalies (
     CONSTRAINT uq_anomalies_dataset_timestamp_method UNIQUE (dataset_id, timestamp, detection_method)
 );
 
+CREATE TABLE IF NOT EXISTS anomaly_clusters (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    start_timestamp TIMESTAMPTZ NOT NULL,
+    end_timestamp TIMESTAMPTZ NOT NULL,
+    anchor_timestamp TIMESTAMPTZ NOT NULL,
+    anomaly_count INTEGER NOT NULL,
+    dataset_count INTEGER NOT NULL,
+    peak_severity_score DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS anomaly_cluster_members (
+    cluster_id BIGINT NOT NULL REFERENCES anomaly_clusters(id) ON DELETE CASCADE,
+    anomaly_id BIGINT NOT NULL REFERENCES anomalies(id) ON DELETE CASCADE,
+    membership_rank INTEGER NOT NULL DEFAULT 1,
+    PRIMARY KEY (cluster_id, anomaly_id),
+    CONSTRAINT uq_anomaly_cluster_members_anomaly UNIQUE (anomaly_id)
+);
+
 CREATE TABLE IF NOT EXISTS correlations (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     anomaly_id BIGINT NOT NULL REFERENCES anomalies(id) ON DELETE CASCADE,
@@ -83,6 +102,12 @@ CREATE INDEX IF NOT EXISTS idx_data_points_dataset_timestamp
 
 CREATE INDEX IF NOT EXISTS idx_anomalies_dataset_timestamp
     ON anomalies (dataset_id, timestamp DESC);
+
+CREATE INDEX IF NOT EXISTS idx_anomaly_clusters_start_timestamp
+    ON anomaly_clusters (start_timestamp DESC);
+
+CREATE INDEX IF NOT EXISTS idx_anomaly_cluster_members_anomaly
+    ON anomaly_cluster_members (anomaly_id);
 
 CREATE INDEX IF NOT EXISTS idx_correlations_anomaly
     ON correlations (anomaly_id);

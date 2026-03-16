@@ -6,6 +6,10 @@ The anomaly engine identifies unusual movements within a single dataset and pers
 
 This matters because the rest of the product is event-centric. Without anomaly records, there is nothing coherent for the user to investigate.
 
+The engine now has a second downstream responsibility:
+
+persisted anomalies are also grouped into macro-event clusters after detection runs complete.
+
 ## Current Implementation
 
 The current engine uses rolling z-score detection.
@@ -80,7 +84,7 @@ That is acceptable for MVP, but not ideal for long-term provenance.
 
 - add dataset-specific configs
 - add change-point detection experiment path
-- store anomaly versioning if methods evolve
+- connect anomaly clusters into event-chain views
 
 ### Lower priority
 

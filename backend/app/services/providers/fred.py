@@ -38,6 +38,30 @@ FRED_SERIES: dict[str, DatasetDefinition] = {
         description="S&P 500 stock market index.",
         frequency="daily",
     ),
+    "house_price_us": DatasetDefinition(
+        key="house_price_us",
+        name="Case-Shiller U.S. National Home Price Index",
+        symbol="CSUSHPISA",
+        source="FRED",
+        description="S&P CoreLogic Case-Shiller U.S. National Home Price Index.",
+        frequency="monthly",
+    ),
+    "mortgage_30y": DatasetDefinition(
+        key="mortgage_30y",
+        name="30-Year Fixed Rate Mortgage Average in the United States",
+        symbol="MORTGAGE30US",
+        source="FRED",
+        description="Average commitment rate on a 30-year fixed-rate mortgage in the United States.",
+        frequency="weekly",
+    ),
+    "income_real_per_capita": DatasetDefinition(
+        key="income_real_per_capita",
+        name="Real Disposable Personal Income Per Capita",
+        symbol="A229RX0",
+        source="FRED",
+        description="Real disposable personal income per capita.",
+        frequency="monthly",
+    ),
 }
 
 

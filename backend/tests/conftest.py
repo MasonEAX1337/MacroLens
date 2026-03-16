@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.api.deps import get_db
 from app.main import app
+from app.services.clustering import run_clustering_for_all_anomalies
 from app.services.ingestion import DataPointRecord, DatasetDefinition, upsert_data_points, upsert_dataset
 
 
@@ -66,6 +67,8 @@ def db_session(integration_engine) -> Generator[Session, None, None]:
                     explanations,
                     news_context,
                     correlations,
+                    anomaly_cluster_members,
+                    anomaly_clusters,
                     anomalies,
                     data_points,
                     datasets,
@@ -166,9 +169,27 @@ def seeded_event_graph(db_session: Session) -> dict[str, int]:
             "anomaly_id": anomaly_id,
             "related_dataset_id": related_dataset_id,
             "correlation_score": 0.66,
-            "lag_days": -1,
+            "lag_days": 10,
             "method": "pearson_pct_change",
         },
+    )
+    target_anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": related_dataset_id,
+                "timestamp": datetime(2026, 2, 16, tzinfo=timezone.utc),
+                "severity_score": 2.91,
+                "direction": "down",
+                "detection_method": "z_score",
+            },
+        ).scalar_one()
     )
     db_session.execute(
         text(
@@ -230,10 +251,12 @@ def seeded_event_graph(db_session: Session) -> dict[str, int]:
             "evidence": "{}",
         },
     )
+    run_clustering_for_all_anomalies(db_session, window_days=7)
     db_session.commit()
 
     return {
         "dataset_id": primary_dataset_id,
         "related_dataset_id": related_dataset_id,
         "anomaly_id": anomaly_id,
+        "target_anomaly_id": target_anomaly_id,
     }

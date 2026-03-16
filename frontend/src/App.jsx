@@ -150,6 +150,41 @@ function describeArticleTiming(publishedAt, anomalyTimestamp) {
   return "same day";
 }
 
+function describeClusterSpan(cluster) {
+  if (!cluster) {
+    return "n/a";
+  }
+
+  if (cluster.start_timestamp === cluster.end_timestamp) {
+    return formatDate(cluster.start_timestamp);
+  }
+
+  return `${formatDate(cluster.start_timestamp)} to ${formatDate(cluster.end_timestamp)}`;
+}
+
+function describeClusterDuration(cluster) {
+  if (!cluster) {
+    return "n/a";
+  }
+
+  const start = new Date(cluster.start_timestamp);
+  const end = new Date(cluster.end_timestamp);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  const durationDays = Math.round((end.getTime() - start.getTime()) / 86400000);
+  return durationDays === 0 ? "single-day cluster" : `${durationDays + 1}-day span`;
+}
+
+function formatEvidenceStrength(score) {
+  if (score >= 0.75) {
+    return "strong";
+  }
+  if (score >= 0.5) {
+    return "moderate";
+  }
+  return "weak";
+}
+
 function buildEvidenceSummary(detail) {
   if (!detail) {
     return null;
@@ -702,6 +737,10 @@ export default function App() {
                     <span>Correlations</span>
                     <strong>{selectedAnomalyDetail.correlations.length}</strong>
                   </article>
+                  <article>
+                    <span>Cluster size</span>
+                    <strong>{selectedAnomalyDetail.cluster?.anomaly_count ?? 1}</strong>
+                  </article>
                 </div>
 
                 <section className="detail-section">
@@ -765,6 +804,151 @@ export default function App() {
 
                 <section className="detail-section">
                   <header>
+                    <p className="panel-label">Macro event cluster</p>
+                  </header>
+                  {selectedAnomalyDetail.cluster ? (
+                    <div className="cluster-card">
+                      <div className="cluster-summary-grid">
+                        <article>
+                          <span>Cluster window</span>
+                          <strong>{describeClusterSpan(selectedAnomalyDetail.cluster)}</strong>
+                        </article>
+                        <article>
+                          <span>Anomalies</span>
+                          <strong>{selectedAnomalyDetail.cluster.anomaly_count}</strong>
+                        </article>
+                        <article>
+                          <span>Datasets affected</span>
+                          <strong>{selectedAnomalyDetail.cluster.dataset_count}</strong>
+                        </article>
+                        <article>
+                          <span>Peak severity</span>
+                          <strong>{selectedAnomalyDetail.cluster.peak_severity_score.toFixed(2)}</strong>
+                        </article>
+                      </div>
+
+                      <div className="cluster-window-note">
+                        This anomaly belongs to a persisted macro-event cluster spanning{" "}
+                        <strong>{describeClusterDuration(selectedAnomalyDetail.cluster)}</strong>. The
+                        current clustering rule groups anomalies when adjacent events land within the
+                        configured time window.
+                      </div>
+
+                      <div className="cluster-member-list">
+                        {selectedAnomalyDetail.cluster.members.map((member) => (
+                          <button
+                            className={`anomaly-list-item ${
+                              selectedAnomalyId === member.anomaly_id ? "active" : ""
+                            }`}
+                            key={member.anomaly_id}
+                            onClick={() => setSelectedAnomalyId(member.anomaly_id)}
+                            type="button"
+                          >
+                            <div className="anomaly-list-copy">
+                              <span>{member.dataset_name}</span>
+                              <small>
+                                {formatDate(member.timestamp)} / {member.direction ?? "n/a"} /{" "}
+                                {member.detection_method}
+                              </small>
+                            </div>
+                            <strong>{member.severity_score.toFixed(2)}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="empty-card">This anomaly has not been assigned to a cluster yet.</div>
+                  )}
+                </section>
+
+                <section className="detail-section">
+                  <header>
+                    <p className="panel-label">Propagation timeline</p>
+                  </header>
+                  {selectedAnomalyDetail.propagation_timeline.length > 0 ? (
+                    <div className="propagation-list">
+                      {selectedAnomalyDetail.propagation_timeline.map((edge) => (
+                        <article className="propagation-card" key={`${edge.source_cluster_id}-${edge.target_cluster_id}`}>
+                          <div className="propagation-card-top">
+                            <div>
+                              <h3>
+                                {describeClusterSpan({
+                                  start_timestamp: edge.target_start_timestamp,
+                                  end_timestamp: edge.target_end_timestamp,
+                                })}
+                              </h3>
+                              <p>
+                                {edge.target_dataset_names.join(", ")} / {edge.target_anomaly_count} anomaly
+                                {edge.target_anomaly_count === 1 ? "" : "ies"} / {edge.target_dataset_count} dataset
+                                {edge.target_dataset_count === 1 ? "" : "s"}
+                              </p>
+                            </div>
+                            <div className="propagation-score">
+                              <strong>{edge.evidence_strength.toFixed(2)}</strong>
+                              <span>{formatEvidenceStrength(edge.evidence_strength)} evidence</span>
+                            </div>
+                          </div>
+
+                          <div className="propagation-metrics">
+                            <article>
+                              <span>Average lag</span>
+                              <strong>{describeLagDays(edge.average_lag_days)}</strong>
+                            </article>
+                            <article>
+                              <span>Strongest correlation</span>
+                              <strong>{formatCorrelation(edge.strongest_correlation_score)}</strong>
+                            </article>
+                            <article>
+                              <span>Supporting links</span>
+                              <strong>{edge.supporting_link_count}</strong>
+                            </article>
+                          </div>
+
+                          <div className="propagation-note">
+                            This is a suggested downstream transmission path derived from stored lagged correlations and later anomaly matches. It is evidence for sequencing, not proof of causation.
+                          </div>
+
+                          <div className="propagation-evidence-list">
+                            {edge.evidence.map((item) => (
+                              <div
+                                className="propagation-evidence-item"
+                                key={`${item.source_anomaly_id}-${item.target_anomaly_id}-${item.method}`}
+                              >
+                                <span>
+                                  {item.source_dataset_name} ({formatDate(item.source_timestamp)}) →{" "}
+                                  {item.target_dataset_name} ({formatDate(item.target_timestamp)})
+                                </span>
+                                <strong>
+                                  {formatCorrelation(item.correlation_score)} / {describeLagDays(item.lag_days)}
+                                </strong>
+                              </div>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            className="action-button"
+                            onClick={() =>
+                              handleConstellationSelect(
+                                edge.target_anchor_dataset_id,
+                                edge.target_anchor_anomaly_id,
+                              )
+                            }
+                          >
+                            Follow this path
+                          </button>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-card">
+                      No downstream propagation path is currently supported by stored lagged evidence for this cluster.
+                    </div>
+                  )}
+                </section>
+
+                <section className="detail-section">
+                  <header>
                     <p className="panel-label">News context</p>
                   </header>
                   {selectedAnomalyDetail.news_context.length > 0 ? (
@@ -803,7 +987,12 @@ export default function App() {
                       ))}
                     </div>
                   ) : (
-                    <div className="empty-card">No news context is stored for this event yet.</div>
+                    <div className="empty-card">
+                      <p>No news context is stored for this event yet.</p>
+                      <div className={`news-status-note ${selectedAnomalyDetail.news_context_status.status}`}>
+                        {selectedAnomalyDetail.news_context_status.note}
+                      </div>
+                    </div>
                   )}
                 </section>
 
@@ -896,7 +1085,12 @@ export default function App() {
                   >
                     <div className="anomaly-list-copy">
                       <span>{formatDate(anomaly.timestamp)}</span>
-                      <small>{anomaly.direction ?? "n/a"}</small>
+                      <small>
+                        {anomaly.direction ?? "n/a"}
+                        {anomaly.cluster_anomaly_count > 1
+                          ? ` / cluster ${anomaly.cluster_anomaly_count}`
+                          : ""}
+                      </small>
                     </div>
                     <strong>{anomaly.severity_score.toFixed(2)}</strong>
                   </button>

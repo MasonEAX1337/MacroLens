@@ -24,6 +24,8 @@ class AnomalySummary(BaseModel):
     severity_score: float
     direction: str | None = None
     detection_method: str
+    cluster_id: int | None = None
+    cluster_anomaly_count: int | None = None
 
 
 class CorrelationRecord(BaseModel):
@@ -53,8 +55,73 @@ class NewsContextRecord(BaseModel):
     relevance_rank: int
 
 
+class NewsContextStatus(BaseModel):
+    provider: str
+    status: str
+    note: str
+
+
+class ClusterMemberRecord(BaseModel):
+    anomaly_id: int
+    dataset_id: int
+    dataset_name: str
+    timestamp: datetime
+    severity_score: float
+    direction: str | None = None
+    detection_method: str
+
+
+class AnomalyClusterRecord(BaseModel):
+    id: int
+    start_timestamp: datetime
+    end_timestamp: datetime
+    anchor_timestamp: datetime
+    anomaly_count: int
+    dataset_count: int
+    peak_severity_score: float
+    members: list[ClusterMemberRecord]
+
+
+class PropagationEvidenceRecord(BaseModel):
+    source_anomaly_id: int
+    source_dataset_name: str
+    source_timestamp: datetime
+    target_anomaly_id: int
+    target_dataset_id: int
+    target_dataset_name: str
+    target_timestamp: datetime
+    correlation_score: float
+    lag_days: int
+    method: str
+    match_gap_days: float
+    tolerance_days: int
+
+
+class PropagationEdgeRecord(BaseModel):
+    source_cluster_id: int
+    target_cluster_id: int
+    target_start_timestamp: datetime
+    target_end_timestamp: datetime
+    target_anchor_timestamp: datetime
+    target_anchor_anomaly_id: int
+    target_anchor_dataset_id: int
+    target_anomaly_count: int
+    target_dataset_count: int
+    target_peak_severity_score: float
+    average_lag_days: int
+    strongest_correlation_score: float
+    supporting_link_count: int
+    evidence_strength: float
+    source_dataset_names: list[str]
+    target_dataset_names: list[str]
+    evidence: list[PropagationEvidenceRecord]
+
+
 class AnomalyDetail(AnomalySummary):
     dataset_name: str
+    cluster: AnomalyClusterRecord | None = None
+    propagation_timeline: list[PropagationEdgeRecord]
     correlations: list[CorrelationRecord]
     explanations: list[ExplanationRecord]
     news_context: list[NewsContextRecord]
+    news_context_status: NewsContextStatus

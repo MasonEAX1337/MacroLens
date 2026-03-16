@@ -21,9 +21,12 @@ def build_points(values: list[float]) -> list[dict[str, object]]:
 
 def test_get_detection_config_uses_frequency_defaults() -> None:
     daily = get_detection_config("daily")
+    weekly = get_detection_config("weekly")
     monthly = get_detection_config("monthly")
 
     assert daily.window_size == 30
+    assert weekly.window_size == 12
+    assert weekly.threshold == 3.0
     assert monthly.window_size == 12
     assert monthly.threshold == 2.5
 
@@ -71,3 +74,12 @@ def test_detect_anomalies_uses_lower_threshold_for_monthly_series() -> None:
 
     assert len(anomalies) == 1
     assert anomalies[0].severity_score > 2.5
+
+
+def test_detect_anomalies_uses_weekly_defaults() -> None:
+    values = [6.5] * 12 + [9.8]
+    anomalies = detect_anomalies(build_points(values), "weekly")
+
+    assert len(anomalies) == 1
+    assert anomalies[0].direction == "up"
+    assert anomalies[0].metadata["window_size"] == 12

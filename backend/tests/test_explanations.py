@@ -20,6 +20,8 @@ def build_context(
         anomaly_id=1,
         dataset_id=10,
         dataset_name="Bitcoin Price",
+        dataset_symbol="BTC",
+        dataset_frequency="daily",
         timestamp=datetime(2024, 3, 1, tzinfo=timezone.utc),
         severity_score=3.7,
         direction="down",
@@ -58,6 +60,27 @@ def test_rules_based_provider_handles_missing_correlations() -> None:
 
     assert "No strong cross-dataset relationship was stored" in result.generated_text
     assert "Confidence is limited" in result.generated_text
+
+
+def test_rules_based_provider_mentions_household_news_provider_limits_when_empty() -> None:
+    provider = RulesBasedExplanationProvider()
+    context = ExplanationContext(
+        anomaly_id=2,
+        dataset_id=20,
+        dataset_name="Real Disposable Personal Income Per Capita",
+        dataset_symbol="A229RX0",
+        dataset_frequency="monthly",
+        timestamp=datetime(2021, 3, 1, tzinfo=timezone.utc),
+        severity_score=2.8,
+        direction="up",
+        detection_method="z_score",
+        correlations=[],
+        news_context=[],
+    )
+
+    result = provider.generate(context)
+
+    assert "broad household macro topics are still weak with the current news provider" in result.generated_text
 
 
 def test_rules_based_provider_mentions_news_context_when_available() -> None:
@@ -281,3 +304,36 @@ def test_hosted_provider_input_includes_news_context() -> None:
     assert '"provider": "gdelt"' in payload
     assert '"timing_class": "concurrent"' in payload
     assert '"timing_interpretation": "on the same day as the anomaly"' in payload
+
+
+def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driver() -> None:
+    payload = build_openai_input(
+        build_context(
+            [
+                CorrelationEvidence(
+                    related_dataset_id=20,
+                    related_dataset_name="30-Year Fixed Rate Mortgage Average in the United States",
+                    correlation_score=-0.91,
+                    lag_days=-6,
+                    method="pearson_pct_change",
+                )
+            ],
+            news_context=[
+                NewsContextEvidence(
+                    provider="macro_timeline",
+                    article_url="https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
+                    title="IRS: Economic impact payments: What you need to know",
+                    domain="irs.gov",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2020, 3, 30, tzinfo=timezone.utc),
+                    search_query="macro_timeline:economic_impact_payments_2020",
+                    relevance_rank=1,
+                )
+            ],
+        )
+    )
+
+    assert '"provider": "macro_timeline"' in payload
+    assert "Reference the strongest stored correlation evidence first when correlations exist." in payload
+    assert "Treat macro_timeline items as historical regime context, not as the primary driver unless no stronger structured evidence exists." in payload

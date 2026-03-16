@@ -44,16 +44,25 @@ So the correct first design is retrieval plus citation, not naive news correlati
 
 ## Current Implementation
 
-The first provider is GDELT DOC 2.0 article search.
+The engine now uses two contextual providers:
+
+- `gdelt`
+- `macro_timeline`
+
+`gdelt` is the live retrieval path.
+`macro_timeline` is a curated historical-context path used to cover household regimes that keyword search handles poorly.
 
 For each anomaly, the engine:
 
-- loads the anomaly timestamp and dataset symbol
-- builds a dataset-aware keyword query
-- searches within a configurable date window
+- loads the anomaly timestamp, dataset symbol, and dataset frequency
+- chooses one or more providers based on the series type
+- adjusts the effective search window for slower weekly and monthly series
+- builds a dataset-aware keyword query for live retrieval
+- searches within a configurable date window using a deeper raw candidate pool than the final stored article count
 - filters titles that do not look relevant to the dataset
 - suppresses duplicate article titles
-- ranks surviving articles by timing and original provider order
+- adds curated historical entries when the anomaly lands inside a known macro regime
+- ranks surviving articles by provider priority, timing, and original provider order
 - stores article citations with rank and provenance
 
 Stored fields include:
@@ -73,11 +82,28 @@ Stored fields include:
 - works without introducing another paid API key immediately
 - returns enough article metadata for a citation-first MVP
 
+## Why Macro Timeline Was Added
+
+The first provider exposed a real weakness:
+
+- broad household topics often do not map cleanly to article search
+- slower monthly and weekly series have weaker same-window headline alignment
+- historical macro regimes matter even when there is no single decisive headline
+
+So the system now supplements live retrieval with a curated `macro_timeline` provider for selected household scenarios.
+
+That is a deliberate design choice, not a hack.
+
+It reflects a first-principles distinction:
+
+- live article search is good for event-level market context
+- curated historical context is better for slower structural household regimes
+
 ## Current Weaknesses
 
-- keyword retrieval is noisy
+- live keyword retrieval is noisy
 - rate limiting is strict
-- ranking is shallow
+- curated macro-timeline coverage is intentionally sparse and does not cover every anomaly
 - article timestamps are "seen" timestamps, not guaranteed publication timestamps
 - historical coverage quality varies by topic and era
 
@@ -85,8 +111,11 @@ Stored fields include:
 
 - news context is stored separately from correlations
 - explanations can cite article context, but the engine still treats it as evidence, not certainty
+- explanations are instructed to treat `macro_timeline` items as broad background, not direct causal proof
 - provider failures degrade to empty news context rather than crashing explanation generation
 - article ranking prefers leading and same-day context over clearly lagging context
+- the anomaly API now distinguishes between available citations and limited provider coverage for empty news-context results
+- provider ordering surfaces curated household context before weaker live retrieval when both exist
 
 ## What Should Improve Next
 
@@ -105,6 +134,7 @@ Stored fields include:
 
 ### Longer-term
 
-- add second provider for comparison
+- expand curated macro-timeline coverage beyond the first household regimes
+- add a second live provider for comparison if GDELT remains too noisy
 - add semantic reranking over stored article candidates
 - use extracted event entities rather than only raw titles

@@ -21,9 +21,15 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     assert response.status_code == 200
     payload = response.json()
     assert payload["dataset_name"] == "Bitcoin Price"
+    assert payload["cluster"]["anomaly_count"] == 1
+    assert payload["cluster"]["members"][0]["anomaly_id"] == seeded_event_graph["anomaly_id"]
+    assert payload["propagation_timeline"][0]["target_anchor_anomaly_id"] == seeded_event_graph["target_anomaly_id"]
+    assert payload["propagation_timeline"][0]["target_dataset_names"] == ["S&P 500 Index"]
+    assert payload["propagation_timeline"][0]["supporting_link_count"] == 1
     assert payload["correlations"][0]["related_dataset_name"] == "S&P 500 Index"
     assert payload["news_context"][0]["title"] == "Bitcoin Selloff Deepens as Risk Assets Weaken"
     assert payload["news_context"][0]["provider"] == "gdelt"
+    assert payload["news_context_status"]["status"] == "available"
     assert payload["explanations"][0]["provider"] == "gemini"
 
 

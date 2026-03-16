@@ -39,9 +39,11 @@ For each supported dataset, MacroLens can:
 - ingest historical data from external sources
 - normalize and store it in PostgreSQL
 - detect anomalies with rolling z-score logic
+- group nearby anomalies into persisted macro-event clusters
 - compute lag-aware correlations against other datasets
 - retrieve article context around anomaly windows
 - generate explanation text from stored evidence
+- trace suggested downstream propagation paths from one macro-event cluster to later clusters
 - expose all of that through an API and frontend investigation interface
 
 ## What Makes This Project Interesting
@@ -53,10 +55,12 @@ The system is built as an evidence pipeline:
 1. raw data is fetched from source APIs
 2. normalized data is stored in PostgreSQL
 3. anomalies are persisted as first-class events
-4. correlations are persisted as supporting evidence
-5. article context is persisted as cited event evidence
-6. explanations are generated from stored system state
-7. the frontend lets a user inspect the result
+4. nearby anomalies are grouped into persisted macro-event clusters
+5. downstream propagation links are derived from persisted lagged relationships and later anomaly matches
+6. correlations are persisted as supporting evidence
+7. article context is persisted as cited event evidence
+8. explanations are generated from stored system state
+9. the frontend lets a user inspect the result
 
 That makes the repo more than a frontend demo. The backend reasoning chain is the actual product.
 
@@ -69,9 +73,11 @@ MacroLens currently has a working end-to-end MVP slice.
 - FastAPI backend
 - PostgreSQL schema
 - CoinGecko ingestion for Bitcoin
-- FRED ingestion for CPI, Federal Funds Rate, WTI oil, and S&P 500
+- FRED ingestion for CPI, Federal Funds Rate, WTI oil, S&P 500, and household macro series
 - rolling z-score anomaly detection
 - lag-aware correlation discovery on percent changes
+- persisted anomaly clustering into macro-event groups
+- cluster-to-cluster propagation timeline generation
 - stored news-context retrieval through GDELT
 - explanation generation through a provider abstraction
 - React frontend connected to the live API
@@ -92,16 +98,20 @@ The hosted-provider paths are implemented and have been validated on live anomal
 
 ### Current news context model
 
-MacroLens now includes a first-pass news evidence layer.
+MacroLens now uses a hybrid contextual-evidence approach.
 
 That layer:
 
-- retrieves article citations around an anomaly window
+- retrieves live article citations around an anomaly window
 - stores those articles separately from correlations
-- exposes them through the anomaly detail API
+- adds curated macro-timeline context for household series when live retrieval is weak
+- exposes both through the anomaly detail API
 - allows the explainer to use cited context instead of relying only on market-to-market relationships
 
-The first provider is GDELT DOC 2.0. This was chosen because it supports historical article search without adding another paid API key immediately.
+The current providers are:
+
+- `gdelt` for live historical article search
+- `macro_timeline` for curated historical regime context on slower household series
 
 The current ranking pass also applies:
 
@@ -109,6 +119,7 @@ The current ranking pass also applies:
 - title-based relevance filtering
 - duplicate suppression
 - timing-aware ranking around the anomaly date
+- provider ordering that surfaces curated historical context ahead of weaker live retrieval when appropriate
 
 ### Not complete yet
 
@@ -124,6 +135,9 @@ Implemented datasets:
 - Federal Funds Rate
 - WTI Oil Price
 - S&P 500 Index
+- Case-Shiller U.S. National Home Price Index
+- 30-Year Fixed Rate Mortgage Average in the United States
+- Real Disposable Personal Income Per Capita
 
 ## High-Level Architecture
 
@@ -181,9 +195,10 @@ Important variables in `.env`:
 - `OPENAI_API_KEY`: required when using the OpenAI provider
 - `GEMINI_MODEL`: model used when `EXPLANATION_PROVIDER=gemini`
 - `GEMINI_API_KEY`: required when using the Gemini provider
-- `NEWS_CONTEXT_PROVIDER`: current news provider, default `gdelt`
+- `NEWS_CONTEXT_PROVIDER`: current news provider mode, supports `gdelt`, `macro_timeline`, or `hybrid`
 - `NEWS_CONTEXT_WINDOW_DAYS`: retrieval window around anomaly timestamps
 - `NEWS_CONTEXT_MAX_ARTICLES`: max stored articles per anomaly
+- `ANOMALY_CLUSTER_WINDOW_DAYS`: max gap in days between adjacent anomalies inside the same cluster
 
 ## Local Setup
 
@@ -245,7 +260,7 @@ Backend URLs:
 From the repo root:
 
 ```powershell
-.\.venv\Scripts\python scripts\ingest\run_ingestion.py --dataset bitcoin --dataset cpi --dataset fed_funds --dataset wti --dataset sp500
+.\.venv\Scripts\python scripts\ingest\run_ingestion.py --dataset bitcoin --dataset cpi --dataset fed_funds --dataset wti --dataset sp500 --dataset house_price_us --dataset mortgage_30y --dataset income_real_per_capita
 ```
 
 What this command does:
@@ -253,6 +268,7 @@ What this command does:
 - fetches source data
 - refreshes stored rows for each selected dataset
 - runs anomaly detection
+- recomputes anomaly clusters
 - runs correlation computation
 - fetches and stores news context
 - runs explanation generation
@@ -264,13 +280,25 @@ Available dataset flags:
 - `fed_funds`
 - `wti`
 - `sp500`
+- `house_price_us`
+- `mortgage_30y`
+- `income_real_per_capita`
 
 Optional ingestion flags:
 
 - `--skip-anomaly-detection`
+- `--skip-clustering`
 - `--skip-correlation`
 - `--skip-news-context`
 - `--skip-explanations`
+
+### Recompute anomaly clusters without re-ingesting data
+
+If you want to refresh macro-event clusters from the current anomaly table:
+
+```powershell
+.\.venv\Scripts\python scripts\clusters\recompute_clusters.py
+```
 
 ### Fetch news context without re-ingesting data
 
@@ -349,8 +377,11 @@ Current core endpoints:
 The anomaly detail endpoint returns:
 
 - anomaly metadata
+- macro-event cluster membership
+- suggested downstream propagation edges
 - correlated datasets
 - stored news context
+- news-context availability status
 - generated explanations
 
 ## Frontend Experience
@@ -367,8 +398,12 @@ The current frontend supports:
 - anomaly markers on the chart
 - anomaly selection from the chart or event list
 - anomaly selection from the 3D constellation
+- macro-event cluster inspection for the selected anomaly
+- propagation timeline cards with click-through investigation
 - evidence provenance in the event panel
 - cited news context in the event panel
+- curated macro-timeline context for selected household anomalies
+- explicit news-context status notes when the provider could not supply trustworthy citations
 - article timing badges in the event panel
 - explanation regeneration from the event panel
 - detail panel with correlations and explanations
@@ -421,14 +456,20 @@ Useful entry points:
 - [MVP.md](documentation/MVP.md)
 - [DevelopmentPlan.md](documentation/DevelopmentPlan.md)
 - [system_overview.md](documentation/architecture/system_overview.md)
+- [event_clustering.md](documentation/architecture/event_clustering.md)
+- [propagation_timeline.md](documentation/architecture/propagation_timeline.md)
 - [news_context_engine.md](documentation/architecture/news_context_engine.md)
 
 ## Current Limitations
 
 - explanations are rules-based by default even though OpenAI-backed and Gemini-backed provider paths now exist
 - correlations are useful but should not be interpreted as causal proof
-- the first news provider is keyword-based retrieval, so relevance quality is still uneven
+- anomaly clustering is time-proximity based today, so a cluster is a useful event envelope rather than proof of shared causation
+- propagation timelines are conservative downstream suggestions, not causal proof
+- live news retrieval is still keyword-based, so relevance quality is still uneven
+- household macro anomalies now fall back to curated macro-timeline context for selected historical regimes, but that timeline is intentionally sparse rather than comprehensive
 - mixed-frequency analysis is still coarse
+- monthly and weekly household macro series are useful, but they will naturally produce fewer clean event explanations than daily market series
 - current ingestion uses full refresh for implemented sources
 - the new Three.js constellation view is visually stronger, but it increases frontend bundle weight and should be optimized if kept as a permanent default surface
 - there is no production deployment path yet
@@ -438,9 +479,12 @@ Useful entry points:
 The next highest-value steps are:
 
 1. evaluate OpenAI and Gemini explanation quality more systematically
-2. improve article ranking and filtering quality for news context
-3. optimize and deepen the new multi-dataset constellation view
-4. add a documented refresh and deployment workflow
+2. add explicit evidence-strength decomposition for propagation edges and explanations
+3. expand curated macro-timeline coverage beyond the first household regimes
+4. improve article ranking and filtering quality for live news retrieval
+5. experiment with change-point detection alongside z-score
+6. optimize and deepen the new multi-dataset constellation view
+7. add a documented refresh and deployment workflow
 
 ## Why This Repo Is Structured This Way
 
