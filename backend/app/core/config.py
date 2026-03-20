@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     gdelt_min_interval_seconds: float = 8.0
     gdelt_retry_attempts: int = 4
     gdelt_retry_backoff_seconds: float = 8.0
+    gdelt_max_anomaly_age_days: int = 3650
     anthropic_api_key: str = ""
 
     model_config = SettingsConfigDict(

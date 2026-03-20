@@ -26,11 +26,36 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     assert payload["propagation_timeline"][0]["target_anchor_anomaly_id"] == seeded_event_graph["target_anomaly_id"]
     assert payload["propagation_timeline"][0]["target_dataset_names"] == ["S&P 500 Index"]
     assert payload["propagation_timeline"][0]["supporting_link_count"] == 1
+    assert payload["propagation_timeline"][0]["evidence_strength_components"]["overall"] == payload["propagation_timeline"][0]["evidence_strength"]
     assert payload["correlations"][0]["related_dataset_name"] == "S&P 500 Index"
     assert payload["news_context"][0]["title"] == "Bitcoin Selloff Deepens as Risk Assets Weaken"
     assert payload["news_context"][0]["provider"] == "gdelt"
     assert payload["news_context_status"]["status"] == "available"
     assert payload["explanations"][0]["provider"] == "gemini"
+
+
+def test_dataset_leading_indicators_endpoint_returns_cluster_aggregates(client, seeded_leading_indicators) -> None:  # noqa: ANN001
+    response = client.get(
+        f"/api/v1/datasets/{seeded_leading_indicators['dataset_id']}/leading-indicators?limit=5"
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 2
+    assert payload[0]["related_dataset_name"] == "WTI Oil Price"
+    assert payload[0]["supporting_cluster_count"] == 2
+    assert payload[0]["target_cluster_count"] == 2
+    assert payload[0]["cluster_coverage"] == 1.0
+    assert payload[0]["related_dataset_frequency"] == "daily"
+    assert payload[0]["target_dataset_frequency"] == "monthly"
+    assert payload[0]["average_lead_days"] == 19
+    assert payload[0]["frequency_alignment"] == 0.65
+    assert payload[0]["support_confidence"] == 0.55
+    assert payload[0]["supporting_episodes"][0]["target_anomaly_id"] == 2
+    assert payload[0]["supporting_episodes"][0]["target_cluster_id"] == 2
+    assert payload[0]["supporting_episodes"][0]["target_cluster_anomaly_count"] == 2
+    assert len(payload[0]["supporting_episodes"][0]["cluster_members"]) == 2
+    assert payload[0]["supporting_episodes"][0]["cluster_members"][0]["dataset_name"] == "Consumer Price Index"
 
 
 def test_regenerate_explanation_endpoint_returns_updated_detail(client, seeded_event_graph, monkeypatch) -> None:  # noqa: ANN001

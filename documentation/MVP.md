@@ -53,6 +53,7 @@ As of March 12, 2026, the repository contains a working end-to-end vertical slic
 - data ingestion for Bitcoin, CPI, Federal Funds Rate, WTI oil, and S&P 500
 - data ingestion for a first household macro cluster: U.S. house prices, 30-year mortgage rates, and real disposable personal income per capita
 - rolling z-score anomaly detection with frequency-aware defaults
+- `change_point` anomaly detection for structural shifts
 - lag-aware correlation scoring on percent changes
 - persisted article-context retrieval through GDELT
 - explanation generation through a provider abstraction
@@ -220,6 +221,10 @@ Key fields:
 
 The MVP anomaly detector uses rolling z-score logic.
 
+The system now also includes a second detector:
+
+- `change_point`
+
 ### Why this was chosen
 
 - simple to implement
@@ -233,6 +238,18 @@ The MVP anomaly detector uses rolling z-score logic.
 - low-frequency macro series need different thresholds than daily market series
 
 The current implementation partly addresses this by using frequency-aware defaults and collapsing adjacent flagged points into one event.
+
+### Change-point detector
+
+The new change-point path uses `ruptures` to detect structural shifts rather than only local outliers.
+
+This matters because MacroLens should eventually reason over:
+
+- sharp spikes
+- regime breaks
+- sustained level transitions
+
+The first implementation uses frequency-aware defaults and stores `change_point` as a separate `detection_method` rather than replacing `z_score`.
 
 ## Propagation Strategy
 

@@ -38,12 +38,13 @@ For each supported dataset, MacroLens can:
 
 - ingest historical data from external sources
 - normalize and store it in PostgreSQL
-- detect anomalies with rolling z-score logic
+- detect anomalies with rolling z-score and change-point logic
 - group nearby anomalies into persisted macro-event clusters
 - compute lag-aware correlations against other datasets
 - retrieve article context around anomaly windows
 - generate explanation text from stored evidence
 - trace suggested downstream propagation paths from one macro-event cluster to later clusters
+- aggregate repeated leading relationships into a dataset-level leading-signal view
 - expose all of that through an API and frontend investigation interface
 
 ## What Makes This Project Interesting
@@ -75,9 +76,11 @@ MacroLens currently has a working end-to-end MVP slice.
 - CoinGecko ingestion for Bitcoin
 - FRED ingestion for CPI, Federal Funds Rate, WTI oil, S&P 500, and household macro series
 - rolling z-score anomaly detection
+- `ruptures`-based change-point detection for structural shifts
 - lag-aware correlation discovery on percent changes
 - persisted anomaly clustering into macro-event groups
 - cluster-to-cluster propagation timeline generation
+- dataset-level leading-indicator discovery built on clustered event episodes
 - stored news-context retrieval through GDELT
 - explanation generation through a provider abstraction
 - React frontend connected to the live API
@@ -120,6 +123,14 @@ The current ranking pass also applies:
 - duplicate suppression
 - timing-aware ranking around the anomaly date
 - provider ordering that surfaces curated historical context ahead of weaker live retrieval when appropriate
+
+Operationally, `gdelt` is now treated as a recent-context provider rather than a universal historical archive.
+
+That means:
+
+- live article retrieval is attempted only for anomalies inside a configurable recent-age window
+- older anomalies fall back to curated timeline evidence or structured-evidence-only explanations
+- full evidence refreshes are now much more realistic to run without wasting time on decades-old weak-coverage queries
 
 ### Not complete yet
 
@@ -267,7 +278,7 @@ What this command does:
 
 - fetches source data
 - refreshes stored rows for each selected dataset
-- runs anomaly detection
+- runs anomaly detection for both `z_score` and `change_point`
 - recomputes anomaly clusters
 - runs correlation computation
 - fetches and stores news context
@@ -342,6 +353,22 @@ To compare only Gemini-generated explanations:
 .\.venv\Scripts\python scripts\explanations\view_explanations.py --provider gemini --limit 5
 ```
 
+### Recompute the full evidence graph from stored data
+
+If you change detection logic or want to rebuild downstream evidence without refetching source datasets:
+
+```powershell
+.\.venv\Scripts\python scripts\pipeline\recompute_evidence.py
+```
+
+Useful resume flags:
+
+- `--skip-anomaly-detection`
+- `--skip-clustering`
+- `--skip-correlation`
+- `--skip-news-context`
+- `--skip-explanations`
+
 ### Start the frontend
 
 From the repo root:
@@ -371,6 +398,7 @@ Current core endpoints:
 - `GET /api/v1/datasets`
 - `GET /api/v1/datasets/{id}/timeseries`
 - `GET /api/v1/datasets/{id}/anomalies`
+- `GET /api/v1/datasets/{id}/leading-indicators`
 - `GET /api/v1/anomalies/{id}`
 - `POST /api/v1/anomalies/{id}/regenerate-explanation`
 
@@ -393,6 +421,11 @@ The current frontend supports:
 - minimum-severity filtering
 - direction filtering
 - multi-dataset 3D constellation view
+- leading-signal ranking for the selected dataset
+- supporting-cluster browser with inline cluster-member previews behind each leading signal
+- side-by-side comparison of selected supporting episodes inside a leading-signal row
+- visible frequency-pair and frequency-fit scoring for leading indicators
+- visible support-confidence scoring so sparse leaders do not look fully mature
 - live timeseries rendering
 - chart brush for local zooming
 - anomaly markers on the chart
@@ -400,6 +433,7 @@ The current frontend supports:
 - anomaly selection from the 3D constellation
 - macro-event cluster inspection for the selected anomaly
 - propagation timeline cards with click-through investigation
+- propagation score breakdown for each downstream edge
 - evidence provenance in the event panel
 - cited news context in the event panel
 - curated macro-timeline context for selected household anomalies
@@ -458,6 +492,7 @@ Useful entry points:
 - [system_overview.md](documentation/architecture/system_overview.md)
 - [event_clustering.md](documentation/architecture/event_clustering.md)
 - [propagation_timeline.md](documentation/architecture/propagation_timeline.md)
+- [leading_indicator_discovery.md](documentation/architecture/leading_indicator_discovery.md)
 - [news_context_engine.md](documentation/architecture/news_context_engine.md)
 
 ## Current Limitations
@@ -465,8 +500,11 @@ Useful entry points:
 - explanations are rules-based by default even though OpenAI-backed and Gemini-backed provider paths now exist
 - correlations are useful but should not be interpreted as causal proof
 - anomaly clustering is time-proximity based today, so a cluster is a useful event envelope rather than proof of shared causation
+- change-point detection is now backfilled into the live evidence graph, but its configs are still first-pass and should be treated as an auxiliary detector rather than a mature default
 - propagation timelines are conservative downstream suggestions, not causal proof
-- live news retrieval is still keyword-based, so relevance quality is still uneven
+- leading-indicator rankings now include sign consistency, but they are still repeated-pattern views rather than causal claims
+- leading-indicator rankings now include both frequency alignment and support confidence; the current support-confidence curve is intentionally frozen as a simple stepwise heuristic until episode quality improves
+- live news retrieval is still keyword-based and recent-only, so relevance quality and historical coverage are both uneven
 - household macro anomalies now fall back to curated macro-timeline context for selected historical regimes, but that timeline is intentionally sparse rather than comprehensive
 - mixed-frequency analysis is still coarse
 - monthly and weekly household macro series are useful, but they will naturally produce fewer clean event explanations than daily market series
@@ -479,12 +517,11 @@ Useful entry points:
 The next highest-value steps are:
 
 1. evaluate OpenAI and Gemini explanation quality more systematically
-2. add explicit evidence-strength decomposition for propagation edges and explanations
-3. expand curated macro-timeline coverage beyond the first household regimes
-4. improve article ranking and filtering quality for live news retrieval
-5. experiment with change-point detection alongside z-score
-6. optimize and deepen the new multi-dataset constellation view
-7. add a documented refresh and deployment workflow
+2. expand curated macro-timeline coverage beyond the first household regimes
+3. improve article ranking and filtering quality for live news retrieval
+4. improve event clustering and episode quality so downstream rankings depend less on heuristic patching
+5. optimize and deepen the new multi-dataset constellation view
+6. add a documented deployment workflow
 
 ## Why This Repo Is Structured This Way
 

@@ -260,3 +260,125 @@ def seeded_event_graph(db_session: Session) -> dict[str, int]:
         "anomaly_id": anomaly_id,
         "target_anomaly_id": target_anomaly_id,
     }
+
+
+@pytest.fixture()
+def seeded_leading_indicators(db_session: Session) -> dict[str, int]:
+    target_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="cpi",
+            name="Consumer Price Index",
+            symbol="CPIAUCSL",
+            source="FRED",
+            description="Consumer Price Index for All Urban Consumers.",
+            frequency="monthly",
+        ),
+    )
+    oil_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="wti",
+            name="WTI Oil Price",
+            symbol="DCOILWTICO",
+            source="FRED",
+            description="Crude Oil Prices: West Texas Intermediate.",
+            frequency="daily",
+        ),
+    )
+    fed_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="fed_funds",
+            name="Federal Funds Rate",
+            symbol="FEDFUNDS",
+            source="FRED",
+            description="Effective Federal Funds Rate.",
+            frequency="monthly",
+        ),
+    )
+
+    anomaly_one_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": target_dataset_id,
+                "timestamp": datetime(2025, 1, 15, tzinfo=timezone.utc),
+                "severity_score": 3.1,
+                "direction": "up",
+                "detection_method": "z_score",
+            },
+        ).scalar_one()
+    )
+    anomaly_two_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": target_dataset_id,
+                "timestamp": datetime(2025, 4, 15, tzinfo=timezone.utc),
+                "severity_score": 3.0,
+                "direction": "up",
+                "detection_method": "z_score",
+            },
+        ).scalar_one()
+    )
+    anomaly_three_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": target_dataset_id,
+                "timestamp": datetime(2025, 4, 18, tzinfo=timezone.utc),
+                "severity_score": 2.7,
+                "direction": "up",
+                "detection_method": "change_point",
+            },
+        ).scalar_one()
+    )
+
+    db_session.execute(
+        text(
+            """
+            INSERT INTO correlations (anomaly_id, related_dataset_id, correlation_score, lag_days, method)
+            VALUES
+                (:anomaly_one_id, :oil_dataset_id, 0.72, -20, 'pearson_pct_change'),
+                (:anomaly_one_id, :fed_dataset_id, 0.44, -9, 'pearson_pct_change'),
+                (:anomaly_two_id, :oil_dataset_id, 0.81, -18, 'pearson_pct_change'),
+                (:anomaly_two_id, :fed_dataset_id, 0.45, -11, 'pearson_pct_change'),
+                (:anomaly_three_id, :oil_dataset_id, 0.60, -25, 'pearson_pct_change')
+            """
+        ),
+        {
+            "anomaly_one_id": anomaly_one_id,
+            "anomaly_two_id": anomaly_two_id,
+            "anomaly_three_id": anomaly_three_id,
+            "oil_dataset_id": oil_dataset_id,
+            "fed_dataset_id": fed_dataset_id,
+        },
+    )
+
+    run_clustering_for_all_anomalies(db_session, window_days=7)
+    db_session.commit()
+
+    return {
+        "dataset_id": target_dataset_id,
+        "oil_dataset_id": oil_dataset_id,
+        "fed_dataset_id": fed_dataset_id,
+    }

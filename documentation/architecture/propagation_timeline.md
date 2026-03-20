@@ -56,16 +56,17 @@ Each propagation edge currently includes:
 
 ## Current Scoring
 
-The first edge-strength score is intentionally simple.
+The first edge-strength score is intentionally simple, but it is no longer opaque.
 
-It currently combines:
+Each edge now exposes:
 
-- strongest correlation magnitude
+- correlation strength
 - support density
 - temporal alignment
 - target cluster scale
+- overall weighted score
 
-This is useful for ranking, but it is not yet decomposed enough for scientific transparency.
+This is still a heuristic, but it is inspectable rather than theatrical.
 
 ## Current Strengths
 
@@ -82,4 +83,4 @@ This is useful for ranking, but it is not yet decomposed enough for scientific t
 
 ## Best Next Step
 
-Add explicit evidence-strength decomposition before making propagation logic more ambitious.
+Improve the underlying event quality with change-point detection before making propagation logic more ambitious.

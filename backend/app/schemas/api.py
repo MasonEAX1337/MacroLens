@@ -12,6 +12,54 @@ class DatasetSummary(BaseModel):
     frequency: str
 
 
+class LeadingIndicatorRecord(BaseModel):
+    related_dataset_id: int
+    related_dataset_name: str
+    related_dataset_frequency: str
+    target_dataset_frequency: str
+    supporting_cluster_count: int
+    target_cluster_count: int
+    cluster_coverage: float
+    average_lead_days: int
+    average_correlation_score: float
+    average_abs_correlation_score: float
+    strongest_correlation_score: float
+    sign_consistency: float
+    dominant_direction: str
+    frequency_alignment: float
+    support_confidence: float
+    consistency_score: float
+    supporting_episodes: list["LeadingIndicatorSupportRecord"]
+
+
+class LeadingIndicatorSupportRecord(BaseModel):
+    target_cluster_id: int
+    target_anomaly_id: int
+    target_dataset_name: str
+    target_timestamp: datetime
+    target_direction: str | None = None
+    target_detection_method: str
+    target_severity_score: float
+    target_cluster_start_timestamp: datetime
+    target_cluster_end_timestamp: datetime
+    target_cluster_anomaly_count: int
+    target_cluster_dataset_count: int
+    target_cluster_peak_severity_score: float
+    correlation_score: float
+    lag_days: int
+    cluster_members: list["LeadingIndicatorClusterMemberPreview"]
+
+
+class LeadingIndicatorClusterMemberPreview(BaseModel):
+    anomaly_id: int
+    dataset_id: int
+    dataset_name: str
+    timestamp: datetime
+    severity_score: float
+    direction: str | None = None
+    detection_method: str
+
+
 class TimeSeriesPoint(BaseModel):
     timestamp: datetime
     value: float
@@ -97,6 +145,14 @@ class PropagationEvidenceRecord(BaseModel):
     tolerance_days: int
 
 
+class PropagationStrengthComponents(BaseModel):
+    correlation_strength: float
+    support_density: float
+    temporal_alignment: float
+    target_scale: float
+    overall: float
+
+
 class PropagationEdgeRecord(BaseModel):
     source_cluster_id: int
     target_cluster_id: int
@@ -112,6 +168,7 @@ class PropagationEdgeRecord(BaseModel):
     strongest_correlation_score: float
     supporting_link_count: int
     evidence_strength: float
+    evidence_strength_components: PropagationStrengthComponents
     source_dataset_names: list[str]
     target_dataset_names: list[str]
     evidence: list[PropagationEvidenceRecord]

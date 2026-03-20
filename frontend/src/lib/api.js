@@ -29,6 +29,10 @@ export function fetchDatasetAnomalies(datasetId, limit = 100) {
   return request(`/api/v1/datasets/${datasetId}/anomalies?limit=${limit}`);
 }
 
+export function fetchDatasetLeadingIndicators(datasetId, limit = 5) {
+  return request(`/api/v1/datasets/${datasetId}/leading-indicators?limit=${limit}`);
+}
+
 export function fetchAnomalyDetail(anomalyId) {
   return request(`/api/v1/anomalies/${anomalyId}`);
 }

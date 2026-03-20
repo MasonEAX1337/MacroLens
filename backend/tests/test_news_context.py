@@ -11,8 +11,10 @@ from app.services.news_context import (
     build_news_query,
     get_fetch_record_limit,
     get_effective_window_days,
+    get_active_news_context_provider_names,
     get_news_context_provider_names,
     get_news_context_status,
+    should_query_gdelt,
 )
 
 
@@ -247,6 +249,35 @@ def test_gdelt_provider_returns_empty_list_after_rate_limit(monkeypatch) -> None
     assert articles == []
 
 
+def test_gdelt_provider_returns_empty_list_after_transport_timeout(monkeypatch) -> None:
+    def mock_get(url, params, timeout):  # noqa: ANN001, ARG001
+        request = httpx.Request("GET", "https://api.gdeltproject.org/api/v2/doc/doc")
+        raise httpx.ConnectTimeout("handshake timed out", request=request)
+
+    monkeypatch.setattr("app.services.news_context.httpx.get", mock_get)
+    monkeypatch.setattr("app.services.news_context.time.sleep", lambda *_args, **_kwargs: None)
+
+    provider = GDELTNewsContextProvider(
+        base_url="https://api.gdeltproject.org/api/v2/doc",
+        window_days=7,
+        max_articles=3,
+        language="English",
+        timeout_seconds=11.0,
+    )
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=1,
+            dataset_name="Bitcoin Price",
+            dataset_symbol="BTC",
+            dataset_frequency="daily",
+            timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert articles == []
+
+
 def test_income_titles_can_match_broader_relief_language() -> None:
     request = NewsContextRequest(
         anomaly_id=210,
@@ -345,6 +376,36 @@ def test_non_household_series_keep_single_gdelt_provider_by_default() -> None:
     provider_names = get_news_context_provider_names(request)
 
     assert provider_names == ["gdelt"]
+
+
+def test_old_non_household_series_skip_gdelt_execution(monkeypatch) -> None:
+    request = NewsContextRequest(
+        anomaly_id=100,
+        dataset_name="Federal Funds Rate",
+        dataset_symbol="FEDFUNDS",
+        dataset_frequency="monthly",
+        timestamp=datetime(1965, 12, 1, tzinfo=timezone.utc),
+    )
+
+    monkeypatch.setattr("app.services.news_context.settings.gdelt_max_anomaly_age_days", 3650)
+
+    assert should_query_gdelt(request) is False
+    assert get_active_news_context_provider_names(request) == []
+
+
+def test_old_household_series_fall_back_to_macro_timeline_provider(monkeypatch) -> None:
+    request = NewsContextRequest(
+        anomaly_id=183,
+        dataset_name="Case-Shiller U.S. National Home Price Index",
+        dataset_symbol="CSUSHPISA",
+        dataset_frequency="monthly",
+        timestamp=datetime(2010, 2, 1, tzinfo=timezone.utc),
+    )
+
+    monkeypatch.setattr("app.services.news_context.settings.gdelt_max_anomaly_age_days", 3650)
+
+    assert should_query_gdelt(request) is False
+    assert get_active_news_context_provider_names(request) == ["macro_timeline"]
 
 
 def test_news_context_status_reports_hybrid_provider_label_for_household_series() -> None:

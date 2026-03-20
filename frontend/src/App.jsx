@@ -14,6 +14,7 @@ import {
 import {
   fetchAnomalyDetail,
   fetchDatasetAnomalies,
+  fetchDatasetLeadingIndicators,
   fetchDatasets,
   fetchDatasetTimeseries,
   regenerateAnomalyExplanation,
@@ -42,6 +43,8 @@ const DIRECTION_OPTIONS = [
   { value: "down", label: "Down only" },
 ];
 
+const MAX_COMPARED_EPISODES = 3;
+
 function formatDate(timestamp) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -58,6 +61,10 @@ function formatValue(value) {
 
 function formatCorrelation(score) {
   return `${score >= 0 ? "+" : ""}${score.toFixed(2)}`;
+}
+
+function getSupportingEpisodeKey(episode) {
+  return `${episode.target_cluster_id}-${episode.target_anomaly_id}`;
 }
 
 function buildChartData(timeseries, anomalies) {
@@ -185,6 +192,10 @@ function formatEvidenceStrength(score) {
   return "weak";
 }
 
+function formatShare(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
 function buildEvidenceSummary(detail) {
   if (!detail) {
     return null;
@@ -204,6 +215,335 @@ function buildEvidenceSummary(detail) {
   };
 }
 
+function LeadingIndicatorCard({
+  item,
+  expandedLeadingIndicatorId,
+  setExpandedLeadingIndicatorId,
+  selectedComparisonKeys,
+  onToggleComparison,
+  onClearComparison,
+  onSelectEpisode,
+}) {
+  const comparedEpisodes = selectedComparisonKeys
+    .map((key) =>
+      item.supporting_episodes.find((episode) => getSupportingEpisodeKey(episode) === key),
+    )
+    .filter(Boolean);
+
+  return (
+    <article className="leading-indicator-card">
+      <div className="leading-indicator-top">
+        <div>
+          <h3>{item.related_dataset_name}</h3>
+          <p>
+            {item.supporting_cluster_count} of {item.target_cluster_count} target cluster
+            {item.target_cluster_count === 1 ? "" : "s"}
+          </p>
+          <p className="leading-indicator-frequency-pair">
+            {item.related_dataset_frequency} to {item.target_dataset_frequency}
+          </p>
+        </div>
+        <div className="propagation-score">
+          <strong>{item.consistency_score.toFixed(2)}</strong>
+          <span>consistency</span>
+        </div>
+      </div>
+
+      <div className="leading-indicator-metrics leading-indicator-metrics-wide">
+        <article>
+          <span>Coverage</span>
+          <strong>{formatShare(item.cluster_coverage)}</strong>
+        </article>
+        <article>
+          <span>Support confidence</span>
+          <strong>{formatShare(item.support_confidence)}</strong>
+        </article>
+        <article>
+          <span>Average lead</span>
+          <strong>{item.average_lead_days} day(s)</strong>
+        </article>
+        <article>
+          <span>Average strength</span>
+          <strong>{item.average_abs_correlation_score.toFixed(2)}</strong>
+        </article>
+        <article>
+          <span>Sign consistency</span>
+          <strong>{formatShare(item.sign_consistency)}</strong>
+        </article>
+        <article>
+          <span>Frequency fit</span>
+          <strong>{formatShare(item.frequency_alignment)}</strong>
+        </article>
+        <article>
+          <span>Strongest link</span>
+          <strong>{formatCorrelation(item.strongest_correlation_score)}</strong>
+        </article>
+      </div>
+
+      <div className="propagation-note">
+        Dominant direction: <strong>{item.dominant_direction}</strong>. This ranking aggregates
+        only leading relationships and collapses duplicate matches inside the same target cluster.
+        It is a repeated-pattern view, not causal proof. Support confidence reflects how many
+        distinct target clusters actually back the ranking, so one-cluster leaders stay visible
+        without looking fully mature.
+      </div>
+
+      <div className="leading-indicator-support">
+        <div className="leading-indicator-support-header">
+          <div className="leading-indicator-support-copy">
+            <span>Supporting episodes</span>
+            <small>
+              Select up to {MAX_COMPARED_EPISODES} episodes to compare regimes side by side.
+            </small>
+          </div>
+          <button
+            type="button"
+            className="action-button subtle"
+            onClick={() =>
+              setExpandedLeadingIndicatorId((current) =>
+                current === item.related_dataset_id ? null : item.related_dataset_id,
+              )
+            }
+          >
+            {expandedLeadingIndicatorId === item.related_dataset_id
+              ? "Hide episodes"
+              : `Show episodes (${item.supporting_episodes.length})`}
+          </button>
+        </div>
+
+        {expandedLeadingIndicatorId === item.related_dataset_id ? (
+          <>
+            {comparedEpisodes.length > 0 ? (
+              <section className="leading-indicator-comparison">
+                <div className="leading-indicator-comparison-header">
+                  <div>
+                    <strong>Episode comparison</strong>
+                    <p>
+                      Compare how this leader appears across stored target clusters before you
+                      inspect one anomaly in depth.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="action-button subtle"
+                    onClick={() => onClearComparison(item.related_dataset_id)}
+                  >
+                    Clear selection
+                  </button>
+                </div>
+
+                {comparedEpisodes.length < 2 ? (
+                  <div className="leading-indicator-comparison-note">
+                    Select one more episode to make the comparison meaningful.
+                  </div>
+                ) : null}
+
+                <div className="leading-indicator-comparison-grid">
+                  {comparedEpisodes.map((episode) => (
+                    <article
+                      className="leading-indicator-comparison-card"
+                      key={`${item.related_dataset_id}-${getSupportingEpisodeKey(episode)}`}
+                    >
+                      <div className="leading-indicator-comparison-top">
+                        <div>
+                          <strong>
+                            {formatDate(episode.target_cluster_start_timestamp)}
+                            {episode.target_cluster_start_timestamp !==
+                            episode.target_cluster_end_timestamp
+                              ? ` to ${formatDate(episode.target_cluster_end_timestamp)}`
+                              : ""}
+                          </strong>
+                          <p>
+                            cluster {episode.target_cluster_id} /{" "}
+                            {episode.target_cluster_anomaly_count} anomaly
+                            {episode.target_cluster_anomaly_count === 1 ? "" : "ies"} /{" "}
+                            {episode.target_cluster_dataset_count} dataset
+                            {episode.target_cluster_dataset_count === 1 ? "" : "s"}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          className="action-button subtle"
+                          onClick={() =>
+                            onToggleComparison(
+                              item.related_dataset_id,
+                              getSupportingEpisodeKey(episode),
+                            )
+                          }
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div className="leading-indicator-comparison-metrics">
+                        <article>
+                          <span>Matched lag</span>
+                          <strong>{describeLagDays(episode.lag_days)}</strong>
+                        </article>
+                        <article>
+                          <span>Correlation</span>
+                          <strong>{formatCorrelation(episode.correlation_score)}</strong>
+                        </article>
+                        <article>
+                          <span>Target event</span>
+                          <strong>{formatDate(episode.target_timestamp)}</strong>
+                        </article>
+                        <article>
+                          <span>Method</span>
+                          <strong>{episode.target_detection_method}</strong>
+                        </article>
+                        <article>
+                          <span>Direction</span>
+                          <strong>{episode.target_direction ?? "n/a"}</strong>
+                        </article>
+                        <article>
+                          <span>Severity</span>
+                          <strong>{episode.target_severity_score.toFixed(2)}</strong>
+                        </article>
+                        <article>
+                          <span>Cluster peak</span>
+                          <strong>{episode.target_cluster_peak_severity_score.toFixed(2)}</strong>
+                        </article>
+                      </div>
+
+                      <div className="leading-indicator-member-preview comparison-preview">
+                        <span>Cluster members</span>
+                        <div className="leading-indicator-member-list">
+                          {episode.cluster_members.map((member) => (
+                            <div
+                              className="leading-indicator-member-chip"
+                              key={`${episode.target_cluster_id}-${member.anomaly_id}`}
+                            >
+                              <strong>{member.dataset_name}</strong>
+                              <small>
+                                {formatDate(member.timestamp)} / {member.direction ?? "n/a"} /{" "}
+                                {member.detection_method}
+                              </small>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() => onSelectEpisode(episode.target_anomaly_id)}
+                      >
+                        Inspect this cluster
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            <div className="leading-indicator-episode-list">
+              {item.supporting_episodes.map((episode) => {
+                const episodeKey = getSupportingEpisodeKey(episode);
+                const isCompared = selectedComparisonKeys.includes(episodeKey);
+
+                return (
+                  <article
+                    className={`leading-indicator-episode ${isCompared ? "compared" : ""}`}
+                    key={`${item.related_dataset_id}-${episode.target_cluster_id}-${episode.target_anomaly_id}`}
+                  >
+                    <div className="leading-indicator-episode-top">
+                      <div>
+                        <strong>
+                          {formatDate(episode.target_cluster_start_timestamp)}
+                          {episode.target_cluster_start_timestamp !==
+                          episode.target_cluster_end_timestamp
+                            ? ` to ${formatDate(episode.target_cluster_end_timestamp)}`
+                            : ""}
+                        </strong>
+                        <p>
+                          cluster {episode.target_cluster_id} /{" "}
+                          {episode.target_cluster_anomaly_count} anomaly
+                          {episode.target_cluster_anomaly_count === 1 ? "" : "ies"} /{" "}
+                          {episode.target_cluster_dataset_count} dataset
+                          {episode.target_cluster_dataset_count === 1 ? "" : "s"}
+                        </p>
+                      </div>
+                      <div className="leading-indicator-episode-signal">
+                        <strong>{formatCorrelation(episode.correlation_score)}</strong>
+                        <span>{describeLagDays(episode.lag_days)}</span>
+                      </div>
+                    </div>
+
+                    <div className="leading-indicator-episode-metrics">
+                      <article>
+                        <span>Target event</span>
+                        <strong>{formatDate(episode.target_timestamp)}</strong>
+                      </article>
+                      <article>
+                        <span>Method</span>
+                        <strong>{episode.target_detection_method}</strong>
+                      </article>
+                      <article>
+                        <span>Direction</span>
+                        <strong>{episode.target_direction ?? "n/a"}</strong>
+                      </article>
+                      <article>
+                        <span>Severity</span>
+                        <strong>{episode.target_severity_score.toFixed(2)}</strong>
+                      </article>
+                      <article>
+                        <span>Cluster peak</span>
+                        <strong>{episode.target_cluster_peak_severity_score.toFixed(2)}</strong>
+                      </article>
+                    </div>
+
+                    <div className="leading-indicator-episode-note">
+                      This is the strongest stored leading match for{" "}
+                      <strong>{item.related_dataset_name}</strong> inside this target cluster after
+                      deduplication.
+                    </div>
+
+                    <div className="leading-indicator-member-preview">
+                      <span>Cluster members</span>
+                      <div className="leading-indicator-member-list">
+                        {episode.cluster_members.map((member) => (
+                          <div
+                            className="leading-indicator-member-chip"
+                            key={`${episode.target_cluster_id}-${member.anomaly_id}`}
+                          >
+                            <strong>{member.dataset_name}</strong>
+                            <small>
+                              {formatDate(member.timestamp)} / {member.direction ?? "n/a"} /{" "}
+                              {member.detection_method}
+                            </small>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="leading-indicator-episode-actions">
+                      <button
+                        type="button"
+                        className={`action-button subtle ${isCompared ? "active" : ""}`}
+                        onClick={() => onToggleComparison(item.related_dataset_id, episodeKey)}
+                      >
+                        {isCompared ? "Remove from comparison" : "Compare episode"}
+                      </button>
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() => onSelectEpisode(episode.target_anomaly_id)}
+                      >
+                        Inspect this cluster
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
 export default function App() {
   const [datasets, setDatasets] = useState([]);
   const [selectedDatasetId, setSelectedDatasetId] = useState(null);
@@ -211,6 +551,9 @@ export default function App() {
   const [anomalies, setAnomalies] = useState([]);
   const [selectedAnomalyId, setSelectedAnomalyId] = useState(null);
   const [selectedAnomalyDetail, setSelectedAnomalyDetail] = useState(null);
+  const [leadingIndicators, setLeadingIndicators] = useState([]);
+  const [expandedLeadingIndicatorId, setExpandedLeadingIndicatorId] = useState(null);
+  const [leadingIndicatorComparisons, setLeadingIndicatorComparisons] = useState({});
   const [selectedDateWindow, setSelectedDateWindow] = useState("1y");
   const [minSeverity, setMinSeverity] = useState("0");
   const [directionFilter, setDirectionFilter] = useState("all");
@@ -219,6 +562,7 @@ export default function App() {
   const [datasetsLoading, setDatasetsLoading] = useState(true);
   const [constellationLoading, setConstellationLoading] = useState(false);
   const [chartLoading, setChartLoading] = useState(false);
+  const [leadingIndicatorsLoading, setLeadingIndicatorsLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [regeneratingExplanation, setRegeneratingExplanation] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -312,18 +656,23 @@ export default function App() {
 
     async function loadDatasetView() {
       setChartLoading(true);
+      setLeadingIndicatorsLoading(true);
       setErrorMessage("");
 
       try {
-        const [nextTimeseries, nextAnomalies] = await Promise.all([
+        const [nextTimeseries, nextAnomalies, nextLeadingIndicators] = await Promise.all([
           fetchDatasetTimeseries(selectedDatasetId, 2000),
           fetchDatasetAnomalies(selectedDatasetId, 250),
+          fetchDatasetLeadingIndicators(selectedDatasetId, 6),
         ]);
         if (cancelled) {
           return;
         }
         setTimeseries(nextTimeseries);
         setAnomalies(nextAnomalies);
+        setLeadingIndicators(nextLeadingIndicators);
+        setExpandedLeadingIndicatorId(nextLeadingIndicators[0]?.related_dataset_id ?? null);
+        setLeadingIndicatorComparisons({});
         const requestedSelection =
           pendingSelectionRef.current?.datasetId === selectedDatasetId
             ? pendingSelectionRef.current.anomalyId
@@ -341,12 +690,15 @@ export default function App() {
           setErrorMessage(error.message);
           setTimeseries([]);
           setAnomalies([]);
+          setLeadingIndicators([]);
+          setExpandedLeadingIndicatorId(null);
           setSelectedAnomalyId(null);
           setSelectedAnomalyDetail(null);
         }
       } finally {
         if (!cancelled) {
           setChartLoading(false);
+          setLeadingIndicatorsLoading(false);
         }
       }
     }
@@ -471,6 +823,45 @@ export default function App() {
 
       pendingSelectionRef.current = { datasetId, anomalyId };
       setSelectedDatasetId(datasetId);
+    });
+  }
+
+  function handleLeadingIndicatorEpisodeSelect(anomalyId) {
+    startTransition(() => {
+      setErrorMessage("");
+      setSelectedAnomalyId(anomalyId);
+    });
+  }
+
+  function toggleLeadingIndicatorComparison(relatedDatasetId, episodeKey) {
+    setLeadingIndicatorComparisons((current) => {
+      const existing = current[relatedDatasetId] ?? [];
+      const nextSelection = existing.includes(episodeKey)
+        ? existing.filter((key) => key !== episodeKey)
+        : [...existing, episodeKey].slice(-MAX_COMPARED_EPISODES);
+
+      if (nextSelection.length === 0) {
+        const nextState = { ...current };
+        delete nextState[relatedDatasetId];
+        return nextState;
+      }
+
+      return {
+        ...current,
+        [relatedDatasetId]: nextSelection,
+      };
+    });
+  }
+
+  function clearLeadingIndicatorComparison(relatedDatasetId) {
+    setLeadingIndicatorComparisons((current) => {
+      if (!current[relatedDatasetId]) {
+        return current;
+      }
+
+      const nextState = { ...current };
+      delete nextState[relatedDatasetId];
+      return nextState;
     });
   }
 
@@ -699,6 +1090,37 @@ export default function App() {
                 </>
               )}
             </div>
+
+            <section className="detail-section">
+              <header>
+                <p className="panel-label">Leading signals</p>
+                <h3 className="section-title">Repeatedly leading datasets for {selectedDataset?.name ?? "this series"}</h3>
+              </header>
+              {leadingIndicatorsLoading ? (
+                <div className="state-card">Aggregating leading relationships across clustered events...</div>
+              ) : leadingIndicators.length > 0 ? (
+                <div className="leading-indicator-list">
+                  {leadingIndicators.map((item) => (
+                    <LeadingIndicatorCard
+                      key={item.related_dataset_id}
+                      item={item}
+                      expandedLeadingIndicatorId={expandedLeadingIndicatorId}
+                      setExpandedLeadingIndicatorId={setExpandedLeadingIndicatorId}
+                      selectedComparisonKeys={
+                        leadingIndicatorComparisons[item.related_dataset_id] ?? []
+                      }
+                      onToggleComparison={toggleLeadingIndicatorComparison}
+                      onClearComparison={clearLeadingIndicatorComparison}
+                      onSelectEpisode={handleLeadingIndicatorEpisodeSelect}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-card">
+                  No repeated leading relationships are currently strong enough for this dataset.
+                </div>
+              )}
+            </section>
           </div>
         </div>
 
@@ -901,6 +1323,25 @@ export default function App() {
                             <article>
                               <span>Supporting links</span>
                               <strong>{edge.supporting_link_count}</strong>
+                            </article>
+                          </div>
+
+                          <div className="propagation-breakdown">
+                            <article>
+                              <span>Correlation</span>
+                              <strong>{edge.evidence_strength_components.correlation_strength.toFixed(2)}</strong>
+                            </article>
+                            <article>
+                              <span>Support</span>
+                              <strong>{edge.evidence_strength_components.support_density.toFixed(2)}</strong>
+                            </article>
+                            <article>
+                              <span>Timing</span>
+                              <strong>{edge.evidence_strength_components.temporal_alignment.toFixed(2)}</strong>
+                            </article>
+                            <article>
+                              <span>Coverage</span>
+                              <strong>{edge.evidence_strength_components.target_scale.toFixed(2)}</strong>
                             </article>
                           </div>
 

@@ -34,6 +34,7 @@ The frontend currently includes:
 - event detail panel
 - macro-event cluster section
 - propagation timeline section
+- propagation score decomposition
 - evidence provenance section
 - cited news context section
 - article timing badges

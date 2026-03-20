@@ -37,6 +37,8 @@ As of March 12, 2026, the project has completed the first major system loop:
 - dataset selection
 - multi-dataset 3D constellation view
 - timeseries chart
+- leading-indicator panel
+- side-by-side supporting-episode comparison inside each leading-indicator row
 - anomaly markers
 - event detail panel
 - macro-event cluster panel
@@ -53,8 +55,8 @@ The system is functionally coherent, but it is not yet finished.
 The two biggest gaps are:
 
 1. the hosted-provider path is usable, but not yet compared rigorously enough to justify a default change
-2. contextual retrieval now has a hybrid path, but curated macro-timeline coverage is still sparse
-3. propagation edges now exist, but they still need clearer evidence-strength decomposition and broader event coverage
+2. change-point detection is now live, but it still needs deeper comparative evaluation and tuning
+3. contextual retrieval now has a hybrid path, but curated macro-timeline coverage is still sparse
 
 One important milestone has now been cleared:
 
@@ -71,10 +73,11 @@ MacroLens reduces to six systems:
 3. event detection
 4. event grouping
 5. contextual retrieval
-6. relationship and interpretation
-7. user investigation
+6. relationship aggregation
+7. interpretation
+8. user investigation
 
-The first pass of all seven now exists.
+The first pass of all eight now exists.
 
 The next stage is quality:
 
@@ -116,9 +119,11 @@ Completed for current datasets.
 Completed for MVP.
 
 - rolling z-score detection implemented
+- `ruptures`-based binary segmentation implemented as a second detector
 - frequency-aware defaults added
 - clustered anomaly collapse implemented
 - anomaly metadata persisted
+- live backfill completed through the new evidence-refresh workflow
 
 ### Phase 5: Correlation Engine
 
@@ -128,6 +133,7 @@ Completed for MVP.
 - percent-change transformation implemented
 - lag-aware correlation search implemented
 - correlation persistence implemented
+- clustered leading-indicator aggregation implemented on top of persisted correlation evidence
 
 ### Phase 6: Explanation Engine
 
@@ -141,6 +147,14 @@ Completed in staged form.
 - explanation persistence implemented
 
 This phase is technically complete for the system loop, but not complete for product ambition or operational confidence.
+
+### Phase 9: Evidence Refresh Workflow
+
+Completed for current scope.
+
+- coordinated evidence refresh implemented from stored data
+- downstream stages can now be resumed independently when a long refresh is interrupted
+- historical live-news retrieval is capped to a recent window so refresh time stays bounded
 
 ### Phase 7: API Layer
 
@@ -239,6 +253,7 @@ The remaining problem is now coverage quality rather than architecture.
 
 - expand curated macro-timeline coverage for additional policy and household regimes
 - improve live-retrieval quality where GDELT is still noisy
+- decide where curated historical context should replace live retrieval entirely for older regimes
 - better time-window interpretation in the UI and explainer
 - optional domain filtering or source weighting for live retrieval
 
@@ -246,22 +261,39 @@ The remaining problem is now coverage quality rather than architecture.
 
 Weak contextual evidence can make the product feel smarter while actually making it less trustworthy.
 
-### Priority 3: Strengthen propagation evidence scoring
+### Priority 3: Validate and improve change-point detection
 
-The first propagation layer is now implemented.
-The next quality step is to make edge strength easier to interpret and less arbitrary.
+The second detector now exists in code and has been backfilled into the live evidence graph.
+The next task is to make it analytically credible.
 
 #### Highest-value improvements
 
-- decompose edge strength into visible subcomponents
-- distinguish structural support from timing support
-- make weak paths easier to reject in the UI
+- run comparative evaluation between `z_score` and `change_point`
+- tune frequency-aware and eventually dataset-specific change-point configs on real datasets
+- decide whether slower structural series need alternate event-type classification beyond first-pass `level_shift`
 
 #### Main risk
 
-If the system shows propagation paths without enough score transparency, users will over-read weak links.
+Over-trusting the new detector before comparative evaluation would make the product look more advanced than it really is.
 
-### Priority 4: Continue deepening the frontend investigation workflow
+### Priority 4: Evaluate and tune leading-indicator discovery
+
+The first version now exists.
+The next task is to decide whether the ranking is analytically useful enough to trust.
+
+#### Highest-value improvements
+
+- inspect top-ranked leaders for CPI, Fed funds, mortgage rates, and household series
+- evaluate whether the new sign-consistency weighting is sufficient or still too permissive
+- use the new side-by-side episode comparison browser to inspect whether repeated leaders remain stable across different cluster shapes and regimes
+- continue validating whether the new frequency-alignment term is enough to keep mixed-frequency relationships from being overread as broad “leaders”
+- evaluate whether the new support-confidence term is enough to keep one-cluster leaders from being overread as mature repeated signals
+
+#### Main risk
+
+A leading-indicator panel is useful only if it reflects repeated episodes rather than accidental lag matches.
+
+### Priority 5: Continue deepening the frontend investigation workflow
 
 The frontend is now materially better than the original MVP shell, but it still stops short of full investigative usefulness.
 
@@ -271,20 +303,8 @@ The frontend is now materially better than the original MVP shell, but it still 
 - clearer selected-range feedback around the chart brush
 - anomaly clustering or bucketing for dense daily series
 - clearer evidence-provider comparison in the event panel
-
-### Priority 5: Add change-point detection alongside z-score
-
-The current event model is still built entirely on point anomalies.
-
-#### Highest-value improvements
-
-- detect regime shifts that z-score misses
-- store `change_point` events alongside `z_score` events
-- compare propagation behavior across point anomalies and regime anomalies
-
-#### Main risk
-
-Adding a second detector changes the meaning of an event, so the storage and UI boundaries must remain explicit.
+- decide whether supporting-episode comparison should eventually include sparklines or remain metadata-first
+- improve episode quality so ranking trust depends less on heuristic patching and more on better event units
 
 ### Priority 6: Add scheduled pipeline execution
 
@@ -303,11 +323,10 @@ Do not overbuild orchestration yet.
 ## Recommended Build Order From Here
 
 1. compare and harden hosted provider behavior
-2. strengthen propagation evidence scoring
-3. deepen hybrid contextual evidence
-4. continue frontend investigation improvements
-5. add change-point detection alongside z-score
-6. add scheduler and refresh workflow
+2. deepen hybrid contextual evidence
+3. improve change-point credibility through evaluation and tuning
+4. improve event clustering and episode quality
+5. continue frontend investigation improvements on top of better episodes
 
 This order keeps the work aligned with the product thesis.
 
@@ -322,7 +341,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 1. hosted-provider comparison pass
 2. news-context quality improvements
 3. targeted frontend follow-up work
-4. operational refresh workflow
+4. leading-indicator evaluation and tuning
 
 ### Suggested Task Breakdown
 
@@ -338,6 +357,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 - document rate-limit behavior and retry policy
 - inspect retrieved articles for relevance drift
 - evaluate whether household macro terms need source weighting because they are broader and noisier than asset-specific queries
+- expand curated timeline coverage where recent-only live retrieval is the wrong tool
 
 #### Frontend
 
@@ -361,6 +381,6 @@ MacroLens can be called MVP-complete when all of the following are true:
 - The architecture is now real enough that the next mistakes will be judgment mistakes, not scaffolding mistakes.
 - Adding more code is no longer the main challenge. Choosing what not to add is.
 - The strongest thing in the repo right now is the evidence pipeline.
-- The weakest thing in the repo right now is no longer the UI shell. It is the combination of limited integration-grade verification and noisy contextual retrieval.
+- The weakest thing in the repo right now is no longer the UI shell. It is the combination of uneven contextual coverage and still-early second-detector tuning.
 
 The next phase should deepen trust, not broaden complexity.

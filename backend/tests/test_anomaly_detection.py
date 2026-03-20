@@ -3,8 +3,10 @@ from datetime import datetime, timedelta, timezone
 from app.services.anomaly_detection import (
     DetectionPoint,
     collapse_flagged_points,
+    detect_change_point_anomalies,
     detect_anomalies,
     get_detection_config,
+    get_change_point_config,
 )
 
 
@@ -29,6 +31,18 @@ def test_get_detection_config_uses_frequency_defaults() -> None:
     assert weekly.threshold == 3.0
     assert monthly.window_size == 12
     assert monthly.threshold == 2.5
+
+
+def test_get_change_point_config_uses_frequency_defaults() -> None:
+    daily = get_change_point_config("daily")
+    weekly = get_change_point_config("weekly")
+    monthly = get_change_point_config("monthly")
+
+    assert daily.algorithm == "binseg"
+    assert daily.jump == 5
+    assert weekly.min_size == 10
+    assert weekly.severity_threshold == 0.25
+    assert monthly.smoothing_window == 2
 
 
 def test_detect_anomalies_flags_large_spike() -> None:
@@ -83,3 +97,23 @@ def test_detect_anomalies_uses_weekly_defaults() -> None:
     assert len(anomalies) == 1
     assert anomalies[0].direction == "up"
     assert anomalies[0].metadata["window_size"] == 12
+
+
+def test_detect_change_point_anomalies_flags_level_shift() -> None:
+    values = [100.0] * 40 + [145.0] * 40
+    anomalies = detect_change_point_anomalies(build_points(values), "daily")
+
+    assert len(anomalies) >= 1
+    assert anomalies[0].detection_method == "change_point"
+    assert anomalies[0].metadata["event_type"] == "level_shift"
+    assert anomalies[0].metadata["algorithm"] == "binseg"
+    assert anomalies[0].severity_score > 0.75
+
+
+def test_detect_change_point_anomalies_uses_monthly_defaults() -> None:
+    values = [100.0] * 18 + [125.0] * 18
+    anomalies = detect_change_point_anomalies(build_points(values), "monthly")
+
+    assert len(anomalies) >= 1
+    assert anomalies[0].metadata["min_size"] == 6
+    assert anomalies[0].metadata["smoothing_window"] == 2

@@ -390,19 +390,25 @@ class GDELTNewsContextProvider:
         payload: dict[str, object] = {}
         for attempt in range(settings.gdelt_retry_attempts):
             wait_for_gdelt_rate_limit(settings.gdelt_min_interval_seconds)
-            response = httpx.get(
-                f"{self.base_url}/doc",
-                params={
-                    "query": query,
-                    "mode": "ArtList",
-                    "format": "json",
-                    "sort": "datedesc",
-                    "maxrecords": get_fetch_record_limit(self.max_articles),
-                    "startdatetime": format_gdelt_timestamp(start),
-                    "enddatetime": format_gdelt_timestamp(end),
-                },
-                timeout=self.timeout_seconds,
-            )
+            try:
+                response = httpx.get(
+                    f"{self.base_url}/doc",
+                    params={
+                        "query": query,
+                        "mode": "ArtList",
+                        "format": "json",
+                        "sort": "datedesc",
+                        "maxrecords": get_fetch_record_limit(self.max_articles),
+                        "startdatetime": format_gdelt_timestamp(start),
+                        "enddatetime": format_gdelt_timestamp(end),
+                    },
+                    timeout=self.timeout_seconds,
+                )
+            except httpx.RequestError:
+                if attempt < settings.gdelt_retry_attempts - 1:
+                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
+                    continue
+                return []
             try:
                 response.raise_for_status()
             except httpx.HTTPStatusError:
@@ -520,11 +526,21 @@ def get_news_context_provider_names(request: NewsContextRequest) -> list[str]:
     raise ValueError(f"Unsupported news context provider: {settings.news_context_provider}")
 
 
+def should_query_gdelt(request: NewsContextRequest) -> bool:
+    max_age_days = settings.gdelt_max_anomaly_age_days
+    if max_age_days <= 0:
+        return True
+    age_days = (datetime.now(timezone.utc).date() - ensure_utc(request.timestamp).date()).days
+    return age_days <= max_age_days
+
+
 def get_news_context_providers(request: NewsContextRequest) -> list[NewsContextProvider]:
     provider_names = get_news_context_provider_names(request)
     providers: list[NewsContextProvider] = []
     for provider_name in provider_names:
         if provider_name == "gdelt":
+            if not should_query_gdelt(request):
+                continue
             providers.append(build_gdelt_provider())
             continue
         if provider_name == "macro_timeline":
@@ -532,6 +548,10 @@ def get_news_context_providers(request: NewsContextRequest) -> list[NewsContextP
             continue
         raise ValueError(f"Unsupported news context provider: {provider_name}")
     return providers
+
+
+def get_active_news_context_provider_names(request: NewsContextRequest) -> list[str]:
+    return [provider.provider_name for provider in get_news_context_providers(request)]
 
 
 def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextRequest | None:

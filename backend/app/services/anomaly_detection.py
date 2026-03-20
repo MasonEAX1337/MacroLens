@@ -2,7 +2,9 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
+import ruptures as rpt
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -12,6 +14,17 @@ class DetectionConfig:
     window_size: int
     threshold: float
     min_periods: int
+
+
+@dataclass(frozen=True)
+class ChangePointConfig:
+    algorithm: str
+    model: str
+    penalty: float
+    min_size: int
+    jump: int
+    smoothing_window: int
+    severity_threshold: float
 
 
 @dataclass(frozen=True)
@@ -39,9 +52,43 @@ DEFAULT_CONFIGS: dict[str, DetectionConfig] = {
     "monthly": DetectionConfig(window_size=12, threshold=2.5, min_periods=12),
 }
 
+CHANGE_POINT_CONFIGS: dict[str, ChangePointConfig] = {
+    "daily": ChangePointConfig(
+        algorithm="binseg",
+        model="l2",
+        penalty=5.0,
+        min_size=14,
+        jump=5,
+        smoothing_window=3,
+        severity_threshold=0.9,
+    ),
+    "weekly": ChangePointConfig(
+        algorithm="binseg",
+        model="l2",
+        penalty=2.5,
+        min_size=10,
+        jump=3,
+        smoothing_window=3,
+        severity_threshold=0.25,
+    ),
+    "monthly": ChangePointConfig(
+        algorithm="binseg",
+        model="l2",
+        penalty=3.0,
+        min_size=6,
+        jump=1,
+        smoothing_window=2,
+        severity_threshold=0.45,
+    ),
+}
+
 
 def get_detection_config(frequency: str) -> DetectionConfig:
     return DEFAULT_CONFIGS.get(frequency, DEFAULT_CONFIGS["daily"])
+
+
+def get_change_point_config(frequency: str) -> ChangePointConfig:
+    return CHANGE_POINT_CONFIGS.get(frequency, CHANGE_POINT_CONFIGS["daily"])
 
 
 def load_dataset_series(db: Session, dataset_id: int) -> tuple[str, list[dict[str, object]]]:
@@ -69,6 +116,21 @@ def load_dataset_series(db: Session, dataset_id: int) -> tuple[str, list[dict[st
 
 
 def detect_anomalies(
+    points: list[dict[str, object]],
+    frequency: str,
+    *,
+    window_size: int | None = None,
+    threshold: float | None = None,
+) -> list[PersistedAnomaly]:
+    return detect_z_score_anomalies(
+        points,
+        frequency,
+        window_size=window_size,
+        threshold=threshold,
+    )
+
+
+def detect_z_score_anomalies(
     points: list[dict[str, object]],
     frequency: str,
     *,
@@ -114,6 +176,121 @@ def detect_anomalies(
     return collapse_flagged_points(flagged, window_size=active_window, threshold=active_threshold)
 
 
+def build_change_point_signal(values: pd.Series, *, smoothing_window: int) -> np.ndarray:
+    smoothed_values = values.rolling(window=smoothing_window, min_periods=1).mean()
+    standardized_values = (smoothed_values - smoothed_values.mean()) / max(float(smoothed_values.std(ddof=0)), 1e-9)
+    return standardized_values.to_numpy().reshape(-1, 1)
+
+
+def classify_change_point_event_type(
+    *,
+    before_values: np.ndarray,
+    after_values: np.ndarray,
+) -> str:
+    mean_shift = abs(float(after_values.mean()) - float(before_values.mean()))
+    volatility_shift = abs(float(after_values.std(ddof=0)) - float(before_values.std(ddof=0)))
+    return "level_shift" if mean_shift >= volatility_shift else "volatility_shift"
+
+
+def detect_change_point_anomalies(
+    points: list[dict[str, object]],
+    frequency: str,
+    *,
+    penalty: float | None = None,
+) -> list[PersistedAnomaly]:
+    if not points:
+        return []
+
+    config = get_change_point_config(frequency)
+    active_penalty = penalty or config.penalty
+
+    frame = pd.DataFrame(points)
+    frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True)
+    frame["value"] = frame["value"].astype(float)
+
+    if len(frame) < max(config.min_size * 2, 8):
+        return []
+
+    signal = build_change_point_signal(frame["value"], smoothing_window=config.smoothing_window)
+    if config.algorithm == "binseg":
+        algo = rpt.Binseg(model=config.model, min_size=config.min_size, jump=config.jump).fit(signal)
+    else:
+        algo = rpt.Pelt(model=config.model, min_size=config.min_size, jump=config.jump).fit(signal)
+    breakpoints = [int(item) for item in algo.predict(pen=active_penalty)[:-1]]
+
+    anomalies: list[PersistedAnomaly] = []
+    overall_std = max(float(frame["value"].std(ddof=0)), 1e-9)
+    for breakpoint in breakpoints:
+        if breakpoint <= 0 or breakpoint >= len(frame):
+            continue
+
+        before_start = max(0, breakpoint - config.min_size)
+        after_end = min(len(frame), breakpoint + config.min_size)
+        before_values = frame["value"].iloc[before_start:breakpoint].to_numpy()
+        after_values = frame["value"].iloc[breakpoint:after_end].to_numpy()
+        if len(before_values) < max(2, config.min_size // 2) or len(after_values) < max(2, config.min_size // 2):
+            continue
+
+        before_mean = float(before_values.mean())
+        after_mean = float(after_values.mean())
+        delta_mean = after_mean - before_mean
+        event_type = classify_change_point_event_type(
+            before_values=before_values,
+            after_values=after_values,
+        )
+        severity_score = abs(delta_mean) / overall_std
+        if severity_score < config.severity_threshold:
+            continue
+
+        timestamp = frame.iloc[breakpoint]["timestamp"].to_pydatetime()
+        anomalies.append(
+            PersistedAnomaly(
+                timestamp=timestamp,
+                severity_score=round(severity_score, 6),
+                direction="up" if delta_mean >= 0 else "down",
+                detection_method="change_point",
+                metadata={
+                    "event_type": event_type,
+                    "algorithm": config.algorithm,
+                    "model": config.model,
+                    "penalty": active_penalty,
+                    "min_size": config.min_size,
+                    "jump": config.jump,
+                    "smoothing_window": config.smoothing_window,
+                    "severity_threshold": config.severity_threshold,
+                    "before_mean": round(before_mean, 6),
+                    "after_mean": round(after_mean, 6),
+                    "delta_mean": round(delta_mean, 6),
+                    "overall_std": round(overall_std, 6),
+                    "value": round(float(frame.iloc[breakpoint]["value"]), 6),
+                },
+            )
+        )
+
+    return collapse_change_point_anomalies(anomalies, min_gap=config.min_size)
+
+
+def collapse_change_point_anomalies(
+    anomalies: list[PersistedAnomaly],
+    *,
+    min_gap: int,
+) -> list[PersistedAnomaly]:
+    if not anomalies:
+        return []
+
+    sorted_anomalies = sorted(anomalies, key=lambda item: item.timestamp)
+    collapsed: list[PersistedAnomaly] = [sorted_anomalies[0]]
+    for candidate in sorted_anomalies[1:]:
+        previous = collapsed[-1]
+        gap_days = abs((candidate.timestamp - previous.timestamp).days)
+        if gap_days <= min_gap:
+            if candidate.severity_score > previous.severity_score:
+                collapsed[-1] = candidate
+            continue
+        collapsed.append(candidate)
+    return collapsed
+
+
 def collapse_flagged_points(
     flagged: list[DetectionPoint],
     *,
@@ -157,15 +334,20 @@ def collapse_flagged_points(
     return anomalies
 
 
-def replace_dataset_anomalies(db: Session, dataset_id: int, anomalies: list[PersistedAnomaly]) -> int:
+def replace_dataset_anomalies_for_method(
+    db: Session,
+    dataset_id: int,
+    detection_method: str,
+    anomalies: list[PersistedAnomaly],
+) -> int:
     delete_query = text(
         """
         DELETE FROM anomalies
         WHERE dataset_id = :dataset_id
-          AND detection_method = 'z_score'
+          AND detection_method = :detection_method
         """
     )
-    db.execute(delete_query, {"dataset_id": dataset_id})
+    db.execute(delete_query, {"dataset_id": dataset_id, "detection_method": detection_method})
 
     if not anomalies:
         return 0
@@ -199,10 +381,14 @@ def run_detection_for_dataset(
     threshold: float | None = None,
 ) -> int:
     frequency, points = load_dataset_series(db, dataset_id)
-    anomalies = detect_anomalies(
+    z_score_anomalies = detect_z_score_anomalies(
         points,
         frequency,
         window_size=window_size,
         threshold=threshold,
     )
-    return replace_dataset_anomalies(db, dataset_id, anomalies)
+    change_point_anomalies = detect_change_point_anomalies(points, frequency)
+    inserted = 0
+    inserted += replace_dataset_anomalies_for_method(db, dataset_id, "z_score", z_score_anomalies)
+    inserted += replace_dataset_anomalies_for_method(db, dataset_id, "change_point", change_point_anomalies)
+    return inserted

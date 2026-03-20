@@ -65,6 +65,47 @@ class PropagationEvidence:
     tolerance_days: int
 
 
+def build_propagation_edge_score(
+    evidence_items: list[PropagationEvidence],
+    *,
+    source_cluster: ClusterNode,
+    target_cluster: ClusterNode,
+) -> dict[str, float]:
+    if not evidence_items:
+        return {
+            "correlation_strength": 0.0,
+            "support_density": 0.0,
+            "temporal_alignment": 0.0,
+            "target_scale": 0.0,
+            "overall": 0.0,
+        }
+
+    correlation_strength = min(1.0, max(abs(item.correlation_score) for item in evidence_items))
+    temporal_alignment = sum(
+        max(0.0, 1.0 - (item.match_gap_days / max(1, item.tolerance_days)))
+        for item in evidence_items
+    ) / len(evidence_items)
+    unique_source_anomalies = len({item.source_anomaly_id for item in evidence_items})
+    support_density = min(
+        1.0,
+        unique_source_anomalies / max(2, min(source_cluster.anomaly_count, 4)),
+    )
+    target_scale = min(1.0, target_cluster.dataset_count / 3.0)
+    overall = (
+        (0.45 * correlation_strength)
+        + (0.25 * support_density)
+        + (0.20 * temporal_alignment)
+        + (0.10 * target_scale)
+    )
+    return {
+        "correlation_strength": round(correlation_strength, 3),
+        "support_density": round(support_density, 3),
+        "temporal_alignment": round(temporal_alignment, 3),
+        "target_scale": round(target_scale, 3),
+        "overall": round(overall, 3),
+    }
+
+
 def get_propagation_tolerance_days(frequency: str) -> int:
     normalized = frequency.strip().lower()
     if normalized == "monthly":
@@ -208,32 +249,6 @@ def pick_best_target_match(
     return best_match
 
 
-def score_propagation_edge(
-    evidence_items: list[PropagationEvidence],
-    *,
-    source_cluster: ClusterNode,
-    target_cluster: ClusterNode,
-) -> float:
-    if not evidence_items:
-        return 0.0
-
-    strongest_correlation = max(abs(item.correlation_score) for item in evidence_items)
-    average_temporal_alignment = sum(
-        max(0.0, 1.0 - (item.match_gap_days / max(1, item.tolerance_days)))
-        for item in evidence_items
-    ) / len(evidence_items)
-    support_density = min(1.0, len(evidence_items) / max(1, min(source_cluster.anomaly_count, 3)))
-    target_scale = min(1.0, target_cluster.dataset_count / 3.0)
-
-    score = (
-        (0.45 * min(1.0, strongest_correlation))
-        + (0.25 * support_density)
-        + (0.20 * average_temporal_alignment)
-        + (0.10 * target_scale)
-    )
-    return round(score, 3)
-
-
 def build_propagation_timeline(
     db: Session,
     cluster_id: int,
@@ -299,7 +314,7 @@ def build_propagation_timeline(
             key=lambda item: (item.target_timestamp, -abs(item.correlation_score), item.target_anomaly_id),
         )
         strongest_item = max(sorted_evidence, key=lambda item: abs(item.correlation_score))
-        evidence_strength = score_propagation_edge(
+        evidence_strength_components = build_propagation_edge_score(
             sorted_evidence,
             source_cluster=source_cluster,
             target_cluster=target_cluster,
@@ -327,7 +342,8 @@ def build_propagation_timeline(
                 "average_lag_days": round(sum(item.lag_days for item in sorted_evidence) / len(sorted_evidence)),
                 "strongest_correlation_score": round(strongest_item.correlation_score, 3),
                 "supporting_link_count": len(sorted_evidence),
-                "evidence_strength": evidence_strength,
+                "evidence_strength": evidence_strength_components["overall"],
+                "evidence_strength_components": evidence_strength_components,
                 "source_dataset_names": sorted({item.source_dataset_name for item in sorted_evidence}),
                 "target_dataset_names": sorted({item.target_dataset_name for item in sorted_evidence}),
                 "evidence": [

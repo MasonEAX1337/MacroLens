@@ -10,13 +10,55 @@ from app.schemas.api import (
     CorrelationRecord,
     DatasetSummary,
     ExplanationRecord,
+    LeadingIndicatorClusterMemberPreview,
+    LeadingIndicatorRecord,
+    LeadingIndicatorSupportRecord,
     NewsContextRecord,
     NewsContextStatus,
     PropagationEdgeRecord,
     TimeSeriesPoint,
 )
-from app.services.news_context import NewsContextRequest, get_news_context_provider_names, get_news_context_status
+from app.services.leading_indicators import build_leading_indicators
+from app.services.news_context import NewsContextRequest, get_active_news_context_provider_names, get_news_context_status
 from app.services.propagation import build_propagation_timeline
+
+
+def load_cluster_member_previews(
+    db: Session,
+    cluster_ids: list[int],
+) -> dict[int, list[LeadingIndicatorClusterMemberPreview]]:
+    positive_cluster_ids = sorted({cluster_id for cluster_id in cluster_ids if cluster_id > 0})
+    if not positive_cluster_ids:
+        return {}
+
+    query = text(
+        """
+        SELECT
+            acm.cluster_id,
+            a.id AS anomaly_id,
+            a.dataset_id,
+            d.name AS dataset_name,
+            a.timestamp,
+            a.severity_score,
+            a.direction,
+            a.detection_method
+        FROM anomaly_cluster_members AS acm
+        JOIN anomalies AS a ON a.id = acm.anomaly_id
+        JOIN datasets AS d ON d.id = a.dataset_id
+        WHERE acm.cluster_id = ANY(:cluster_ids)
+        ORDER BY acm.cluster_id ASC, a.timestamp ASC, a.severity_score DESC, a.id ASC
+        """
+    )
+    rows = db.execute(query, {"cluster_ids": positive_cluster_ids}).mappings().all()
+    members_by_cluster: dict[int, list[LeadingIndicatorClusterMemberPreview]] = {}
+    for row in rows:
+        cluster_id = int(row["cluster_id"])
+        payload = dict(row)
+        payload.pop("cluster_id", None)
+        members_by_cluster.setdefault(cluster_id, []).append(
+            LeadingIndicatorClusterMemberPreview.model_validate(payload)
+        )
+    return members_by_cluster
 
 
 def fetch_datasets(db: Session) -> list[DatasetSummary]:
@@ -67,6 +109,48 @@ def fetch_dataset_anomalies(db: Session, dataset_id: int, limit: int) -> list[An
     )
     rows = db.execute(query, {"dataset_id": dataset_id, "limit": limit}).mappings().all()
     return [AnomalySummary.model_validate(row) for row in rows]
+
+
+def fetch_dataset_leading_indicators(
+    db: Session,
+    dataset_id: int,
+    limit: int,
+) -> list[LeadingIndicatorRecord]:
+    aggregates = build_leading_indicators(db, dataset_id, limit=limit)
+    members_by_cluster = load_cluster_member_previews(
+        db,
+        [episode.target_cluster_id for item in aggregates for episode in item.supporting_episodes],
+    )
+    records: list[LeadingIndicatorRecord] = []
+    for item in aggregates:
+        payload = vars(item) | {
+            "supporting_episodes": [
+                LeadingIndicatorSupportRecord.model_validate(
+                    vars(episode)
+                    | {
+                        "cluster_members": members_by_cluster.get(
+                            episode.target_cluster_id,
+                            [
+                                LeadingIndicatorClusterMemberPreview.model_validate(
+                                    {
+                                        "anomaly_id": episode.target_anomaly_id,
+                                        "dataset_id": episode.target_dataset_id,
+                                        "dataset_name": episode.target_dataset_name,
+                                        "timestamp": episode.target_timestamp,
+                                        "severity_score": episode.target_severity_score,
+                                        "direction": episode.target_direction,
+                                        "detection_method": episode.target_detection_method,
+                                    }
+                                )
+                            ],
+                        )
+                    }
+                )
+                for episode in item.supporting_episodes
+            ]
+        }
+        records.append(LeadingIndicatorRecord.model_validate(payload))
+    return records
 
 
 def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
@@ -175,7 +259,7 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
         """
     )
 
-    attempted_provider_names = get_news_context_provider_names(
+    attempted_provider_names = get_active_news_context_provider_names(
         NewsContextRequest(
             anomaly_id=int(anomaly["id"]),
             dataset_name=str(anomaly["dataset_name"]),

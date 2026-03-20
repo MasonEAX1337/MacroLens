@@ -65,6 +65,14 @@ For each anomaly, the engine:
 - ranks surviving articles by provider priority, timing, and original provider order
 - stores article citations with rank and provenance
 
+Operationally, the live provider is now treated as a recent-context provider rather than a universal historical archive.
+
+That means:
+
+- GDELT is queried only for anomalies inside a configurable recent-age window
+- older anomalies fall back to curated macro-timeline context when available
+- otherwise the system returns structured-evidence-only explanations with explicit limited-coverage status
+
 Stored fields include:
 
 - article URL
@@ -103,6 +111,7 @@ It reflects a first-principles distinction:
 
 - live keyword retrieval is noisy
 - rate limiting is strict
+- transport-level failures happen and must be treated as provider misses rather than pipeline-fatal errors
 - curated macro-timeline coverage is intentionally sparse and does not cover every anomaly
 - article timestamps are "seen" timestamps, not guaranteed publication timestamps
 - historical coverage quality varies by topic and era
@@ -113,6 +122,7 @@ It reflects a first-principles distinction:
 - explanations can cite article context, but the engine still treats it as evidence, not certainty
 - explanations are instructed to treat `macro_timeline` items as broad background, not direct causal proof
 - provider failures degrade to empty news context rather than crashing explanation generation
+- the coordinated evidence-refresh workflow now commits news-context refreshes per anomaly so long backfills are resumable
 - article ranking prefers leading and same-day context over clearly lagging context
 - the anomaly API now distinguishes between available citations and limited provider coverage for empty news-context results
 - provider ordering surfaces curated household context before weaker live retrieval when both exist
