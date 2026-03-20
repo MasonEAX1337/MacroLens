@@ -79,8 +79,8 @@ This is still a heuristic, but it is inspectable rather than theatrical.
 - only downstream links are modeled in the first pass
 - only later anomaly matches are considered
 - sparse or low-frequency datasets often produce no propagation edge at all
-- the current score is not yet decomposed into visible subcomponents
+- the current score is decomposed, but the target episode quality underneath it is still only as good as the clustering layer
 
 ## Best Next Step
 
-Improve the underlying event quality with change-point detection before making propagation logic more ambitious.
+Improve the underlying event quality with better episode clustering before making propagation logic more ambitious.

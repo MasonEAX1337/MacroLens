@@ -66,7 +66,7 @@ One important milestone has now been cleared:
 
 ## First-Principles Breakdown
 
-MacroLens reduces to six systems:
+MacroLens reduces to eight systems:
 
 1. data acquisition
 2. evidence storage
@@ -286,7 +286,7 @@ The next task is to decide whether the ranking is analytically useful enough to 
 - inspect top-ranked leaders for CPI, Fed funds, mortgage rates, and household series
 - evaluate whether the new sign-consistency weighting is sufficient or still too permissive
 - use the new side-by-side episode comparison browser to inspect whether repeated leaders remain stable across different cluster shapes and regimes
-- continue validating whether the new frequency-alignment term is enough to keep mixed-frequency relationships from being overread as broad “leaders”
+- continue validating whether the new frequency-alignment term is enough to keep mixed-frequency relationships from being overread as broad "leaders"
 - evaluate whether the new support-confidence term is enough to keep one-cluster leaders from being overread as mature repeated signals
 
 #### Main risk
@@ -340,8 +340,8 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 1. hosted-provider comparison pass
 2. news-context quality improvements
-3. targeted frontend follow-up work
-4. leading-indicator evaluation and tuning
+3. episode-quality improvement pass
+4. targeted frontend follow-up work on top of better episodes
 
 ### Suggested Task Breakdown
 
@@ -364,6 +364,12 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 - add selected-range feedback around the chart brush
 - optimize and deepen the 3D constellation view
 - make provider comparison clearer inside the event panel
+
+#### Episode Quality
+
+- make clustering frequency-aware instead of globally fixed
+- add explicit quality metadata for sparse vs broader episodes
+- decide how single-anomaly episodes should be labeled in the UI and downstream systems
 
 ## Definition of MVP Completion
 

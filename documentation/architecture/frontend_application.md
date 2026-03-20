@@ -27,6 +27,9 @@ The frontend currently includes:
 - date-window controls
 - anomaly severity and direction filters
 - multi-dataset 3D constellation surface
+- leading-indicator panel
+- supporting-episode browser
+- side-by-side supporting-episode comparison
 - timeseries chart
 - chart brush for local zooming
 - anomaly markers on the chart
@@ -49,6 +52,7 @@ The UI depends on:
 - `GET /api/v1/datasets`
 - `GET /api/v1/datasets/{id}/timeseries`
 - `GET /api/v1/datasets/{id}/anomalies`
+- `GET /api/v1/datasets/{id}/leading-indicators`
 - `GET /api/v1/anomalies/{id}`
 - `POST /api/v1/anomalies/{id}/regenerate-explanation`
 
@@ -85,7 +89,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - no loading skeletons
 - no explicit raw evidence payload view
 - the 3D constellation adds a meaningful visual layer, but it also increases bundle size and needs performance discipline
-- the propagation timeline is useful, but its score is still too compressed to explain itself fully
+- the episode-comparison workflow is useful, but it still depends on a clustering layer that is time-proximity based rather than quality-aware
 
 ## Next Improvements
 
@@ -94,7 +98,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - selected-range summary tied to the chart brush
 - richer comparison semantics inside the constellation view
 - explicit raw evidence payload view
-- clearer propagation score decomposition
+- stronger episode-quality cues so users can distinguish sparse isolated events from broader macro episodes
 
 ### Second-order improvements
 

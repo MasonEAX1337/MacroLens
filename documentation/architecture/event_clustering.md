@@ -85,9 +85,9 @@ The important boundary is honesty:
 
 ## Best Next Step
 
-The next quality step is not more chain breadth.
-It is better chain trust:
+The next quality step is not more heuristic tuning downstream.
+It is better episode quality upstream:
 
-- decompose propagation edge strength
-- make weak links easier to reject
-- keep the cluster-to-causality boundary explicit
+- make clustering frequency-aware instead of globally fixed
+- distinguish sparse single-anomaly episodes from broader macro episodes
+- attach richer cluster-quality metadata so downstream systems can reason about episode strength more honestly
