@@ -382,3 +382,109 @@ def seeded_leading_indicators(db_session: Session) -> dict[str, int]:
         "oil_dataset_id": oil_dataset_id,
         "fed_dataset_id": fed_dataset_id,
     }
+
+
+@pytest.fixture()
+def seeded_episode_filter_graph(db_session: Session) -> dict[str, int]:
+    cpi_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="cpi",
+            name="Consumer Price Index",
+            symbol="CPIAUCSL",
+            source="FRED",
+            description="Consumer Price Index for All Urban Consumers.",
+            frequency="monthly",
+        ),
+    )
+    house_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="house_prices",
+            name="Case-Shiller U.S. National Home Price Index",
+            symbol="CSUSHPISA",
+            source="FRED",
+            description="U.S. National Home Price Index.",
+            frequency="monthly",
+        ),
+    )
+    fed_dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="fed_funds",
+            name="Federal Funds Rate",
+            symbol="FEDFUNDS",
+            source="FRED",
+            description="Effective Federal Funds Rate.",
+            frequency="monthly",
+        ),
+    )
+
+    bridge_anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method, metadata)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method, CAST(:metadata AS JSONB))
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": cpi_dataset_id,
+                "timestamp": datetime(2025, 1, 1, tzinfo=timezone.utc),
+                "severity_score": 0.65,
+                "direction": "up",
+                "detection_method": "change_point",
+                "metadata": '{"delta_mean": 0.001, "transformed_value": 0.0004, "transform": "percent_change"}',
+            },
+        ).scalar_one()
+    )
+    fed_anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method, metadata)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method, CAST(:metadata AS JSONB))
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": fed_dataset_id,
+                "timestamp": datetime(2025, 1, 3, tzinfo=timezone.utc),
+                "severity_score": 2.1,
+                "direction": "up",
+                "detection_method": "z_score",
+                "metadata": "{}",
+            },
+        ).scalar_one()
+    )
+    suppressed_anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method, metadata)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method, CAST(:metadata AS JSONB))
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": house_dataset_id,
+                "timestamp": datetime(2025, 3, 1, tzinfo=timezone.utc),
+                "severity_score": 0.7,
+                "direction": "down",
+                "detection_method": "change_point",
+                "metadata": '{"delta_mean": 0.002, "transformed_value": 0.001, "transform": "percent_change"}',
+            },
+        ).scalar_one()
+    )
+
+    run_clustering_for_all_anomalies(db_session, window_days=7)
+    db_session.commit()
+
+    return {
+        "cpi_dataset_id": cpi_dataset_id,
+        "house_dataset_id": house_dataset_id,
+        "bridge_anomaly_id": bridge_anomaly_id,
+        "fed_anomaly_id": fed_anomaly_id,
+        "suppressed_anomaly_id": suppressed_anomaly_id,
+    }

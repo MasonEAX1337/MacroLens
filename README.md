@@ -382,6 +382,12 @@ Useful resume flags:
 
 The recompute script now also prints stage timings so you can see where runtime is actually going.
 
+One operational detail matters for the current clustering system:
+
+- if clustering and correlation rebuild both run in the same refresh, the script now performs a second cluster reconciliation pass after correlations finish
+
+That is intentional. The bridge-preserving monthly episode filter and the wider cross-dataset relationship gate both depend on currently stored correlation evidence. Without the reconciliation pass, clustering would still be using stale relationship state from before the rebuild.
+
 ### Start the frontend
 
 From the repo root:

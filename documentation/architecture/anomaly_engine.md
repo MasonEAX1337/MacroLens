@@ -96,6 +96,21 @@ One important boundary remains:
 
 That keeps the architecture narrow and inspectable.
 
+One important correction followed from live evaluation:
+
+- local detector-time monthly floors were rejected as the active solution
+- they improved local anomaly cleanliness but degraded global episode quality
+
+The current design keeps the transformed monthly change-point path intact, then evaluates weak monthly events at the episode-filter stage during clustering.
+
+That keeps:
+
+- raw anomaly supply
+- timestamps
+- transformed detector metadata
+
+while letting the episode layer decide whether a weak monthly anomaly should stay in the final cluster graph.
+
 ## Why Rolling Z-Score Was the Right First Choice
 
 - transparent

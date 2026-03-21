@@ -76,6 +76,8 @@ class AnomalySummary(BaseModel):
     severity_score: float
     direction: str | None = None
     detection_method: str
+    episode_filter_status: str | None = None
+    episode_filter_reason: str | None = None
     cluster_id: int | None = None
     cluster_anomaly_count: int | None = None
     cluster_episode_kind: str | None = None

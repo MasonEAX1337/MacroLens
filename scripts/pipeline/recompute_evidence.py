@@ -281,6 +281,16 @@ def main() -> None:
             lambda: recompute_correlations(correlation_scope),
         )
         print(f"correlations: stored {total_correlations} relationship row(s)")
+        if clustering_ran:
+            clustering_result = measure_stage(
+                timings,
+                "cluster reconciliation",
+                lambda: _run_clustering(),
+            )
+            print(
+                "clusters: reconciled "
+                f"{clustering_result.cluster_count} cluster row(s) covering {clustering_result.member_count} anomaly membership row(s)"
+            )
 
     if not args.skip_news_context:
         if args.dataset_symbols:

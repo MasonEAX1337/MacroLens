@@ -79,3 +79,30 @@ def test_regenerate_explanation_endpoint_returns_updated_detail(client, seeded_e
     assert response.status_code == 200
     payload = response.json()
     assert any(item["provider"] == "rules_based" for item in payload["explanations"])
+
+
+def test_episode_filter_status_is_exposed_for_suppressed_and_preserved_anomalies(
+    client,
+    seeded_episode_filter_graph,
+) -> None:  # noqa: ANN001
+    suppressed_response = client.get(f"/api/v1/anomalies/{seeded_episode_filter_graph['suppressed_anomaly_id']}")
+    assert suppressed_response.status_code == 200
+    suppressed_payload = suppressed_response.json()
+    assert suppressed_payload["episode_filter_status"] == "suppressed"
+    assert suppressed_payload["episode_filter_reason"] == "weak_monthly_isolated_change_point"
+    assert suppressed_payload["cluster"] is None
+
+    preserved_response = client.get(f"/api/v1/anomalies/{seeded_episode_filter_graph['bridge_anomaly_id']}")
+    assert preserved_response.status_code == 200
+    preserved_payload = preserved_response.json()
+    assert preserved_payload["episode_filter_status"] == "eligible"
+    assert preserved_payload["episode_filter_reason"] is None
+    assert preserved_payload["cluster"]["episode_kind"] == "cross_dataset_episode"
+
+    list_response = client.get(
+        f"/api/v1/datasets/{seeded_episode_filter_graph['house_dataset_id']}/anomalies?limit=10"
+    )
+    assert list_response.status_code == 200
+    list_payload = list_response.json()
+    assert list_payload[0]["episode_filter_status"] == "suppressed"
+    assert list_payload[0]["cluster_id"] is None

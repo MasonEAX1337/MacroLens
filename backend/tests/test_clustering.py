@@ -5,6 +5,7 @@ from app.services.clustering import (
     build_anomaly_clusters,
     build_cluster_metadata,
     get_pair_window_days,
+    select_suppressed_anomaly_ids,
     should_merge_candidate,
 )
 
@@ -17,13 +18,19 @@ def make_candidate(
     day: int,
     severity: float,
     dataset_frequency: str = "daily",
+    dataset_symbol: str | None = None,
+    detection_method: str = "z_score",
+    metadata: dict[str, object] | None = None,
 ) -> AnomalyClusterCandidate:
     return AnomalyClusterCandidate(
         anomaly_id=anomaly_id,
         dataset_id=dataset_id,
+        dataset_symbol=dataset_symbol or f"DATASET_{dataset_id}",
         dataset_frequency=dataset_frequency,
         timestamp=datetime(year, month, day, tzinfo=timezone.utc),
         severity_score=severity,
+        detection_method=detection_method,
+        metadata=metadata or {},
     )
 
 
@@ -193,3 +200,56 @@ def test_build_cluster_metadata_labels_sparse_and_broader_episodes() -> None:
     assert high_metadata.frequency_mix == "daily_only"
     assert high_metadata.episode_kind == "cross_dataset_episode"
     assert high_metadata.quality_band == "high"
+
+
+def test_select_suppressed_anomaly_ids_suppresses_weak_isolated_monthly_change_points() -> None:
+    clusters = [
+        [
+            make_candidate(
+                1,
+                1,
+                2026,
+                3,
+                1,
+                0.6,
+                dataset_frequency="monthly",
+                dataset_symbol="CPIAUCSL",
+                detection_method="change_point",
+                metadata={"transform": "percent_change", "delta_mean": 0.0012, "transformed_value": 0.0004},
+            )
+        ]
+    ]
+
+    assert select_suppressed_anomaly_ids(clusters) == {1}
+
+
+def test_select_suppressed_anomaly_ids_preserves_weak_bridge_in_cross_dataset_cluster() -> None:
+    clusters = [
+        [
+            make_candidate(
+                1,
+                1,
+                2026,
+                3,
+                1,
+                0.6,
+                dataset_frequency="monthly",
+                dataset_symbol="CSUSHPISA",
+                detection_method="change_point",
+                metadata={"transform": "percent_change", "delta_mean": 0.001, "transformed_value": 0.0005},
+            ),
+            make_candidate(
+                2,
+                2,
+                2026,
+                3,
+                3,
+                2.9,
+                dataset_frequency="monthly",
+                dataset_symbol="FEDFUNDS",
+                detection_method="z_score",
+            ),
+        ]
+    ]
+
+    assert select_suppressed_anomaly_ids(clusters) == set()

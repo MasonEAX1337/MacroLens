@@ -81,6 +81,21 @@ The relationship-aware gate is intentionally narrow:
 
 This prevents the wider mixed-frequency windows from manufacturing broad episodes out of weakly related monthly points.
 
+The clusterer now also owns a narrow episode-filter responsibility for transformed monthly change-point anomalies in `CPIAUCSL` and `CSUSHPISA`:
+
+- first build provisional clusters from the full anomaly set
+- then suppress only weak monthly target anomalies that remain isolated or single-dataset
+- preserve weak monthly anomalies if they participate in a provisional cross-dataset episode
+- rebuild final clusters from the retained candidates
+
+This is intentionally bridge-preserving.
+It keeps weak connector anomalies alive long enough for the graph to show whether they matter.
+
+Operationally, this also means stored-data refresh order matters.
+
+The current refresh script now reclusters after correlation rebuild when both stages run together.
+That second pass is not redundant. It lets the relationship-aware gate and bridge-preserving suppression see current relationship evidence rather than stale pre-refresh correlations.
+
 ## Why This Was Chosen
 
 - simple to reason about
@@ -101,6 +116,7 @@ This prevents the wider mixed-frequency windows from manufacturing broad episode
 - clustering is still fundamentally proximity based rather than relationship aware
 - the relationship-aware rule still depends on already-stored correlations, so a good new episode can be split if historical relationship evidence is missing
 - mixed-frequency clusters are less blunt than the first frequency-aware pass, but they are still proximity-based and can still over-group weakly related slow and fast series
+- local anomaly cleanup can still damage the episode graph, because a weak-looking anomaly may function as a bridge node between otherwise separate cross-dataset events
 - quality labels are intentionally simple and should be read as investigation cues, not formal confidence estimates
 
 ## Why This Is Still Worth Having
@@ -139,4 +155,5 @@ They are trying to tell the investigator what kind of event envelope the system 
 The next quality step is still deeper episode quality, but now the obvious blind spot is the cold-start case:
 
 - inspect whether good cross-dataset episodes are being split because the relationship-aware gate depends on historical correlation coverage
+- inspect whether the current bridge-preserving suppression still leaves too many weak monthly isolates in the graph
 - decide whether the next improvement should be a small correlation-aware fallback or a richer episode-quality audit, not another broad threshold change

@@ -1,6 +1,7 @@
 import importlib.util
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 from sqlalchemy import text
 
@@ -156,3 +157,61 @@ def test_recompute_correlations_uses_dataset_scoped_runner(monkeypatch) -> None:
 
     assert calls == [1, 2]
     assert total == 3
+
+
+def test_main_reconciles_clusters_after_correlation_rebuild(monkeypatch) -> None:
+    class DummySessionContext:
+        def __enter__(self):  # noqa: ANN204
+            return object()
+
+        def __exit__(self, exc_type, exc, tb):  # noqa: ANN001, ANN204
+            return False
+
+    class DummySessionLocal:
+        def __call__(self):  # noqa: ANN204
+            return DummySessionContext()
+
+        def begin(self):  # noqa: ANN204
+            return DummySessionContext()
+
+    clustering_calls: list[str] = []
+
+    monkeypatch.setattr(
+        recompute_evidence,
+        "parse_args",
+        lambda: SimpleNamespace(
+            dataset_symbols=["CPIAUCSL"],
+            skip_anomaly_detection=True,
+            skip_clustering=False,
+            skip_correlation=False,
+            skip_news_context=True,
+            skip_explanations=True,
+        ),
+    )
+    monkeypatch.setattr(recompute_evidence, "SessionLocal", DummySessionLocal())
+    monkeypatch.setattr(
+        recompute_evidence,
+        "load_datasets",
+        lambda session, dataset_symbols=None: [  # noqa: ARG005
+            {"id": 1, "symbol": "CPIAUCSL", "frequency": "monthly"}
+        ],
+    )
+    monkeypatch.setattr(
+        recompute_evidence,
+        "resolve_news_context_target_anomaly_ids",
+        lambda session, dataset_ids: [101],  # noqa: ARG005
+    )
+    monkeypatch.setattr(
+        recompute_evidence,
+        "recompute_correlations",
+        lambda datasets=None: 4,  # noqa: ARG005
+    )
+    monkeypatch.setattr(
+        recompute_evidence,
+        "_run_clustering",
+        lambda: clustering_calls.append("cluster") or SimpleNamespace(cluster_count=2, member_count=3),
+    )
+
+    recompute_evidence.main()
+
+    assert clustering_calls == ["cluster", "cluster"]

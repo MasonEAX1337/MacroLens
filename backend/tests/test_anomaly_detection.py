@@ -182,12 +182,12 @@ def test_detect_change_point_anomalies_uses_dataset_specific_penalty(monkeypatch
 
         def predict(self, pen):  # noqa: ANN001
             if pen <= 1.8:
-                return [24, self.signal_length]
+                return [23, self.signal_length]
             return [self.signal_length]
 
     monkeypatch.setattr("app.services.anomaly_detection.rpt.Binseg", MockAlgo)
 
-    values = [100.0] * 24 + [112.0] * 24
+    values = [100.0] * 24 + [140.0] * 24
     generic = detect_change_point_anomalies(build_points(values), "monthly")
     house_prices = detect_change_point_anomalies(
         build_points(values),
@@ -352,3 +352,4 @@ def test_transformed_change_point_detection_ignores_small_noisy_months(monkeypat
     )
 
     assert anomalies == []
+

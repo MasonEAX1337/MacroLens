@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from math import sqrt
@@ -12,9 +13,12 @@ from app.core.config import settings
 class AnomalyClusterCandidate:
     anomaly_id: int
     dataset_id: int
+    dataset_symbol: str
     dataset_frequency: str
     timestamp: datetime
     severity_score: float
+    detection_method: str
+    metadata: dict[str, object]
 
 
 @dataclass(frozen=True)
@@ -31,7 +35,23 @@ class ClusterMetadata:
     quality_band: str
 
 
+@dataclass(frozen=True)
+class MonthlyEpisodeSuppressionRule:
+    min_abs_delta_mean: float | None = None
+    min_abs_transformed_value: float | None = None
+
+
 DatasetRelationshipMap = dict[int, set[int]]
+
+MONTHLY_EPISODE_SUPPRESSION_RULES: dict[str, MonthlyEpisodeSuppressionRule] = {
+    "CPIAUCSL": MonthlyEpisodeSuppressionRule(
+        min_abs_delta_mean=0.0018,
+        min_abs_transformed_value=0.0006,
+    ),
+    "CSUSHPISA": MonthlyEpisodeSuppressionRule(
+        min_abs_transformed_value=0.0029,
+    ),
+}
 
 
 FREQUENCY_WINDOW_MULTIPLIERS = {
@@ -134,9 +154,12 @@ def load_cluster_candidates(db: Session) -> list[AnomalyClusterCandidate]:
         SELECT
             a.id AS anomaly_id,
             a.dataset_id,
+            d.symbol AS dataset_symbol,
             d.frequency AS dataset_frequency,
             a.timestamp,
-            a.severity_score
+            a.severity_score,
+            a.detection_method,
+            a.metadata
         FROM anomalies AS a
         JOIN datasets AS d ON d.id = a.dataset_id
         ORDER BY a.timestamp ASC, a.severity_score DESC, a.id ASC
@@ -231,6 +254,88 @@ def build_anomaly_clusters(
     return clusters
 
 
+def candidate_matches_monthly_episode_filter_target(candidate: AnomalyClusterCandidate) -> bool:
+    metadata = candidate.metadata or {}
+    return (
+        candidate.detection_method == "change_point"
+        and candidate.dataset_symbol in MONTHLY_EPISODE_SUPPRESSION_RULES
+        and str(metadata.get("transform", "")) == "percent_change"
+    )
+
+
+def candidate_is_weak_monthly_change_point(candidate: AnomalyClusterCandidate) -> bool:
+    if not candidate_matches_monthly_episode_filter_target(candidate):
+        return False
+
+    rule = MONTHLY_EPISODE_SUPPRESSION_RULES[candidate.dataset_symbol]
+    metadata = candidate.metadata or {}
+    delta_mean = abs(float(metadata.get("delta_mean", 0.0)))
+    transformed_value = abs(float(metadata.get("transformed_value", 0.0)))
+
+    if rule.min_abs_delta_mean is not None and delta_mean < rule.min_abs_delta_mean:
+        return True
+    if (
+        rule.min_abs_transformed_value is not None
+        and transformed_value < rule.min_abs_transformed_value
+    ):
+        return True
+    return False
+
+
+def select_suppressed_anomaly_ids(
+    provisional_clusters: list[list[AnomalyClusterCandidate]],
+) -> set[int]:
+    suppressed: set[int] = set()
+    for cluster in provisional_clusters:
+        metadata = build_cluster_metadata(cluster)
+        if metadata.episode_kind == "cross_dataset_episode":
+            continue
+        for candidate in cluster:
+            if candidate_is_weak_monthly_change_point(candidate):
+                suppressed.add(candidate.anomaly_id)
+    return suppressed
+
+
+def replace_episode_filter_metadata(
+    db: Session,
+    candidates: list[AnomalyClusterCandidate],
+    suppressed_anomaly_ids: set[int],
+) -> None:
+    target_candidates = [
+        candidate for candidate in candidates if candidate_matches_monthly_episode_filter_target(candidate)
+    ]
+    if not target_candidates:
+        return
+
+    update_query = text(
+        """
+        UPDATE anomalies
+        SET metadata = (
+            COALESCE(metadata, '{}'::jsonb)
+            - 'episode_filter_status'
+            - 'episode_filter_reason'
+            - 'episode_filter_stage'
+        ) || CAST(:metadata_patch AS JSONB)
+        WHERE id = :anomaly_id
+        """
+    )
+    payload = []
+    for candidate in target_candidates:
+        patch: dict[str, object] = {
+            "episode_filter_status": "suppressed" if candidate.anomaly_id in suppressed_anomaly_ids else "eligible",
+            "episode_filter_stage": "post_provisional_clustering",
+        }
+        if candidate.anomaly_id in suppressed_anomaly_ids:
+            patch["episode_filter_reason"] = "weak_monthly_isolated_change_point"
+        payload.append(
+            {
+                "anomaly_id": candidate.anomaly_id,
+                "metadata_patch": json.dumps(patch),
+            }
+        )
+    db.execute(update_query, payload)
+
+
 def replace_clusters(
     db: Session,
     clusters: list[list[AnomalyClusterCandidate]],
@@ -323,9 +428,18 @@ def run_clustering_for_all_anomalies(
 ) -> ClusterPersistenceResult:
     candidates = load_cluster_candidates(db)
     dataset_relationships = load_dataset_relationships(db)
-    clusters = build_anomaly_clusters(
+    base_window_days = window_days if window_days is not None else settings.anomaly_cluster_window_days
+    provisional_clusters = build_anomaly_clusters(
         candidates,
-        window_days=window_days if window_days is not None else settings.anomaly_cluster_window_days,
+        window_days=base_window_days,
         dataset_relationships=dataset_relationships,
     )
-    return replace_clusters(db, clusters)
+    suppressed_anomaly_ids = select_suppressed_anomaly_ids(provisional_clusters)
+    replace_episode_filter_metadata(db, candidates, suppressed_anomaly_ids)
+    final_candidates = [candidate for candidate in candidates if candidate.anomaly_id not in suppressed_anomaly_ids]
+    final_clusters = build_anomaly_clusters(
+        final_candidates,
+        window_days=base_window_days,
+        dataset_relationships=dataset_relationships,
+    )
+    return replace_clusters(db, final_clusters)
