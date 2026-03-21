@@ -16,9 +16,13 @@ class LeadingIndicatorSupport:
     target_severity_score: float
     target_cluster_start_timestamp: object
     target_cluster_end_timestamp: object
+    target_cluster_span_days: int
     target_cluster_anomaly_count: int
     target_cluster_dataset_count: int
     target_cluster_peak_severity_score: float
+    target_cluster_frequency_mix: str
+    target_cluster_episode_kind: str
+    target_cluster_quality_band: str
     target_dataset_frequency: str
     related_dataset_id: int
     related_dataset_name: str
@@ -101,9 +105,13 @@ def load_leading_indicator_support(
             a.severity_score AS target_severity_score,
             COALESCE(ac.start_timestamp, a.timestamp) AS target_cluster_start_timestamp,
             COALESCE(ac.end_timestamp, a.timestamp) AS target_cluster_end_timestamp,
+            COALESCE(ac.span_days, 0) AS target_cluster_span_days,
             COALESCE(ac.anomaly_count, 1) AS target_cluster_anomaly_count,
             COALESCE(ac.dataset_count, 1) AS target_cluster_dataset_count,
             COALESCE(ac.peak_severity_score, a.severity_score) AS target_cluster_peak_severity_score,
+            COALESCE(ac.frequency_mix, td.frequency || '_only') AS target_cluster_frequency_mix,
+            COALESCE(ac.episode_kind, 'isolated_signal') AS target_cluster_episode_kind,
+            COALESCE(ac.quality_band, 'low') AS target_cluster_quality_band,
             td.frequency AS target_dataset_frequency,
             c.related_dataset_id,
             d.name AS related_dataset_name,

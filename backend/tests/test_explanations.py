@@ -26,6 +26,12 @@ def build_context(
         severity_score=3.7,
         direction="down",
         detection_method="z_score",
+        cluster_span_days=0,
+        cluster_anomaly_count=1,
+        cluster_dataset_count=1,
+        cluster_frequency_mix="daily_only",
+        cluster_episode_kind="isolated_signal",
+        cluster_quality_band="low",
         correlations=correlations,
         news_context=news_context or [],
     )
@@ -51,6 +57,7 @@ def test_rules_based_provider_mentions_top_correlation() -> None:
     assert "Bitcoin Price" in result.generated_text
     assert "S&P 500" in result.generated_text
     assert "correlation 0.62" in result.generated_text
+    assert "low quality" in result.generated_text
     assert result.evidence["dataset_name"] == "Bitcoin Price"
 
 
@@ -74,6 +81,12 @@ def test_rules_based_provider_mentions_household_news_provider_limits_when_empty
         severity_score=2.8,
         direction="up",
         detection_method="z_score",
+        cluster_span_days=30,
+        cluster_anomaly_count=2,
+        cluster_dataset_count=1,
+        cluster_frequency_mix="monthly_only",
+        cluster_episode_kind="single_dataset_wave",
+        cluster_quality_band="low",
         correlations=[],
         news_context=[],
     )
@@ -277,6 +290,7 @@ def test_hosted_provider_input_includes_explicit_lag_interpretation() -> None:
     assert '"lag_interpretation": "moved about 29 day(s) after the anomaly"' in payload
     assert "Respect the supplied lag interpretation exactly." in payload
     assert "Do not present lagging evidence as a likely cause of the anomaly." in payload
+    assert "If cluster_quality_band is low, describe the episode context as limited rather than broad." in payload
 
 
 def test_hosted_provider_input_includes_news_context() -> None:

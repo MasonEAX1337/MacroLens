@@ -22,9 +22,15 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     payload = response.json()
     assert payload["dataset_name"] == "Bitcoin Price"
     assert payload["cluster"]["anomaly_count"] == 1
+    assert payload["cluster"]["episode_kind"] == "isolated_signal"
+    assert payload["cluster"]["quality_band"] == "low"
+    assert payload["cluster"]["frequency_mix"] == "daily_only"
     assert payload["cluster"]["members"][0]["anomaly_id"] == seeded_event_graph["anomaly_id"]
     assert payload["propagation_timeline"][0]["target_anchor_anomaly_id"] == seeded_event_graph["target_anomaly_id"]
     assert payload["propagation_timeline"][0]["target_dataset_names"] == ["S&P 500 Index"]
+    assert payload["propagation_timeline"][0]["target_episode_kind"] == "isolated_signal"
+    assert payload["propagation_timeline"][0]["target_quality_band"] == "low"
+    assert payload["propagation_timeline"][0]["evidence_strength_components"]["episode_quality"] == 0.8
     assert payload["propagation_timeline"][0]["supporting_link_count"] == 1
     assert payload["propagation_timeline"][0]["evidence_strength_components"]["overall"] == payload["propagation_timeline"][0]["evidence_strength"]
     assert payload["correlations"][0]["related_dataset_name"] == "S&P 500 Index"
@@ -54,6 +60,8 @@ def test_dataset_leading_indicators_endpoint_returns_cluster_aggregates(client, 
     assert payload[0]["supporting_episodes"][0]["target_anomaly_id"] == 2
     assert payload[0]["supporting_episodes"][0]["target_cluster_id"] == 2
     assert payload[0]["supporting_episodes"][0]["target_cluster_anomaly_count"] == 2
+    assert payload[0]["supporting_episodes"][0]["target_cluster_episode_kind"] == "single_dataset_wave"
+    assert payload[0]["supporting_episodes"][0]["target_cluster_quality_band"] == "low"
     assert len(payload[0]["supporting_episodes"][0]["cluster_members"]) == 2
     assert payload[0]["supporting_episodes"][0]["cluster_members"][0]["dataset_name"] == "Consumer Price Index"
 

@@ -39,7 +39,7 @@ For each supported dataset, MacroLens can:
 - ingest historical data from external sources
 - normalize and store it in PostgreSQL
 - detect anomalies with rolling z-score and change-point logic
-- group nearby anomalies into persisted macro-event clusters
+- group nearby anomalies into persisted macro-event clusters with explicit episode-quality labels
 - compute lag-aware correlations against other datasets
 - retrieve article context around anomaly windows
 - generate explanation text from stored evidence
@@ -77,9 +77,12 @@ MacroLens currently has a working end-to-end MVP slice.
 - FRED ingestion for CPI, Federal Funds Rate, WTI oil, S&P 500, and household macro series
 - rolling z-score anomaly detection
 - `ruptures`-based change-point detection for structural shifts
+- per-dataset detector overrides for sparse monthly series and conservative structural detectors
 - lag-aware correlation discovery on percent changes
 - persisted anomaly clustering into macro-event groups
+- frequency-aware episode clustering with persisted quality metadata
 - cluster-to-cluster propagation timeline generation
+- episode-quality-aware propagation scoring
 - dataset-level leading-indicator discovery built on clustered event episodes
 - stored news-context retrieval through GDELT
 - explanation generation through a provider abstraction
@@ -210,6 +213,7 @@ Important variables in `.env`:
 - `NEWS_CONTEXT_WINDOW_DAYS`: retrieval window around anomaly timestamps
 - `NEWS_CONTEXT_MAX_ARTICLES`: max stored articles per anomaly
 - `ANOMALY_CLUSTER_WINDOW_DAYS`: max gap in days between adjacent anomalies inside the same cluster
+  - this acts as the daily base window; weekly and monthly episodes expand from it conservatively
 
 ## Local Setup
 
@@ -361,13 +365,22 @@ If you change detection logic or want to rebuild downstream evidence without ref
 .\.venv\Scripts\python scripts\pipeline\recompute_evidence.py
 ```
 
+For local iteration on one dataset family, use the new dataset-scoped fast path:
+
+```powershell
+.\.venv\Scripts\python scripts\pipeline\recompute_evidence.py --dataset CPIAUCSL --skip-explanations
+```
+
 Useful resume flags:
 
+- `--dataset SYMBOL`
 - `--skip-anomaly-detection`
 - `--skip-clustering`
 - `--skip-correlation`
 - `--skip-news-context`
 - `--skip-explanations`
+
+The recompute script now also prints stage timings so you can see where runtime is actually going.
 
 ### Start the frontend
 
@@ -432,8 +445,10 @@ The current frontend supports:
 - anomaly selection from the chart or event list
 - anomaly selection from the 3D constellation
 - macro-event cluster inspection for the selected anomaly
+- visible episode-kind, frequency-mix, and quality labels in cluster and propagation investigation
 - propagation timeline cards with click-through investigation
 - propagation score breakdown for each downstream edge
+- episode-quality-aware explanation framing for low-quality clusters
 - evidence provenance in the event panel
 - cited news context in the event panel
 - curated macro-timeline context for selected household anomalies
@@ -499,14 +514,16 @@ Useful entry points:
 
 - explanations are rules-based by default even though OpenAI-backed and Gemini-backed provider paths now exist
 - correlations are useful but should not be interpreted as causal proof
-- anomaly clustering is time-proximity based today, so a cluster is a useful event envelope rather than proof of shared causation
+- anomaly clustering is now frequency-aware, but it is still an event envelope rather than proof of shared causation
 - change-point detection is now backfilled into the live evidence graph, but its configs are still first-pass and should be treated as an auxiliary detector rather than a mature default
+- detector configs are now partially dataset-specific for CPI, house prices, mortgage rates, and selected market series, but that tuning pass is still narrow rather than comprehensive
 - propagation timelines are conservative downstream suggestions, not causal proof
+- low-quality episodes now directly down-weight propagation strength and explanation framing, but the weights are intentionally conservative
 - leading-indicator rankings now include sign consistency, but they are still repeated-pattern views rather than causal claims
 - leading-indicator rankings now include both frequency alignment and support confidence; the current support-confidence curve is intentionally frozen as a simple stepwise heuristic until episode quality improves
 - live news retrieval is still keyword-based and recent-only, so relevance quality and historical coverage are both uneven
 - household macro anomalies now fall back to curated macro-timeline context for selected historical regimes, but that timeline is intentionally sparse rather than comprehensive
-- mixed-frequency analysis is still coarse
+- mixed-frequency episode handling is better than the original fixed-window clusterer, but it is still coarse and can over-group slow and fast series
 - monthly and weekly household macro series are useful, but they will naturally produce fewer clean event explanations than daily market series
 - current ingestion uses full refresh for implemented sources
 - the new Three.js constellation view is visually stronger, but it increases frontend bundle weight and should be optimized if kept as a permanent default surface
@@ -519,9 +536,10 @@ The next highest-value steps are:
 1. evaluate OpenAI and Gemini explanation quality more systematically
 2. expand curated macro-timeline coverage beyond the first household regimes
 3. improve article ranking and filtering quality for live news retrieval
-4. improve event clustering and episode quality so downstream rankings depend less on heuristic patching
-5. optimize and deepen the new multi-dataset constellation view
-6. add a documented deployment workflow
+4. continue detector evaluation dataset by dataset, especially where anomaly supply is still starving the episode graph
+5. deepen episode quality beyond first-pass frequency-aware clustering and quality labels
+6. optimize and deepen the new multi-dataset constellation view
+7. add a documented deployment workflow
 
 ## Why This Repo Is Structured This Way
 

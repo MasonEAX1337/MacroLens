@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime, timedelta, timezone
 
 from app.services.correlation_engine import compute_best_lag_correlation, get_correlation_config
@@ -50,3 +51,21 @@ def test_compute_best_lag_correlation_returns_none_with_low_overlap() -> None:
     )
 
     assert result is None
+
+
+def test_compute_best_lag_correlation_skips_zero_variance_windows_without_warning() -> None:
+    base_points = build_points([100, 100, 100, 100, 100, 100, 100])
+    related_points = build_points([200, 202, 204, 206, 208, 210, 212])
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", RuntimeWarning)
+        result = compute_best_lag_correlation(
+            base_points,
+            related_points,
+            max_lag_days=2,
+            min_overlap=5,
+        )
+
+    assert result is None
+    runtime_warnings = [item for item in caught if issubclass(item.category, RuntimeWarning)]
+    assert runtime_warnings == []

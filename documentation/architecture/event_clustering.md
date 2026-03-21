@@ -37,22 +37,49 @@ That is a much safer claim than:
 
 ## Current Implementation
 
-The current implementation is deliberately simple:
+The current implementation is still deliberately conservative, but it is no longer purely global-window based:
 
 - sort anomalies by timestamp
-- group adjacent anomalies when the gap between consecutive anomalies is at most the configured window
+- compute a frequency-aware gap allowance between adjacent anomalies
+- group adjacent anomalies when the gap stays inside that pair-specific allowance
+- for wider cross-dataset merges, require an existing stored relationship between the incoming dataset and at least one dataset already inside the cluster
 - persist cluster summaries and anomaly-to-cluster membership
+- persist basic episode-quality labels for downstream consumers
 
 Current persisted fields include:
 
 - cluster start timestamp
 - cluster end timestamp
 - anchor timestamp
+- span days
 - anomaly count
 - dataset count
 - peak severity score
+- frequency mix
+- episode kind
+- quality band
 
-The default clustering window is `7` days.
+The default daily base window is `7` days.
+
+Current same-frequency windows are:
+
+- daily: `7` days
+- weekly: `14` days
+- monthly: `35` days
+
+Mixed-frequency pairs now use a more conservative bridge window instead of simply inheriting the widest side:
+
+- daily to weekly: `10` days
+- weekly to monthly: `22` days
+- daily to monthly: `16` days
+
+The relationship-aware gate is intentionally narrow:
+
+- same-dataset waves still merge on proximity alone
+- cross-dataset anomalies that land inside the base daily window still merge on proximity alone
+- cross-dataset anomalies that only qualify because of a wider weekly/monthly bridge must also have a pre-existing stored correlation relationship
+
+This prevents the wider mixed-frequency windows from manufacturing broad episodes out of weakly related monthly points.
 
 ## Why This Was Chosen
 
@@ -64,15 +91,17 @@ The default clustering window is `7` days.
 ## Current Strengths
 
 - turns the product into more than a point-event viewer
-- creates a clean substrate for future event-chain views
-- makes dense anomaly periods easier to inspect
+- creates a clean substrate for propagation and leading-indicator views
+- gives slower weekly and monthly series a more realistic chance of forming multi-event episodes
+- keeps slower mixed-frequency episodes possible without letting every nearby monthly anomaly collapse into a broad macro episode
+- makes sparse isolated events explicit instead of letting them masquerade as broad macro episodes
 
 ## Current Weaknesses
 
-- clustering is based on time proximity only
-- a cluster can still contain weakly related anomalies
-- sparse household and monthly series often collapse to single-anomaly clusters
-- the current method does not distinguish local noise from true systemic episodes
+- clustering is still fundamentally proximity based rather than relationship aware
+- the relationship-aware rule still depends on already-stored correlations, so a good new episode can be split if historical relationship evidence is missing
+- mixed-frequency clusters are less blunt than the first frequency-aware pass, but they are still proximity-based and can still over-group weakly related slow and fast series
+- quality labels are intentionally simple and should be read as investigation cues, not formal confidence estimates
 
 ## Why This Is Still Worth Having
 
@@ -83,11 +112,31 @@ The important boundary is honesty:
 - clusters define investigation scope
 - they do not prove shared causation
 
+## Current Episode Labels
+
+The clusterer now persists three fields that matter downstream:
+
+- `frequency_mix`
+  - `daily_only`
+  - `weekly_only`
+  - `monthly_only`
+  - `mixed`
+- `episode_kind`
+  - `isolated_signal`
+  - `single_dataset_wave`
+  - `cross_dataset_episode`
+- `quality_band`
+  - `low`
+  - `medium`
+  - `high`
+
+These labels are intentionally transparent.
+They are not trying to predict causality.
+They are trying to tell the investigator what kind of event envelope the system believes it is looking at.
+
 ## Best Next Step
 
-The next quality step is not more heuristic tuning downstream.
-It is better episode quality upstream:
+The next quality step is still deeper episode quality, but now the obvious blind spot is the cold-start case:
 
-- make clustering frequency-aware instead of globally fixed
-- distinguish sparse single-anomaly episodes from broader macro episodes
-- attach richer cluster-quality metadata so downstream systems can reason about episode strength more honestly
+- inspect whether good cross-dataset episodes are being split because the relationship-aware gate depends on historical correlation coverage
+- decide whether the next improvement should be a small correlation-aware fallback or a richer episode-quality audit, not another broad threshold change

@@ -182,6 +182,27 @@ function describeClusterDuration(cluster) {
   return durationDays === 0 ? "single-day cluster" : `${durationDays + 1}-day span`;
 }
 
+function formatEpisodeKind(kind) {
+  if (kind === "cross_dataset_episode") {
+    return "cross-dataset episode";
+  }
+  if (kind === "single_dataset_wave") {
+    return "single-dataset wave";
+  }
+  return "isolated signal";
+}
+
+function formatFrequencyMix(frequencyMix) {
+  if (!frequencyMix) {
+    return "n/a";
+  }
+  return frequencyMix.replace("_", " ");
+}
+
+function formatQualityBand(qualityBand) {
+  return qualityBand ? `${qualityBand} quality` : "n/a";
+}
+
 function formatEvidenceStrength(score) {
   if (score >= 0.75) {
     return "strong";
@@ -404,6 +425,18 @@ function LeadingIndicatorCard({
                           <span>Cluster peak</span>
                           <strong>{episode.target_cluster_peak_severity_score.toFixed(2)}</strong>
                         </article>
+                        <article>
+                          <span>Episode type</span>
+                          <strong>{formatEpisodeKind(episode.target_cluster_episode_kind)}</strong>
+                        </article>
+                        <article>
+                          <span>Episode quality</span>
+                          <strong>{formatQualityBand(episode.target_cluster_quality_band)}</strong>
+                        </article>
+                        <article>
+                          <span>Frequency mix</span>
+                          <strong>{formatFrequencyMix(episode.target_cluster_frequency_mix)}</strong>
+                        </article>
                       </div>
 
                       <div className="leading-indicator-member-preview comparison-preview">
@@ -490,6 +523,14 @@ function LeadingIndicatorCard({
                       <article>
                         <span>Cluster peak</span>
                         <strong>{episode.target_cluster_peak_severity_score.toFixed(2)}</strong>
+                      </article>
+                      <article>
+                        <span>Episode type</span>
+                        <strong>{formatEpisodeKind(episode.target_cluster_episode_kind)}</strong>
+                      </article>
+                      <article>
+                        <span>Quality</span>
+                        <strong>{formatQualityBand(episode.target_cluster_quality_band)}</strong>
                       </article>
                     </div>
 
@@ -1247,13 +1288,27 @@ export default function App() {
                           <span>Peak severity</span>
                           <strong>{selectedAnomalyDetail.cluster.peak_severity_score.toFixed(2)}</strong>
                         </article>
+                        <article>
+                          <span>Episode type</span>
+                          <strong>{formatEpisodeKind(selectedAnomalyDetail.cluster.episode_kind)}</strong>
+                        </article>
+                        <article>
+                          <span>Quality</span>
+                          <strong>{formatQualityBand(selectedAnomalyDetail.cluster.quality_band)}</strong>
+                        </article>
+                        <article>
+                          <span>Frequency mix</span>
+                          <strong>{formatFrequencyMix(selectedAnomalyDetail.cluster.frequency_mix)}</strong>
+                        </article>
                       </div>
 
                       <div className="cluster-window-note">
                         This anomaly belongs to a persisted macro-event cluster spanning{" "}
-                        <strong>{describeClusterDuration(selectedAnomalyDetail.cluster)}</strong>. The
-                        current clustering rule groups anomalies when adjacent events land within the
-                        configured time window.
+                        <strong>{describeClusterDuration(selectedAnomalyDetail.cluster)}</strong>. This
+                        episode is currently labeled{" "}
+                        <strong>{formatEpisodeKind(selectedAnomalyDetail.cluster.episode_kind)}</strong>{" "}
+                        with <strong>{formatQualityBand(selectedAnomalyDetail.cluster.quality_band)}</strong>{" "}
+                        based on breadth, span, and dataset coverage.
                       </div>
 
                       <div className="cluster-member-list">
@@ -1324,6 +1379,14 @@ export default function App() {
                               <span>Supporting links</span>
                               <strong>{edge.supporting_link_count}</strong>
                             </article>
+                            <article>
+                              <span>Target episode</span>
+                              <strong>{formatEpisodeKind(edge.target_episode_kind)}</strong>
+                            </article>
+                            <article>
+                              <span>Target quality</span>
+                              <strong>{formatQualityBand(edge.target_quality_band)}</strong>
+                            </article>
                           </div>
 
                           <div className="propagation-breakdown">
@@ -1343,10 +1406,16 @@ export default function App() {
                               <span>Coverage</span>
                               <strong>{edge.evidence_strength_components.target_scale.toFixed(2)}</strong>
                             </article>
+                            <article>
+                              <span>Episode quality</span>
+                              <strong>{edge.evidence_strength_components.episode_quality.toFixed(2)}</strong>
+                            </article>
                           </div>
 
                           <div className="propagation-note">
-                            This is a suggested downstream transmission path derived from stored lagged correlations and later anomaly matches. It is evidence for sequencing, not proof of causation.
+                            This is a suggested downstream transmission path derived from stored lagged correlations and later anomaly matches. The target episode is{" "}
+                            <strong>{formatEpisodeKind(edge.target_episode_kind)}</strong> with{" "}
+                            <strong>{formatFrequencyMix(edge.target_frequency_mix)}</strong> frequency composition. It is evidence for sequencing, not proof of causation.
                           </div>
 
                           <div className="propagation-evidence-list">

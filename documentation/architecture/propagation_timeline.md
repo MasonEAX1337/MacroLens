@@ -49,6 +49,9 @@ Each propagation edge currently includes:
 - target cluster timing
 - target anchor anomaly
 - target dataset names
+- target episode kind
+- target frequency mix
+- target quality band
 - average lag
 - strongest stored correlation
 - supporting link count
@@ -64,9 +67,22 @@ Each edge now exposes:
 - support density
 - temporal alignment
 - target cluster scale
+- episode quality
 - overall weighted score
 
 This is still a heuristic, but it is inspectable rather than theatrical.
+
+Low-quality episodes now directly down-weight the edge score.
+
+The current rule is conservative:
+
+- `high` episode quality -> `1.00`
+- `medium` episode quality -> `0.90`
+- `low` episode quality -> `0.80`
+
+The edge uses the weaker of source and target episode quality.
+That is intentional.
+If either side of the proposed transmission path is weak, the propagation claim should look weaker too.
 
 ## Current Strengths
 
@@ -80,6 +96,7 @@ This is still a heuristic, but it is inspectable rather than theatrical.
 - only later anomaly matches are considered
 - sparse or low-frequency datasets often produce no propagation edge at all
 - the current score is decomposed, but the target episode quality underneath it is still only as good as the clustering layer
+- episode labels improve inspection, but they do not yet directly constrain which edges are allowed to form
 
 ## Best Next Step
 

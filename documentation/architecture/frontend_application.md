@@ -36,6 +36,7 @@ The frontend currently includes:
 - recent anomaly list
 - event detail panel
 - macro-event cluster section
+- explicit episode-kind, frequency-mix, and quality labels in cluster-facing surfaces
 - propagation timeline section
 - propagation score decomposition
 - evidence provenance section
@@ -89,7 +90,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - no loading skeletons
 - no explicit raw evidence payload view
 - the 3D constellation adds a meaningful visual layer, but it also increases bundle size and needs performance discipline
-- the episode-comparison workflow is useful, but it still depends on a clustering layer that is time-proximity based rather than quality-aware
+- episode-quality labels are now visible, but the UI still does not show why a mixed-frequency episode was grouped the way it was
 
 ## Next Improvements
 
@@ -98,7 +99,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - selected-range summary tied to the chart brush
 - richer comparison semantics inside the constellation view
 - explicit raw evidence payload view
-- stronger episode-quality cues so users can distinguish sparse isolated events from broader macro episodes
+- stronger explanation of why a cluster was labeled low, medium, or high quality
 
 ### Second-order improvements
 

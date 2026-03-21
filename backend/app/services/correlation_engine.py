@@ -122,6 +122,12 @@ def build_return_frame(points: list[dict[str, object]], value_column_name: str) 
     return frame.dropna().reset_index(drop=True)
 
 
+def has_nonzero_variance(series: pd.Series) -> bool:
+    if len(series) < 2:
+        return False
+    return bool(series.nunique(dropna=True) >= 2)
+
+
 def compute_best_lag_correlation(
     base_points: list[dict[str, object]],
     related_points: list[dict[str, object]],
@@ -141,6 +147,10 @@ def compute_best_lag_correlation(
         shifted["timestamp"] = shifted["timestamp"] - pd.to_timedelta(lag_days, unit="D")
         merged = base_frame.merge(shifted, on="timestamp", how="inner")
         if len(merged) < min_overlap:
+            continue
+        if not has_nonzero_variance(merged["base_return"]):
+            continue
+        if not has_nonzero_variance(merged["related_return"]):
             continue
         correlation = merged["base_return"].corr(merged["related_return"])
         if pd.isna(correlation):

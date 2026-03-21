@@ -44,6 +44,12 @@ class ExplanationContext:
     severity_score: float
     direction: str | None
     detection_method: str
+    cluster_span_days: int
+    cluster_anomaly_count: int
+    cluster_dataset_count: int
+    cluster_frequency_mix: str
+    cluster_episode_kind: str
+    cluster_quality_band: str
     correlations: list[CorrelationEvidence]
     news_context: list[NewsContextEvidence]
 
@@ -73,6 +79,14 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
         "severity_score": context.severity_score,
         "direction": context.direction,
         "detection_method": context.detection_method,
+        "episode_context": {
+            "cluster_span_days": context.cluster_span_days,
+            "cluster_anomaly_count": context.cluster_anomaly_count,
+            "cluster_dataset_count": context.cluster_dataset_count,
+            "cluster_frequency_mix": context.cluster_frequency_mix,
+            "cluster_episode_kind": context.cluster_episode_kind,
+            "cluster_quality_band": context.cluster_quality_band,
+        },
         "correlations": [
             {
                 "related_dataset_id": item.related_dataset_id,
@@ -151,6 +165,27 @@ class RulesBasedExplanationProvider:
     def generate(self, context: ExplanationContext) -> GeneratedExplanation:
         event_date = context.timestamp.strftime("%B %d, %Y")
         move_word = "increase" if context.direction == "up" else "decline" if context.direction == "down" else "move"
+        if context.cluster_episode_kind == "cross_dataset_episode":
+            episode_text = (
+                f"This anomaly sits inside a broader cross-dataset episode spanning about {context.cluster_span_days + 1} day(s) "
+                f"across {context.cluster_dataset_count} dataset(s)."
+            )
+        elif context.cluster_episode_kind == "single_dataset_wave":
+            episode_text = (
+                f"This anomaly is part of a single-dataset wave spanning about {context.cluster_span_days + 1} day(s)."
+            )
+        else:
+            episode_text = "This is currently an isolated stored signal rather than a broader cross-dataset episode."
+        if context.cluster_quality_band == "low":
+            episode_quality_text = (
+                "The stored episode context is low quality, so broad macro interpretation should be treated cautiously."
+            )
+        elif context.cluster_quality_band == "medium":
+            episode_quality_text = (
+                "The stored episode context is moderate, which gives broader context without making this a strong regime-level episode."
+            )
+        else:
+            episode_quality_text = "The stored episode context is relatively broad for the current evidence graph."
 
         if context.correlations:
             top = context.correlations[0]
@@ -192,7 +227,7 @@ class RulesBasedExplanationProvider:
         generated_text = (
             f"{context.dataset_name} showed an unusual {move_word} on {event_date} "
             f"with a severity score of {context.severity_score:.2f} using {context.detection_method} detection. "
-            f"{correlation_text} {news_text} {uncertainty}"
+            f"{episode_text} {episode_quality_text} {correlation_text} {news_text} {uncertainty}"
         )
         return GeneratedExplanation(
             provider=self.provider_name,
@@ -210,6 +245,7 @@ def build_openai_instructions() -> str:
         "Do not introduce outside facts that are not present in the evidence. "
         "If the evidence is weak or correlations are sparse, say so clearly. "
         "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "If the supplied cluster_quality_band is low, do not frame the anomaly as part of a broad macro episode. "
         "Treat macro_timeline items as broad historical background, not as the strongest direct evidence. "
         "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
     )
@@ -225,6 +261,14 @@ def build_openai_input(context: ExplanationContext) -> str:
             "severity_score": context.severity_score,
             "direction": move_direction,
             "detection_method": context.detection_method,
+        },
+        "episode_context": {
+            "cluster_span_days": context.cluster_span_days,
+            "cluster_anomaly_count": context.cluster_anomaly_count,
+            "cluster_dataset_count": context.cluster_dataset_count,
+            "cluster_frequency_mix": context.cluster_frequency_mix,
+            "cluster_episode_kind": context.cluster_episode_kind,
+            "cluster_quality_band": context.cluster_quality_band,
         },
         "correlations": [
             {
@@ -260,6 +304,7 @@ def build_openai_input(context: ExplanationContext) -> str:
             "Respect the supplied lag interpretation exactly.",
             "Do not present lagging evidence as a likely cause of the anomaly.",
             "Prefer 'the strongest stored relationship was' over broad causal phrasing.",
+            "If cluster_quality_band is low, describe the episode context as limited rather than broad.",
             "If stored news context exists, use it as contextual evidence and cite it by title or source.",
             "Treat lagging news context as retrospective context, not proof of the original driver.",
             "Treat macro_timeline items as historical regime context, not as the primary driver unless no stronger structured evidence exists.",
@@ -304,6 +349,7 @@ def build_gemini_system_instruction() -> str:
         "Do not claim causality as certainty. "
         "If the evidence is weak, state that clearly. "
         "Do not describe lagging evidence as a likely driver of the anomaly. "
+        "If the supplied cluster_quality_band is low, do not frame the anomaly as part of a broad macro episode. "
         "Treat macro_timeline items as broad historical background, not as the strongest direct evidence. "
         "Avoid phrases like statistically significant, impossible to identify, or may be associated with unless the supplied evidence directly supports them."
     )
@@ -517,9 +563,17 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             a.timestamp,
             a.severity_score,
             a.direction,
-            a.detection_method
+            a.detection_method,
+            COALESCE(ac.span_days, 0) AS cluster_span_days,
+            COALESCE(ac.anomaly_count, 1) AS cluster_anomaly_count,
+            COALESCE(ac.dataset_count, 1) AS cluster_dataset_count,
+            COALESCE(ac.frequency_mix, d.frequency || '_only') AS cluster_frequency_mix,
+            COALESCE(ac.episode_kind, 'isolated_signal') AS cluster_episode_kind,
+            COALESCE(ac.quality_band, 'low') AS cluster_quality_band
         FROM anomalies AS a
         JOIN datasets AS d ON d.id = a.dataset_id
+        LEFT JOIN anomaly_cluster_members AS acm ON acm.anomaly_id = a.id
+        LEFT JOIN anomaly_clusters AS ac ON ac.id = acm.cluster_id
         WHERE a.id = :anomaly_id
         """
     )
@@ -582,6 +636,12 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
         severity_score=float(anomaly["severity_score"]),
         direction=anomaly["direction"],
         detection_method=str(anomaly["detection_method"]),
+        cluster_span_days=int(anomaly["cluster_span_days"]),
+        cluster_anomaly_count=int(anomaly["cluster_anomaly_count"]),
+        cluster_dataset_count=int(anomaly["cluster_dataset_count"]),
+        cluster_frequency_mix=str(anomaly["cluster_frequency_mix"]),
+        cluster_episode_kind=str(anomaly["cluster_episode_kind"]),
+        cluster_quality_band=str(anomaly["cluster_quality_band"]),
         correlations=correlations,
         news_context=news_context,
     )

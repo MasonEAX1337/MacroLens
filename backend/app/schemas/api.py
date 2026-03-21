@@ -42,9 +42,13 @@ class LeadingIndicatorSupportRecord(BaseModel):
     target_severity_score: float
     target_cluster_start_timestamp: datetime
     target_cluster_end_timestamp: datetime
+    target_cluster_span_days: int
     target_cluster_anomaly_count: int
     target_cluster_dataset_count: int
     target_cluster_peak_severity_score: float
+    target_cluster_frequency_mix: str
+    target_cluster_episode_kind: str
+    target_cluster_quality_band: str
     correlation_score: float
     lag_days: int
     cluster_members: list["LeadingIndicatorClusterMemberPreview"]
@@ -74,6 +78,8 @@ class AnomalySummary(BaseModel):
     detection_method: str
     cluster_id: int | None = None
     cluster_anomaly_count: int | None = None
+    cluster_episode_kind: str | None = None
+    cluster_quality_band: str | None = None
 
 
 class CorrelationRecord(BaseModel):
@@ -124,9 +130,13 @@ class AnomalyClusterRecord(BaseModel):
     start_timestamp: datetime
     end_timestamp: datetime
     anchor_timestamp: datetime
+    span_days: int
     anomaly_count: int
     dataset_count: int
     peak_severity_score: float
+    frequency_mix: str
+    episode_kind: str
+    quality_band: str
     members: list[ClusterMemberRecord]
 
 
@@ -150,6 +160,7 @@ class PropagationStrengthComponents(BaseModel):
     support_density: float
     temporal_alignment: float
     target_scale: float
+    episode_quality: float
     overall: float
 
 
@@ -161,9 +172,13 @@ class PropagationEdgeRecord(BaseModel):
     target_anchor_timestamp: datetime
     target_anchor_anomaly_id: int
     target_anchor_dataset_id: int
+    target_span_days: int
     target_anomaly_count: int
     target_dataset_count: int
     target_peak_severity_score: float
+    target_frequency_mix: str
+    target_episode_kind: str
+    target_quality_band: str
     average_lag_days: int
     strongest_correlation_score: float
     supporting_link_count: int

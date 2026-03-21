@@ -9,45 +9,95 @@ from app.services.leading_indicators import (
 )
 
 
+def make_support(
+    *,
+    target_cluster_id: int,
+    target_anomaly_id: int,
+    target_timestamp: datetime,
+    target_cluster_start_timestamp: datetime,
+    target_cluster_end_timestamp: datetime,
+    target_cluster_anomaly_count: int,
+    target_cluster_dataset_count: int,
+    target_cluster_peak_severity_score: float,
+    related_dataset_id: int,
+    related_dataset_name: str,
+    related_dataset_frequency: str,
+    correlation_score: float,
+    lag_days: int,
+    target_direction: str = "up",
+    target_detection_method: str = "z_score",
+    target_severity_score: float = 3.1,
+    target_dataset_id: int = 1,
+    target_dataset_name: str = "Consumer Price Index",
+    target_dataset_frequency: str = "monthly",
+    target_cluster_frequency_mix: str = "monthly_only",
+    target_cluster_episode_kind: str = "isolated_signal",
+    target_cluster_quality_band: str = "low",
+) -> LeadingIndicatorSupport:
+    span_days = round(
+        max(
+            0.0,
+            (target_cluster_end_timestamp - target_cluster_start_timestamp).total_seconds() / 86400.0,
+        )
+    )
+    return LeadingIndicatorSupport(
+        target_cluster_id=target_cluster_id,
+        target_anomaly_id=target_anomaly_id,
+        target_dataset_id=target_dataset_id,
+        target_dataset_name=target_dataset_name,
+        target_timestamp=target_timestamp,
+        target_direction=target_direction,
+        target_detection_method=target_detection_method,
+        target_severity_score=target_severity_score,
+        target_cluster_start_timestamp=target_cluster_start_timestamp,
+        target_cluster_end_timestamp=target_cluster_end_timestamp,
+        target_cluster_span_days=span_days,
+        target_cluster_anomaly_count=target_cluster_anomaly_count,
+        target_cluster_dataset_count=target_cluster_dataset_count,
+        target_cluster_peak_severity_score=target_cluster_peak_severity_score,
+        target_cluster_frequency_mix=target_cluster_frequency_mix,
+        target_cluster_episode_kind=target_cluster_episode_kind,
+        target_cluster_quality_band=target_cluster_quality_band,
+        target_dataset_frequency=target_dataset_frequency,
+        related_dataset_id=related_dataset_id,
+        related_dataset_name=related_dataset_name,
+        related_dataset_frequency=related_dataset_frequency,
+        correlation_score=correlation_score,
+        lag_days=lag_days,
+    )
+
+
 def test_collapse_support_by_cluster_keeps_strongest_correlation_per_target_cluster() -> None:
     collapsed = collapse_support_by_cluster(
         [
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=10,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.2,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 18, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=2,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.2,
-                target_dataset_frequency="monthly",
+                target_cluster_episode_kind="single_dataset_wave",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
                 correlation_score=0.61,
                 lag_days=-20,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=10,
                 target_anomaly_id=101,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 16, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="change_point",
-                target_severity_score=2.8,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 18, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=2,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.2,
-                target_dataset_frequency="monthly",
+                target_cluster_episode_kind="single_dataset_wave",
+                target_detection_method="change_point",
+                target_severity_score=2.8,
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
@@ -61,68 +111,52 @@ def test_collapse_support_by_cluster_keeps_strongest_correlation_per_target_clus
     assert collapsed[0].correlation_score == 0.82
     assert collapsed[0].lag_days == -18
     assert collapsed[0].target_anomaly_id == 101
+    assert collapsed[0].target_cluster_episode_kind == "single_dataset_wave"
 
 
 def test_aggregate_leading_indicators_ranks_by_coverage_and_strength() -> None:
     aggregates = aggregate_leading_indicators(
         [
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=1,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.1,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.1,
-                target_dataset_frequency="monthly",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
                 correlation_score=0.72,
                 lag_days=-20,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=2,
                 target_anomaly_id=101,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.0,
                 target_cluster_start_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 4, 18, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=2,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.0,
-                target_dataset_frequency="monthly",
+                target_cluster_episode_kind="single_dataset_wave",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
                 correlation_score=0.81,
                 lag_days=-18,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=1,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.1,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.1,
-                target_dataset_frequency="monthly",
                 related_dataset_id=3,
                 related_dataset_name="Federal Funds Rate",
                 related_dataset_frequency="monthly",
@@ -143,48 +177,38 @@ def test_aggregate_leading_indicators_ranks_by_coverage_and_strength() -> None:
     assert aggregates[0].frequency_alignment == 0.65
     assert aggregates[0].support_confidence == 0.55
     assert len(aggregates[0].supporting_episodes) == 2
+    assert aggregates[0].supporting_episodes[0].target_cluster_episode_kind == "single_dataset_wave"
     assert aggregates[0].average_abs_correlation_score > aggregates[1].average_abs_correlation_score
 
 
 def test_aggregate_leading_indicators_penalizes_mixed_sign_relationships() -> None:
     aggregates = aggregate_leading_indicators(
         [
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=1,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.1,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.1,
-                target_dataset_frequency="monthly",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
                 correlation_score=0.7,
                 lag_days=-12,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=2,
                 target_anomaly_id=101,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.0,
                 target_cluster_start_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 4, 18, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=2,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.0,
-                target_dataset_frequency="monthly",
+                target_cluster_episode_kind="single_dataset_wave",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="daily",
@@ -216,63 +240,45 @@ def test_compute_support_confidence_penalizes_one_cluster_leaders() -> None:
 def test_aggregate_leading_indicators_penalizes_one_cluster_leaders() -> None:
     aggregates = aggregate_leading_indicators(
         [
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=1,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.1,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.1,
-                target_dataset_frequency="monthly",
                 related_dataset_id=2,
                 related_dataset_name="WTI Oil Price",
                 related_dataset_frequency="monthly",
                 correlation_score=0.95,
                 lag_days=-12,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=1,
                 target_anomaly_id=100,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=3.1,
                 target_cluster_start_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 1, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=3.1,
-                target_dataset_frequency="monthly",
                 related_dataset_id=3,
                 related_dataset_name="Federal Funds Rate",
                 related_dataset_frequency="monthly",
                 correlation_score=0.74,
                 lag_days=-10,
             ),
-            LeadingIndicatorSupport(
+            make_support(
                 target_cluster_id=2,
                 target_anomaly_id=101,
-                target_dataset_id=1,
-                target_dataset_name="Consumer Price Index",
                 target_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
-                target_direction="up",
-                target_detection_method="z_score",
-                target_severity_score=2.9,
                 target_cluster_start_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
                 target_cluster_end_timestamp=datetime(2025, 4, 15, tzinfo=timezone.utc),
                 target_cluster_anomaly_count=1,
                 target_cluster_dataset_count=1,
                 target_cluster_peak_severity_score=2.9,
-                target_dataset_frequency="monthly",
                 related_dataset_id=3,
                 related_dataset_name="Federal Funds Rate",
                 related_dataset_frequency="monthly",

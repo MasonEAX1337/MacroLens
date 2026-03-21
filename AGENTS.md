@@ -91,3 +91,5 @@ After an agent completes meaningful work, another engineer should be able to und
 - why it changed
 - what alternatives were considered
 - what risks or limitations remain
+
+All subagents must follow the reasoning style defined in this file.

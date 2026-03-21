@@ -25,6 +25,7 @@ class ChangePointConfig:
     jump: int
     smoothing_window: int
     severity_threshold: float
+    transform: str
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,13 @@ class PersistedAnomaly:
     metadata: dict[str, float | int | str]
 
 
+@dataclass(frozen=True)
+class DatasetSeries:
+    symbol: str
+    frequency: str
+    points: list[dict[str, object]]
+
+
 DEFAULT_CONFIGS: dict[str, DetectionConfig] = {
     "daily": DetectionConfig(window_size=30, threshold=3.0, min_periods=30),
     "weekly": DetectionConfig(window_size=12, threshold=3.0, min_periods=12),
@@ -61,6 +69,7 @@ CHANGE_POINT_CONFIGS: dict[str, ChangePointConfig] = {
         jump=5,
         smoothing_window=3,
         severity_threshold=0.9,
+        transform="raw_level",
     ),
     "weekly": ChangePointConfig(
         algorithm="binseg",
@@ -70,6 +79,7 @@ CHANGE_POINT_CONFIGS: dict[str, ChangePointConfig] = {
         jump=3,
         smoothing_window=3,
         severity_threshold=0.25,
+        transform="raw_level",
     ),
     "monthly": ChangePointConfig(
         algorithm="binseg",
@@ -79,28 +89,85 @@ CHANGE_POINT_CONFIGS: dict[str, ChangePointConfig] = {
         jump=1,
         smoothing_window=2,
         severity_threshold=0.45,
+        transform="raw_level",
     ),
 }
 
+DATASET_Z_SCORE_OVERRIDES: dict[str, dict[str, float | int]] = {
+    # Monthly inflation prints are sparse under the generic monthly threshold.
+    "CPIAUCSL": {"threshold": 2.2},
+    # House prices are slower and smoother than CPI, so the generic monthly threshold is too strict.
+    "CSUSHPISA": {"threshold": 2.15},
+}
 
-def get_detection_config(frequency: str) -> DetectionConfig:
-    return DEFAULT_CONFIGS.get(frequency, DEFAULT_CONFIGS["daily"])
+DATASET_CHANGE_POINT_OVERRIDES: dict[str, dict[str, float | int | str]] = {
+    # Daily market series were under-producing structural breaks at the generic daily penalty.
+    "BTC": {"penalty": 4.0},
+    "DCOILWTICO": {"penalty": 3.0},
+    "SP500": {"penalty": 3.5},
+    # Slower structural household series need a gentler penalty to surface regime shifts at all.
+    # CPI and house prices are trend series, so structural detection should operate on rate-of-change rather than raw levels.
+    "CPIAUCSL": {"penalty": 2.2, "transform": "percent_change"},
+    "CSUSHPISA": {"penalty": 1.8, "transform": "percent_change"},
+    "MORTGAGE30US": {"penalty": 2.0},
+}
 
 
-def get_change_point_config(frequency: str) -> ChangePointConfig:
-    return CHANGE_POINT_CONFIGS.get(frequency, CHANGE_POINT_CONFIGS["daily"])
+def get_detection_config(
+    frequency: str,
+    *,
+    dataset_symbol: str | None = None,
+) -> DetectionConfig:
+    base = DEFAULT_CONFIGS.get(frequency, DEFAULT_CONFIGS["daily"])
+    if not dataset_symbol:
+        return base
+
+    override = DATASET_Z_SCORE_OVERRIDES.get(dataset_symbol.upper())
+    if not override:
+        return base
+
+    return DetectionConfig(
+        window_size=int(override.get("window_size", base.window_size)),
+        threshold=float(override.get("threshold", base.threshold)),
+        min_periods=int(override.get("min_periods", base.min_periods)),
+    )
 
 
-def load_dataset_series(db: Session, dataset_id: int) -> tuple[str, list[dict[str, object]]]:
+def get_change_point_config(
+    frequency: str,
+    *,
+    dataset_symbol: str | None = None,
+) -> ChangePointConfig:
+    base = CHANGE_POINT_CONFIGS.get(frequency, CHANGE_POINT_CONFIGS["daily"])
+    if not dataset_symbol:
+        return base
+
+    override = DATASET_CHANGE_POINT_OVERRIDES.get(dataset_symbol.upper())
+    if not override:
+        return base
+
+    return ChangePointConfig(
+        algorithm=str(override.get("algorithm", base.algorithm)),
+        model=str(override.get("model", base.model)),
+        penalty=float(override.get("penalty", base.penalty)),
+        min_size=int(override.get("min_size", base.min_size)),
+        jump=int(override.get("jump", base.jump)),
+        smoothing_window=int(override.get("smoothing_window", base.smoothing_window)),
+        severity_threshold=float(override.get("severity_threshold", base.severity_threshold)),
+        transform=str(override.get("transform", base.transform)),
+    )
+
+
+def load_dataset_series(db: Session, dataset_id: int) -> DatasetSeries:
     dataset_query = text(
         """
-        SELECT frequency
+        SELECT symbol, frequency
         FROM datasets
         WHERE id = :dataset_id
         """
     )
-    frequency = db.execute(dataset_query, {"dataset_id": dataset_id}).scalar_one_or_none()
-    if frequency is None:
+    dataset_row = db.execute(dataset_query, {"dataset_id": dataset_id}).mappings().first()
+    if dataset_row is None:
         raise ValueError(f"Dataset {dataset_id} not found.")
 
     points_query = text(
@@ -112,19 +179,25 @@ def load_dataset_series(db: Session, dataset_id: int) -> tuple[str, list[dict[st
         """
     )
     rows = db.execute(points_query, {"dataset_id": dataset_id}).mappings().all()
-    return str(frequency), [dict(row) for row in rows]
+    return DatasetSeries(
+        symbol=str(dataset_row["symbol"]),
+        frequency=str(dataset_row["frequency"]),
+        points=[dict(row) for row in rows],
+    )
 
 
 def detect_anomalies(
     points: list[dict[str, object]],
     frequency: str,
     *,
+    dataset_symbol: str | None = None,
     window_size: int | None = None,
     threshold: float | None = None,
 ) -> list[PersistedAnomaly]:
     return detect_z_score_anomalies(
         points,
         frequency,
+        dataset_symbol=dataset_symbol,
         window_size=window_size,
         threshold=threshold,
     )
@@ -134,13 +207,14 @@ def detect_z_score_anomalies(
     points: list[dict[str, object]],
     frequency: str,
     *,
+    dataset_symbol: str | None = None,
     window_size: int | None = None,
     threshold: float | None = None,
 ) -> list[PersistedAnomaly]:
     if not points:
         return []
 
-    config = get_detection_config(frequency)
+    config = get_detection_config(frequency, dataset_symbol=dataset_symbol)
     active_window = window_size or config.window_size
     active_threshold = threshold or config.threshold
     min_periods = min(active_window, config.min_periods)
@@ -182,6 +256,24 @@ def build_change_point_signal(values: pd.Series, *, smoothing_window: int) -> np
     return standardized_values.to_numpy().reshape(-1, 1)
 
 
+def apply_change_point_transform(
+    frame: pd.DataFrame,
+    *,
+    transform: str,
+) -> pd.DataFrame:
+    transformed = frame[["timestamp", "value"]].copy()
+
+    if transform == "percent_change":
+        transformed["signal_value"] = transformed["value"].pct_change()
+    elif transform == "first_difference":
+        transformed["signal_value"] = transformed["value"].diff()
+    else:
+        transformed["signal_value"] = transformed["value"]
+
+    transformed = transformed.replace([pd.NA, float("inf"), float("-inf")], pd.NA).dropna().reset_index(drop=True)
+    return transformed
+
+
 def classify_change_point_event_type(
     *,
     before_values: np.ndarray,
@@ -196,22 +288,25 @@ def detect_change_point_anomalies(
     points: list[dict[str, object]],
     frequency: str,
     *,
+    dataset_symbol: str | None = None,
     penalty: float | None = None,
 ) -> list[PersistedAnomaly]:
     if not points:
         return []
 
-    config = get_change_point_config(frequency)
+    config = get_change_point_config(frequency, dataset_symbol=dataset_symbol)
     active_penalty = penalty or config.penalty
 
     frame = pd.DataFrame(points)
     frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True)
     frame["value"] = frame["value"].astype(float)
 
-    if len(frame) < max(config.min_size * 2, 8):
+    transformed_frame = apply_change_point_transform(frame, transform=config.transform)
+
+    if len(transformed_frame) < max(config.min_size * 2, 8):
         return []
 
-    signal = build_change_point_signal(frame["value"], smoothing_window=config.smoothing_window)
+    signal = build_change_point_signal(transformed_frame["signal_value"], smoothing_window=config.smoothing_window)
     if config.algorithm == "binseg":
         algo = rpt.Binseg(model=config.model, min_size=config.min_size, jump=config.jump).fit(signal)
     else:
@@ -219,15 +314,15 @@ def detect_change_point_anomalies(
     breakpoints = [int(item) for item in algo.predict(pen=active_penalty)[:-1]]
 
     anomalies: list[PersistedAnomaly] = []
-    overall_std = max(float(frame["value"].std(ddof=0)), 1e-9)
+    overall_std = max(float(transformed_frame["signal_value"].std(ddof=0)), 1e-9)
     for breakpoint in breakpoints:
-        if breakpoint <= 0 or breakpoint >= len(frame):
+        if breakpoint <= 0 or breakpoint >= len(transformed_frame):
             continue
 
         before_start = max(0, breakpoint - config.min_size)
-        after_end = min(len(frame), breakpoint + config.min_size)
-        before_values = frame["value"].iloc[before_start:breakpoint].to_numpy()
-        after_values = frame["value"].iloc[breakpoint:after_end].to_numpy()
+        after_end = min(len(transformed_frame), breakpoint + config.min_size)
+        before_values = transformed_frame["signal_value"].iloc[before_start:breakpoint].to_numpy()
+        after_values = transformed_frame["signal_value"].iloc[breakpoint:after_end].to_numpy()
         if len(before_values) < max(2, config.min_size // 2) or len(after_values) < max(2, config.min_size // 2):
             continue
 
@@ -242,7 +337,9 @@ def detect_change_point_anomalies(
         if severity_score < config.severity_threshold:
             continue
 
-        timestamp = frame.iloc[breakpoint]["timestamp"].to_pydatetime()
+        timestamp = transformed_frame.iloc[breakpoint]["timestamp"].to_pydatetime()
+        raw_value = float(frame.loc[frame["timestamp"] == transformed_frame.iloc[breakpoint]["timestamp"], "value"].iloc[-1])
+        transformed_value = float(transformed_frame.iloc[breakpoint]["signal_value"])
         anomalies.append(
             PersistedAnomaly(
                 timestamp=timestamp,
@@ -258,11 +355,13 @@ def detect_change_point_anomalies(
                     "jump": config.jump,
                     "smoothing_window": config.smoothing_window,
                     "severity_threshold": config.severity_threshold,
+                    "transform": config.transform,
                     "before_mean": round(before_mean, 6),
                     "after_mean": round(after_mean, 6),
                     "delta_mean": round(delta_mean, 6),
                     "overall_std": round(overall_std, 6),
-                    "value": round(float(frame.iloc[breakpoint]["value"]), 6),
+                    "value": round(raw_value, 6),
+                    "transformed_value": round(transformed_value, 6),
                 },
             )
         )
@@ -380,14 +479,19 @@ def run_detection_for_dataset(
     window_size: int | None = None,
     threshold: float | None = None,
 ) -> int:
-    frequency, points = load_dataset_series(db, dataset_id)
+    dataset = load_dataset_series(db, dataset_id)
     z_score_anomalies = detect_z_score_anomalies(
-        points,
-        frequency,
+        dataset.points,
+        dataset.frequency,
+        dataset_symbol=dataset.symbol,
         window_size=window_size,
         threshold=threshold,
     )
-    change_point_anomalies = detect_change_point_anomalies(points, frequency)
+    change_point_anomalies = detect_change_point_anomalies(
+        dataset.points,
+        dataset.frequency,
+        dataset_symbol=dataset.symbol,
+    )
     inserted = 0
     inserted += replace_dataset_anomalies_for_method(db, dataset_id, "z_score", z_score_anomalies)
     inserted += replace_dataset_anomalies_for_method(db, dataset_id, "change_point", change_point_anomalies)

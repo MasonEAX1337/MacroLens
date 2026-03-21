@@ -46,11 +46,27 @@ CREATE TABLE IF NOT EXISTS anomaly_clusters (
     start_timestamp TIMESTAMPTZ NOT NULL,
     end_timestamp TIMESTAMPTZ NOT NULL,
     anchor_timestamp TIMESTAMPTZ NOT NULL,
+    span_days INTEGER NOT NULL DEFAULT 0,
     anomaly_count INTEGER NOT NULL,
     dataset_count INTEGER NOT NULL,
     peak_severity_score DOUBLE PRECISION NOT NULL,
+    frequency_mix TEXT NOT NULL DEFAULT 'daily_only',
+    episode_kind TEXT NOT NULL DEFAULT 'isolated_signal',
+    quality_band TEXT NOT NULL DEFAULT 'low',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE anomaly_clusters
+    ADD COLUMN IF NOT EXISTS span_days INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE anomaly_clusters
+    ADD COLUMN IF NOT EXISTS frequency_mix TEXT NOT NULL DEFAULT 'daily_only';
+
+ALTER TABLE anomaly_clusters
+    ADD COLUMN IF NOT EXISTS episode_kind TEXT NOT NULL DEFAULT 'isolated_signal';
+
+ALTER TABLE anomaly_clusters
+    ADD COLUMN IF NOT EXISTS quality_band TEXT NOT NULL DEFAULT 'low';
 
 CREATE TABLE IF NOT EXISTS anomaly_cluster_members (
     cluster_id BIGINT NOT NULL REFERENCES anomaly_clusters(id) ON DELETE CASCADE,

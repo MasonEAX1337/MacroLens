@@ -17,9 +17,11 @@ As of March 12, 2026, the project has completed the first major system loop:
 - anomalies can be detected and persisted
 - correlations can be computed and persisted
 - nearby anomalies can be grouped into persisted macro-event clusters
+- persisted clusters now use frequency-aware windows and expose first-pass episode-quality metadata
 - news context can be retrieved and persisted
 - explanations can be generated and persisted
 - the frontend can visualize timeseries and anomaly detail against the live API
+- the investigation workflow can now distinguish isolated signals from broader cross-dataset episodes
 
 ### Implemented datasets
 
@@ -84,6 +86,7 @@ The next stage is quality:
 - better evidence
 - better explanation
 - better interaction
+- better event units
 
 ## What Has Been Completed
 
@@ -121,6 +124,7 @@ Completed for MVP.
 - rolling z-score detection implemented
 - `ruptures`-based binary segmentation implemented as a second detector
 - frequency-aware defaults added
+- first-pass per-dataset detector overrides added where frequency defaults were too blunt
 - clustered anomaly collapse implemented
 - anomaly metadata persisted
 - live backfill completed through the new evidence-refresh workflow
@@ -134,6 +138,14 @@ Completed for MVP.
 - lag-aware correlation search implemented
 - correlation persistence implemented
 - clustered leading-indicator aggregation implemented on top of persisted correlation evidence
+
+### Phase 5.5: Episode Quality
+
+Completed for first pass.
+
+- clustering is now frequency-aware rather than purely global-window based
+- cluster summaries now persist span, frequency mix, episode kind, and quality band
+- anomaly detail, propagation, explanations, and leading-indicator investigation now all consume that metadata
 
 ### Phase 6: Explanation Engine
 
@@ -269,14 +281,31 @@ The next task is to make it analytically credible.
 #### Highest-value improvements
 
 - run comparative evaluation between `z_score` and `change_point`
-- tune frequency-aware and eventually dataset-specific change-point configs on real datasets
+- continue dataset-specific detector review on real datasets now that the first override pass exists
+- decide whether more daily market series need looser change-point penalties or whether the remaining weakness is genuine low structural signal
 - decide whether slower structural series need alternate event-type classification beyond first-pass `level_shift`
 
 #### Main risk
 
-Over-trusting the new detector before comparative evaluation would make the product look more advanced than it really is.
+Over-trusting the new detector or its new per-dataset overrides before comparative evaluation would make the product look more advanced than it really is.
 
-### Priority 4: Evaluate and tune leading-indicator discovery
+### Priority 4: Deepen episode quality beyond the first pass
+
+The clusterer is no longer purely fixed-window based, which is progress.
+It is still the most leveraged weak point in the system.
+
+#### Highest-value improvements
+
+- reduce coarse max-gap bridging between slow monthly series and faster daily series
+- add richer cluster-quality metadata around dataset diversity and span behavior
+- evaluate whether the new low-quality episode penalty in propagation and explanation framing is conservative enough
+- decide whether single-dataset waves should be displayed differently from cross-dataset episodes in more places
+
+#### Main risk
+
+If episode quality stays blunt, downstream systems will keep needing heuristic patches that really belong upstream.
+
+### Priority 5: Evaluate and tune leading-indicator discovery
 
 The first version now exists.
 The next task is to decide whether the ranking is analytically useful enough to trust.
@@ -293,7 +322,7 @@ The next task is to decide whether the ranking is analytically useful enough to 
 
 A leading-indicator panel is useful only if it reflects repeated episodes rather than accidental lag matches.
 
-### Priority 5: Continue deepening the frontend investigation workflow
+### Priority 6: Continue deepening the frontend investigation workflow
 
 The frontend is now materially better than the original MVP shell, but it still stops short of full investigative usefulness.
 
@@ -306,7 +335,7 @@ The frontend is now materially better than the original MVP shell, but it still 
 - decide whether supporting-episode comparison should eventually include sparklines or remain metadata-first
 - improve episode quality so ranking trust depends less on heuristic patching and more on better event units
 
-### Priority 6: Add scheduled pipeline execution
+### Priority 7: Add scheduled pipeline execution
 
 The MVP currently runs through manual commands.
 
@@ -325,7 +354,7 @@ Do not overbuild orchestration yet.
 1. compare and harden hosted provider behavior
 2. deepen hybrid contextual evidence
 3. improve change-point credibility through evaluation and tuning
-4. improve event clustering and episode quality
+4. deepen episode quality beyond the first-pass frequency-aware clusterer
 5. continue frontend investigation improvements on top of better episodes
 
 This order keeps the work aligned with the product thesis.
@@ -340,7 +369,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 1. hosted-provider comparison pass
 2. news-context quality improvements
-3. episode-quality improvement pass
+3. deeper episode-quality improvement pass
 4. targeted frontend follow-up work on top of better episodes
 
 ### Suggested Task Breakdown
@@ -367,9 +396,9 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 #### Episode Quality
 
-- make clustering frequency-aware instead of globally fixed
-- add explicit quality metadata for sparse vs broader episodes
-- decide how single-anomaly episodes should be labeled in the UI and downstream systems
+- reduce mixed-frequency over-grouping
+- add richer quality metadata for sparse vs broader episodes
+- decide how low-quality episodes should affect downstream propagation and explanation framing
 
 ## Definition of MVP Completion
 
@@ -387,6 +416,6 @@ MacroLens can be called MVP-complete when all of the following are true:
 - The architecture is now real enough that the next mistakes will be judgment mistakes, not scaffolding mistakes.
 - Adding more code is no longer the main challenge. Choosing what not to add is.
 - The strongest thing in the repo right now is the evidence pipeline.
-- The weakest thing in the repo right now is no longer the UI shell. It is the combination of uneven contextual coverage and still-early second-detector tuning.
+- The weakest thing in the repo right now is no longer the UI shell. It is the combination of uneven contextual coverage, still-early second-detector tuning, and still-coarse episode quality.
 
 The next phase should deepen trust, not broaden complexity.

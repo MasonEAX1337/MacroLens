@@ -98,7 +98,9 @@ def fetch_dataset_anomalies(db: Session, dataset_id: int, limit: int) -> list[An
             a.direction,
             a.detection_method,
             acm.cluster_id,
-            ac.anomaly_count AS cluster_anomaly_count
+            ac.anomaly_count AS cluster_anomaly_count,
+            ac.episode_kind AS cluster_episode_kind,
+            ac.quality_band AS cluster_quality_band
         FROM anomalies AS a
         LEFT JOIN anomaly_cluster_members AS acm ON acm.anomaly_id = a.id
         LEFT JOIN anomaly_clusters AS ac ON ac.id = acm.cluster_id
@@ -165,6 +167,8 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             a.detection_method,
             acm.cluster_id,
             ac.anomaly_count AS cluster_anomaly_count,
+            ac.episode_kind AS cluster_episode_kind,
+            ac.quality_band AS cluster_quality_band,
             d.name AS dataset_name,
             d.symbol AS dataset_symbol,
             d.frequency AS dataset_frequency
@@ -200,9 +204,13 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             ac.start_timestamp,
             ac.end_timestamp,
             ac.anchor_timestamp,
+            ac.span_days,
             ac.anomaly_count,
             ac.dataset_count,
-            ac.peak_severity_score
+            ac.peak_severity_score,
+            ac.frequency_mix,
+            ac.episode_kind,
+            ac.quality_band
         FROM anomaly_cluster_members AS acm
         JOIN anomaly_clusters AS ac ON ac.id = acm.cluster_id
         WHERE acm.anomaly_id = :anomaly_id

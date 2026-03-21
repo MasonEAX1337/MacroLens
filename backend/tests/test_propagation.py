@@ -37,18 +37,26 @@ def test_propagation_edge_score_exposes_components_conservatively() -> None:
             start_timestamp=datetime(2026, 2, 6, tzinfo=timezone.utc),
             end_timestamp=datetime(2026, 2, 6, tzinfo=timezone.utc),
             anchor_timestamp=datetime(2026, 2, 6, tzinfo=timezone.utc),
+            span_days=0,
             anomaly_count=1,
             dataset_count=1,
             peak_severity_score=3.24,
+            frequency_mix="daily_only",
+            episode_kind="isolated_signal",
+            quality_band="low",
         ),
         target_cluster=ClusterNode(
             cluster_id=2,
             start_timestamp=datetime(2026, 2, 16, tzinfo=timezone.utc),
             end_timestamp=datetime(2026, 2, 16, tzinfo=timezone.utc),
             anchor_timestamp=datetime(2026, 2, 16, tzinfo=timezone.utc),
+            span_days=0,
             anomaly_count=1,
             dataset_count=1,
             peak_severity_score=2.91,
+            frequency_mix="daily_only",
+            episode_kind="isolated_signal",
+            quality_band="low",
         ),
     )
 
@@ -56,4 +64,5 @@ def test_propagation_edge_score_exposes_components_conservatively() -> None:
     assert components["support_density"] == 0.5
     assert components["temporal_alignment"] == 1.0
     assert components["target_scale"] == round(1 / 3, 3)
-    assert components["overall"] < 0.75
+    assert components["episode_quality"] == 0.8
+    assert components["overall"] == 0.677

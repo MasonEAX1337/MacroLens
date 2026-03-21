@@ -52,6 +52,50 @@ The design goal is not theoretical elegance. The design goal is a second detecto
 - explainable enough to inspect
 - conservative enough to avoid fake regime shifts everywhere
 
+## Dataset-Specific Overrides
+
+Frequency defaults were the right first abstraction, but live anomaly-density review showed they were too blunt for some series.
+
+The engine now supports dataset-symbol overrides on top of the frequency baseline.
+
+Current first-pass overrides:
+
+- `CPIAUCSL`
+  - lower z-score threshold from `2.5` to `2.2`
+  - lower change-point penalty from `3.0` to `2.2`
+  - run change-point detection on percent change rather than raw level
+- `CSUSHPISA`
+  - lower z-score threshold from `2.5` to `2.15`
+  - lower change-point penalty from `3.0` to `1.8`
+  - run change-point detection on percent change rather than raw level
+- `MORTGAGE30US`
+  - lower weekly change-point penalty from `2.5` to `2.0`
+- `BTC`
+  - lower daily change-point penalty from `5.0` to `4.0`
+- `DCOILWTICO`
+  - lower daily change-point penalty from `5.0` to `3.0`
+- `SP500`
+  - lower daily change-point penalty from `5.0` to `3.5`
+
+The logic is deliberately narrow.
+
+This is not a free-for-all tuning layer. It is a targeted response to a real problem:
+
+- CPI and house prices were under-supplying events badly enough to starve the episode graph
+- daily change-point detection on market series was so conservative that it added almost no structural evidence
+
+The override standard is:
+
+- increase real event supply where the baseline is clearly too strict
+- avoid global loosening that would add noise everywhere else
+
+One important boundary remains:
+
+- z-score still runs on the raw stored series
+- only the change-point detector can apply a dataset-specific transform layer
+
+That keeps the architecture narrow and inspectable.
+
 ## Why Rolling Z-Score Was the Right First Choice
 
 - transparent
@@ -80,11 +124,13 @@ For `change_point`, the current implementation also stores:
 - min segment size
 - jump
 - smoothing window
+- transform
 - before mean
 - after mean
 - delta mean
 - overall series standard deviation
 - observed value
+- transformed value
 
 This is a strong design choice because it preserves the detector's reasoning rather than only its verdict.
 
@@ -123,12 +169,25 @@ The right standard here is:
 - good enough to surface plausible regime shifts
 - cheap enough to rerun coherently with the rest of the evidence graph
 
+The first dataset-specific detector pass also revealed a second constraint:
+
+- anomaly supply matters more than detector purity if the rest of the system depends on clustered episodes
+
+After the override pass, live anomaly totals shifted in the right direction for sparse monthly series:
+
+- `CPIAUCSL`: `4 -> 11`
+- `CSUSHPISA`: `1 -> 6`
+- `MORTGAGE30US`: `12 -> 13`
+
+That is not proof that the tuning is complete. It is evidence that the previous generic settings were too strict for at least some slow datasets.
+
 ## Next Improvements
 
 ### Highest-value
 
-- add dataset-specific configs where generic frequency defaults are too blunt
 - compare `z_score` and `change_point` output against downstream usefulness, not just anomaly count
+- audit per-dataset overrides against real cluster formation, not just raw anomaly count
+- decide whether CPI and house prices still need alternate event definitions beyond lower thresholds and penalties
 - add richer event typing beyond the current first-pass `level_shift` and `volatility_shift`
 - connect anomaly clusters more deeply into event-chain and leading-indicator views
 

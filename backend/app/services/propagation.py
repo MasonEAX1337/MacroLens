@@ -11,9 +11,13 @@ class ClusterNode:
     start_timestamp: datetime
     end_timestamp: datetime
     anchor_timestamp: datetime
+    span_days: int
     anomaly_count: int
     dataset_count: int
     peak_severity_score: float
+    frequency_mix: str
+    episode_kind: str
+    quality_band: str
 
 
 @dataclass(frozen=True)
@@ -44,9 +48,13 @@ class TargetAnomalyCandidate:
     cluster_start_timestamp: datetime
     cluster_end_timestamp: datetime
     cluster_anchor_timestamp: datetime
+    cluster_span_days: int
     cluster_anomaly_count: int
     cluster_dataset_count: int
     cluster_peak_severity_score: float
+    cluster_frequency_mix: str
+    cluster_episode_kind: str
+    cluster_quality_band: str
 
 
 @dataclass(frozen=True)
@@ -77,6 +85,7 @@ def build_propagation_edge_score(
             "support_density": 0.0,
             "temporal_alignment": 0.0,
             "target_scale": 0.0,
+            "episode_quality": 0.0,
             "overall": 0.0,
         }
 
@@ -91,19 +100,34 @@ def build_propagation_edge_score(
         unique_source_anomalies / max(2, min(source_cluster.anomaly_count, 4)),
     )
     target_scale = min(1.0, target_cluster.dataset_count / 3.0)
+    episode_quality = min(
+        get_episode_quality_weight(source_cluster.quality_band),
+        get_episode_quality_weight(target_cluster.quality_band),
+    )
     overall = (
-        (0.45 * correlation_strength)
-        + (0.25 * support_density)
+        (0.40 * correlation_strength)
+        + (0.20 * support_density)
         + (0.20 * temporal_alignment)
         + (0.10 * target_scale)
+        + (0.10 * episode_quality)
     )
     return {
         "correlation_strength": round(correlation_strength, 3),
         "support_density": round(support_density, 3),
         "temporal_alignment": round(temporal_alignment, 3),
         "target_scale": round(target_scale, 3),
+        "episode_quality": round(episode_quality, 3),
         "overall": round(overall, 3),
     }
+
+
+def get_episode_quality_weight(quality_band: str) -> float:
+    normalized = quality_band.strip().lower()
+    if normalized == "high":
+        return 1.0
+    if normalized == "medium":
+        return 0.9
+    return 0.8
 
 
 def get_propagation_tolerance_days(frequency: str) -> int:
@@ -123,9 +147,13 @@ def load_cluster_node(db: Session, cluster_id: int) -> ClusterNode | None:
             start_timestamp,
             end_timestamp,
             anchor_timestamp,
+            span_days,
             anomaly_count,
             dataset_count,
-            peak_severity_score
+            peak_severity_score,
+            frequency_mix,
+            episode_kind,
+            quality_band
         FROM anomaly_clusters
         WHERE id = :cluster_id
         """
@@ -182,9 +210,13 @@ def load_target_anomaly_candidates(
             ac.start_timestamp AS cluster_start_timestamp,
             ac.end_timestamp AS cluster_end_timestamp,
             ac.anchor_timestamp AS cluster_anchor_timestamp,
+            ac.span_days AS cluster_span_days,
             ac.anomaly_count AS cluster_anomaly_count,
             ac.dataset_count AS cluster_dataset_count,
-            ac.peak_severity_score AS cluster_peak_severity_score
+            ac.peak_severity_score AS cluster_peak_severity_score,
+            ac.frequency_mix AS cluster_frequency_mix,
+            ac.episode_kind AS cluster_episode_kind,
+            ac.quality_band AS cluster_quality_band
         FROM anomalies AS a
         JOIN datasets AS d ON d.id = a.dataset_id
         JOIN anomaly_cluster_members AS acm ON acm.anomaly_id = a.id
@@ -301,9 +333,13 @@ def build_propagation_timeline(
             start_timestamp=target.cluster_start_timestamp,
             end_timestamp=target.cluster_end_timestamp,
             anchor_timestamp=target.cluster_anchor_timestamp,
+            span_days=target.cluster_span_days,
             anomaly_count=target.cluster_anomaly_count,
             dataset_count=target.cluster_dataset_count,
             peak_severity_score=target.cluster_peak_severity_score,
+            frequency_mix=target.cluster_frequency_mix,
+            episode_kind=target.cluster_episode_kind,
+            quality_band=target.cluster_quality_band,
         )
 
     edges: list[dict[str, object]] = []
@@ -336,9 +372,13 @@ def build_propagation_timeline(
                     for item in target_candidates_by_cluster[target_cluster_id]
                     if item.anomaly_id == target_anchor_anomaly_id
                 ),
+                "target_span_days": target_cluster.span_days,
                 "target_anomaly_count": target_cluster.anomaly_count,
                 "target_dataset_count": target_cluster.dataset_count,
                 "target_peak_severity_score": target_cluster.peak_severity_score,
+                "target_frequency_mix": target_cluster.frequency_mix,
+                "target_episode_kind": target_cluster.episode_kind,
+                "target_quality_band": target_cluster.quality_band,
                 "average_lag_days": round(sum(item.lag_days for item in sorted_evidence) / len(sorted_evidence)),
                 "strongest_correlation_score": round(strongest_item.correlation_score, 3),
                 "supporting_link_count": len(sorted_evidence),
