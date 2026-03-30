@@ -58,7 +58,7 @@ The two biggest gaps are:
 
 1. the hosted-provider path is usable, but not yet compared rigorously enough to justify a default change
 2. change-point detection is now live, but it still needs deeper comparative evaluation and tuning
-3. contextual retrieval now has a hybrid path, but curated macro-timeline coverage is still sparse
+3. contextual retrieval now has a hybrid path by default, but curated macro-timeline coverage is still sparse
 
 One important milestone has now been cleared:
 
@@ -269,6 +269,7 @@ The remaining problem is that the system still explains too many anomalies with 
   - live articles
   - curated macro timeline
   - structured event tags
+- keep hybrid historical fallback enabled for older or weakly covered episodes
 - improve dataset-aware query generation and topic coverage where GDELT is still noisy
 - extract event themes so the app can talk about:
   - banking stress
@@ -398,6 +399,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 - add episode-level context retrieval for clustered anomalies
 - tighten dataset-specific live queries
+- keep hybrid historical fallback enabled and expand curated macro-timeline coverage where live validation still shows empty context
 - inspect retrieved articles for relevance drift
 - document rate-limit behavior and retry policy
 - evaluate where curated historical context is better than live retrieval

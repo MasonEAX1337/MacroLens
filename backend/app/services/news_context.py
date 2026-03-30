@@ -166,7 +166,7 @@ def utc_datetime(
 
 MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
     MacroTimelineEntry(
-        dataset_symbols=frozenset({"CSUSHPISA", "MORTGAGE30US"}),
+        dataset_symbols=frozenset({"CSUSHPISA", "MORTGAGE30US", "SP500", "FEDFUNDS", "DCOILWTICO"}),
         start_at=utc_datetime(2007, 1, 1),
         end_at=utc_datetime(2010, 12, 31, 23, 59, 59),
         published_at=utc_datetime(2008, 9, 15),
@@ -181,7 +181,7 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
-        dataset_symbols=frozenset({"MORTGAGE30US"}),
+        dataset_symbols=frozenset({"MORTGAGE30US", "FEDFUNDS", "CPIAUCSL", "DCOILWTICO"}),
         start_at=utc_datetime(1979, 8, 1),
         end_at=utc_datetime(1982, 12, 31, 23, 59, 59),
         published_at=utc_datetime(1979, 10, 6),
@@ -192,6 +192,21 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         metadata={
             "timeline_id": "great_inflation",
             "coverage": "1979-1982 high-rate inflation regime",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "MORTGAGE30US", "SP500"}),
+        start_at=utc_datetime(2022, 2, 1),
+        end_at=utc_datetime(2022, 6, 30, 23, 59, 59),
+        published_at=utc_datetime(2022, 3, 15),
+        title="IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+        article_url="https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
+        domain="imf.org",
+        search_query="macro_timeline:ukraine_war_energy_inflation_2022",
+        metadata={
+            "timeline_id": "ukraine_war_energy_inflation_2022",
+            "coverage": "2022 energy, inflation, and policy shock after Russia's invasion of Ukraine",
             "evidence_kind": "curated_historical_context",
         },
     ),
@@ -510,6 +525,28 @@ def get_news_context_status(
     }
 
 
+def context_window_overlaps_entry(
+    request: NewsContextRequest,
+    entry: MacroTimelineEntry,
+) -> bool:
+    _, context_start, context_end = get_context_window(request)
+    return not (entry.end_at < context_start or entry.start_at > context_end)
+
+
+def get_request_context_symbols(request: NewsContextRequest) -> frozenset[str]:
+    context_symbols = {request.dataset_symbol}
+    if request.cluster_episode_kind in EPISODE_RETRIEVAL_EPISODE_KINDS:
+        context_symbols.update(request.cluster_dataset_symbols)
+    return frozenset(context_symbols)
+
+
+def get_macro_timeline_overlap_score(
+    request: NewsContextRequest,
+    entry: MacroTimelineEntry,
+) -> int:
+    return len(get_request_context_symbols(request) & entry.dataset_symbols)
+
+
 class GDELTNewsContextProvider:
     provider_name = "gdelt"
 
@@ -617,12 +654,13 @@ class MacroTimelineNewsContextProvider:
         matching_entries = [
             entry
             for entry in MACRO_TIMELINE_ENTRIES
-            if request.dataset_symbol in entry.dataset_symbols
-            and entry.start_at <= request.timestamp <= entry.end_at
+            if get_macro_timeline_overlap_score(request, entry) > 0
+            and context_window_overlaps_entry(request, entry)
         ]
         ranked_entries = sorted(
             matching_entries,
             key=lambda entry: (
+                -get_macro_timeline_overlap_score(request, entry),
                 abs((ensure_utc(entry.published_at).date() - ensure_utc(request.timestamp).date()).days),
                 entry.title,
             ),
@@ -660,8 +698,6 @@ def build_macro_timeline_provider() -> NewsContextProvider:
 def get_news_context_provider_names(request: NewsContextRequest) -> list[str]:
     provider_name = settings.news_context_provider.strip().lower()
     if provider_name == "gdelt":
-        if request.dataset_symbol in HOUSEHOLD_NEWS_SYMBOLS:
-            return ["gdelt", "macro_timeline"]
         return ["gdelt"]
     if provider_name == "macro_timeline":
         return ["macro_timeline"]

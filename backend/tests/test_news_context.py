@@ -463,7 +463,29 @@ def test_macro_timeline_provider_returns_curated_household_context() -> None:
     assert articles[0].domain == "irs.gov"
 
 
-def test_household_series_use_hybrid_provider_names_by_default() -> None:
+def test_macro_timeline_provider_can_match_cluster_context_not_just_primary_dataset() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=301,
+            dataset_name="Bitcoin Price",
+            dataset_symbol="BTC",
+            dataset_frequency="daily",
+            timestamp=datetime(2022, 3, 4, tzinfo=timezone.utc),
+            cluster_id=50,
+            cluster_start_timestamp=datetime(2022, 3, 1, tzinfo=timezone.utc),
+            cluster_end_timestamp=datetime(2022, 3, 4, tzinfo=timezone.utc),
+            cluster_episode_kind="cross_dataset_episode",
+            cluster_dataset_symbols=("BTC", "DCOILWTICO", "SP500"),
+        )
+    )
+
+    assert len(articles) == 1
+    assert "Ukraine" in articles[0].title
+
+
+def test_all_series_use_hybrid_provider_names_by_default() -> None:
     request = NewsContextRequest(
         anomaly_id=183,
         dataset_name="Case-Shiller U.S. National Home Price Index",
@@ -477,7 +499,7 @@ def test_household_series_use_hybrid_provider_names_by_default() -> None:
     assert provider_names == ["gdelt", "macro_timeline"]
 
 
-def test_non_household_series_keep_single_gdelt_provider_by_default() -> None:
+def test_non_household_series_also_use_hybrid_provider_names_by_default() -> None:
     request = NewsContextRequest(
         anomaly_id=91,
         dataset_name="Bitcoin Price",
@@ -488,7 +510,7 @@ def test_non_household_series_keep_single_gdelt_provider_by_default() -> None:
 
     provider_names = get_news_context_provider_names(request)
 
-    assert provider_names == ["gdelt"]
+    assert provider_names == ["gdelt", "macro_timeline"]
 
 
 def test_old_non_household_series_skip_gdelt_execution(monkeypatch) -> None:
@@ -503,7 +525,7 @@ def test_old_non_household_series_skip_gdelt_execution(monkeypatch) -> None:
     monkeypatch.setattr("app.services.news_context.settings.gdelt_max_anomaly_age_days", 3650)
 
     assert should_query_gdelt(request) is False
-    assert get_active_news_context_provider_names(request) == []
+    assert get_active_news_context_provider_names(request) == ["macro_timeline"]
 
 
 def test_old_household_series_fall_back_to_macro_timeline_provider(monkeypatch) -> None:

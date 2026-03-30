@@ -129,6 +129,54 @@ def test_rules_based_provider_mentions_news_context_when_available() -> None:
     assert "example.com" in result.generated_text
 
 
+def test_rules_based_provider_prefers_macro_timeline_as_primary_driver_context() -> None:
+    provider = RulesBasedExplanationProvider()
+    result = provider.generate(
+        build_context(
+            [],
+            news_context=[
+                NewsContextEvidence(
+                    provider="gdelt",
+                    article_url="https://example.com/article",
+                    title="Oil prices jump as traders react",
+                    domain="example.com",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2022, 3, 4, tzinfo=timezone.utc),
+                    search_query='("oil prices") sourcelang:english',
+                    relevance_rank=1,
+                    retrieval_scope="episode",
+                    timing_relation="during",
+                    context_window_start=datetime(2022, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2022, 3, 4, tzinfo=timezone.utc),
+                    event_themes=["energy_shock"],
+                    primary_theme="energy_shock",
+                ),
+                NewsContextEvidence(
+                    provider="macro_timeline",
+                    article_url="https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
+                    title="IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+                    domain="imf.org",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2022, 3, 15, tzinfo=timezone.utc),
+                    search_query="macro_timeline:ukraine_war_energy_inflation_2022",
+                    relevance_rank=1,
+                    retrieval_scope="curated_timeline",
+                    timing_relation="during",
+                    context_window_start=datetime(2022, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2022, 3, 4, tzinfo=timezone.utc),
+                    event_themes=["geopolitics", "energy_shock"],
+                    primary_theme="geopolitics",
+                ),
+            ],
+        )
+    )
+
+    assert "broader historical backdrop" in result.generated_text
+    assert "How War in Ukraine Is Reverberating Across World's Regions" in result.generated_text
+
+
 def test_openai_provider_builds_responses_request(monkeypatch) -> None:
     captured: dict[str, object] = {}
 

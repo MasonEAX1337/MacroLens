@@ -50,13 +50,13 @@ The engine now uses two contextual providers:
 - `macro_timeline`
 
 `gdelt` is the live retrieval path.
-`macro_timeline` is a curated historical-context path used to cover household regimes that keyword search handles poorly.
+`macro_timeline` is a curated historical-context path used to cover older and better-known macro regimes that keyword search handles poorly.
 
 For each anomaly, the engine:
 
 - loads the anomaly timestamp, dataset symbol, and dataset frequency
 - checks whether the anomaly belongs to a non-trivial stored cluster
-- chooses one or more providers based on the series type
+- chooses one or more providers based on the configured provider mode
 - derives either:
   - an anomaly-centered context window
   - or an episode-centered context window based on cluster span
@@ -65,7 +65,7 @@ For each anomaly, the engine:
 - searches within a configurable date window using a deeper raw candidate pool than the final stored article count
 - filters titles that do not look relevant to the dataset
 - suppresses duplicate article titles
-- adds curated historical entries when the anomaly lands inside a known macro regime
+- adds curated historical entries when the anomaly or episode window lands inside a known macro regime
 - ranks surviving articles by provider priority, episode timing, and original provider order
 - stores article citations with rank and provenance
 - extracts first-pass event themes from article titles and query context
@@ -75,6 +75,7 @@ Operationally, the live provider is now treated as a recent-context provider rat
 That means:
 
 - GDELT is queried only for anomalies inside a configurable recent-age window
+- the default provider mode is now `hybrid`, so curated macro-timeline context is available for all series when it exists
 - older anomalies fall back to curated macro-timeline context when available
 - otherwise the system returns structured-evidence-only explanations with explicit limited-coverage status
 
@@ -136,23 +137,34 @@ The first provider exposed a real weakness:
 - slower monthly and weekly series have weaker same-window headline alignment
 - historical macro regimes matter even when there is no single decisive headline
 
-So the system now supplements live retrieval with a curated `macro_timeline` provider for selected household scenarios.
+So the system now supplements live retrieval with a curated `macro_timeline` provider for selected historical macro scenarios.
 
 That is a deliberate design choice, not a hack.
 
 It reflects a first-principles distinction:
 
 - live article search is good for event-level market context
-- curated historical context is better for slower structural household regimes
+- curated historical context is better for slower structural regimes and older benchmark episodes
+
+The timeline matcher is now episode-aware.
+
+That means:
+
+- it can match against the anomaly's primary dataset
+- or against the broader set of datasets participating in the anomaly's cluster
+
+This matters because many useful real-world drivers are not specific to only one series.
+A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitical shock.
 
 ## Current Weaknesses
 
 - live keyword retrieval is noisy
 - rate limiting is strict
 - transport-level failures happen and must be treated as provider misses rather than pipeline-fatal errors
-- curated macro-timeline coverage is intentionally sparse and does not cover every anomaly
+- curated macro-timeline coverage is still intentionally sparse and does not cover every anomaly
 - article timestamps are "seen" timestamps, not guaranteed publication timestamps
 - historical coverage quality varies by topic and era
+- the current curated set helps on episodes like March 2022 and October 2008, but many older anomalies such as early-1990s CPI or 2003 housing still have no real-world context
 
 ## Current Guardrails
 
@@ -163,7 +175,7 @@ It reflects a first-principles distinction:
 - the coordinated evidence-refresh workflow now commits news-context refreshes per anomaly so long backfills are resumable
 - article ranking now prefers episode-during context first, then slightly leading context, then lagging context
 - the anomaly API now distinguishes between available citations and limited provider coverage for empty news-context results
-- provider ordering surfaces curated household context before weaker live retrieval when both exist
+- provider ordering now prefers curated macro-timeline context over generic live articles when both point at the same episode
 - stored context now records whether the item was retrieved against an anomaly window, an episode window, or curated timeline coverage
 
 ## What Should Improve Next
@@ -174,7 +186,8 @@ It reflects a first-principles distinction:
 - domain filtering
 - duplicate suppression
 - title-cleaning normalization
-- event and theme extraction on top of retrieved articles
+- semantic reranking over stored context candidates
+- continued expansion of curated historical coverage where live retrieval is predictably weak
 
 ### Trust and provenance
 

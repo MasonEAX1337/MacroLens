@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-3.1-flash-lite-preview"
     gemini_timeout_seconds: float = 30.0
     gemini_api_key: str = ""
-    news_context_provider: str = "gdelt"
+    news_context_provider: str = "hybrid"
     news_context_window_days: int = 7
     news_context_max_articles: int = 5
     news_context_language: str = "English"

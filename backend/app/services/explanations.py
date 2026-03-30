@@ -183,9 +183,9 @@ def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvide
         else:
             timing_rank = 4
         provider_rank = 2
-        if item.provider == "gdelt":
+        if item.provider == "macro_timeline":
             provider_rank = 0
-        elif item.provider == "macro_timeline":
+        elif item.provider == "gdelt":
             provider_rank = 1
         return (timing_rank, provider_rank)
 
