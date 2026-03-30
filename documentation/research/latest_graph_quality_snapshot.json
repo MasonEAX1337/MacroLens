@@ -5,8 +5,8 @@
     "anomalies": 199,
     "clusters": 152,
     "correlations": 559,
-    "news_context_rows": 80,
-    "explanations": 166
+    "news_context_rows": 247,
+    "explanations": 358
   },
   "quality_distribution": [
     {
@@ -96,44 +96,44 @@
   ],
   "context_coverage": [
     {
-      "symbol": "SP500",
-      "anomaly_count": 12,
-      "anomalies_with_context": 8
-    },
-    {
-      "symbol": "MORTGAGE30US",
-      "anomaly_count": 13,
-      "anomalies_with_context": 7
+      "symbol": "DCOILWTICO",
+      "anomaly_count": 53,
+      "anomalies_with_context": 53
     },
     {
       "symbol": "CPIAUCSL",
       "anomaly_count": 38,
-      "anomalies_with_context": 6
+      "anomalies_with_context": 38
+    },
+    {
+      "symbol": "FEDFUNDS",
+      "anomaly_count": 37,
+      "anomalies_with_context": 37
+    },
+    {
+      "symbol": "A229RX0",
+      "anomaly_count": 21,
+      "anomalies_with_context": 21
     },
     {
       "symbol": "CSUSHPISA",
       "anomaly_count": 20,
-      "anomalies_with_context": 6
+      "anomalies_with_context": 20
+    },
+    {
+      "symbol": "MORTGAGE30US",
+      "anomaly_count": 13,
+      "anomalies_with_context": 13
+    },
+    {
+      "symbol": "SP500",
+      "anomaly_count": 12,
+      "anomalies_with_context": 12
     },
     {
       "symbol": "BTC",
       "anomaly_count": 5,
       "anomalies_with_context": 5
-    },
-    {
-      "symbol": "FEDFUNDS",
-      "anomaly_count": 37,
-      "anomalies_with_context": 5
-    },
-    {
-      "symbol": "DCOILWTICO",
-      "anomaly_count": 53,
-      "anomalies_with_context": 4
-    },
-    {
-      "symbol": "A229RX0",
-      "anomaly_count": 21,
-      "anomalies_with_context": 2
     }
   ],
   "bridge_preserved_change_points": 32,

@@ -241,6 +241,40 @@ def test_rules_based_provider_prefers_higher_scored_context_even_when_provider_i
     assert "Fed weighs response to banking stress" in result.generated_text
 
 
+def test_rules_based_provider_uses_structured_driver_fallback_when_no_articles_exist() -> None:
+    provider = RulesBasedExplanationProvider()
+    result = provider.generate(
+        build_context(
+            [],
+            news_context=[
+                NewsContextEvidence(
+                    provider="dataset_backdrop",
+                    article_url="https://fred.stlouisfed.org/series/FEDFUNDS",
+                    title="Likely macro drivers for Fed policy",
+                    domain="structured-fallback",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2025, 11, 1, tzinfo=timezone.utc),
+                    search_query="dataset_backdrop:FEDFUNDS",
+                    relevance_rank=1,
+                    retrieval_scope="dataset_backdrop",
+                    timing_relation="during",
+                    context_window_start=datetime(2025, 11, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2025, 11, 1, tzinfo=timezone.utc),
+                    event_themes=["fed_policy", "inflation"],
+                    primary_theme="fed_policy",
+                    source_kind="dataset_driver_fallback",
+                    driver_summary="No direct article or curated historical event was matched for this anomaly. This rate move most likely reflects changing Federal Reserve policy expectations tied to inflation data, labor-market conditions, banking stress, financial conditions, or recession risk.",
+                    context_score=0.22,
+                )
+            ],
+        )
+    )
+
+    assert "No cited article or curated historical event was matched" in result.generated_text
+    assert "plausible driver context" in result.generated_text
+
+
 def test_openai_provider_builds_responses_request(monkeypatch) -> None:
     captured: dict[str, object] = {}
 

@@ -464,6 +464,9 @@ The next phase should deepen trust, not broaden complexity.
 - historical event system:
   - the registry model now exists
   - but it still lives inside `news_context.metadata` rather than a dedicated persisted event table
+- guaranteed context coverage:
+  - every anomaly can now surface a likely-driver row
+  - but a meaningful share of those rows are explicit `dataset_backdrop` fallbacks rather than cited event evidence
 
 ### Still missing
 

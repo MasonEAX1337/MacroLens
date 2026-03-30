@@ -85,6 +85,89 @@ def test_regenerate_explanation_endpoint_returns_updated_detail(client, seeded_e
     assert any(item["provider"] == "rules_based" for item in payload["explanations"])
 
 
+def test_anomaly_detail_exposes_structured_driver_fallback(client, db_session) -> None:  # noqa: ANN001
+    from app.services.ingestion import DatasetDefinition, upsert_dataset
+    from sqlalchemy import text
+    from datetime import datetime, timezone
+
+    dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="fed_funds",
+            name="Federal Funds Rate",
+            symbol="FEDFUNDS",
+            source="FRED",
+            description="Effective Federal Funds Rate.",
+            frequency="monthly",
+        ),
+    )
+    anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": dataset_id,
+                "timestamp": datetime(2025, 11, 1, tzinfo=timezone.utc),
+                "severity_score": 2.4,
+                "direction": "down",
+                "detection_method": "z_score",
+            },
+        ).scalar_one()
+    )
+    db_session.execute(
+        text(
+            """
+            INSERT INTO news_context (
+                anomaly_id,
+                provider,
+                article_url,
+                title,
+                domain,
+                language,
+                source_country,
+                published_at,
+                search_query,
+                relevance_rank,
+                metadata
+            )
+            VALUES (
+                :anomaly_id,
+                'dataset_backdrop',
+                'https://fred.stlouisfed.org/series/FEDFUNDS',
+                'Likely macro drivers for Fed policy',
+                'structured-fallback',
+                'English',
+                'United States',
+                :published_at,
+                'dataset_backdrop:FEDFUNDS',
+                1,
+                CAST(:metadata AS JSONB)
+            )
+            """
+        ),
+        {
+            "anomaly_id": anomaly_id,
+            "published_at": datetime(2025, 11, 1, tzinfo=timezone.utc),
+            "metadata": '{"retrieval_scope":"dataset_backdrop","timing_relation":"during","source_kind":"dataset_driver_fallback","driver_summary":"No direct article or curated historical event was matched for this anomaly. This rate move most likely reflects changing Federal Reserve policy expectations tied to inflation data, labor-market conditions, banking stress, financial conditions, or recession risk.","event_themes":["fed_policy","inflation"],"primary_theme":"fed_policy","context_score":0.22}',
+        },
+    )
+    db_session.commit()
+
+    response = client.get(f"/api/v1/anomalies/{anomaly_id}")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["news_context"][0]["provider"] == "dataset_backdrop"
+    assert payload["news_context"][0]["source_kind"] == "dataset_driver_fallback"
+    assert "Federal Reserve policy expectations" in payload["news_context"][0]["driver_summary"]
+    assert payload["news_context_status"]["provider"] == "dataset_backdrop"
+
+
 def test_episode_filter_status_is_exposed_for_suppressed_and_preserved_anomalies(
     client,
     seeded_episode_filter_graph,

@@ -193,6 +193,9 @@ function formatRetrievalScope(scope) {
   if (scope === "curated_timeline") {
     return "curated timeline";
   }
+  if (scope === "dataset_backdrop") {
+    return "dataset backdrop";
+  }
   return "stored context";
 }
 
@@ -216,6 +219,7 @@ function splitContextEvidence(detail) {
     const isLikelyDriver =
       index === 0 ||
       item.provider === "macro_timeline" ||
+      item.source_kind === "dataset_driver_fallback" ||
       timingRelation === "during" ||
       timingRelation === "before";
 
@@ -1551,8 +1555,8 @@ export default function App() {
                               {item.domain ?? item.provider}
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
-                            {item.historical_event_summary ? (
-                              <p>{item.historical_event_summary}</p>
+                            {item.driver_summary ?? item.historical_event_summary ? (
+                              <p>{item.driver_summary ?? item.historical_event_summary}</p>
                             ) : null}
                             <div className="news-card-tags">
                               {item.primary_theme ? (
@@ -1608,8 +1612,8 @@ export default function App() {
                               {item.domain ?? item.provider}
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
-                            {item.historical_event_summary ? (
-                              <p>{item.historical_event_summary}</p>
+                            {item.driver_summary ?? item.historical_event_summary ? (
+                              <p>{item.driver_summary ?? item.historical_event_summary}</p>
                             ) : null}
                             <div className="news-card-tags">
                               {item.primary_theme ? (

@@ -264,6 +264,7 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
             metadata ->> 'primary_theme' AS primary_theme,
             metadata ->> 'source_kind' AS source_kind,
+            metadata ->> 'driver_summary' AS driver_summary,
             metadata ->> 'historical_event_id' AS historical_event_id,
             metadata ->> 'historical_event_summary' AS historical_event_summary,
             metadata ->> 'historical_event_type' AS historical_event_type,

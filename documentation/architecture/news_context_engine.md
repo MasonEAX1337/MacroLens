@@ -215,6 +215,7 @@ A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitic
 - semantic context score now ranks candidates before provider order, so a stronger live article can beat a weaker broad backdrop
 - stored context now records whether the item was retrieved against an anomaly window, an episode window, or curated timeline coverage
 - recent targeted validation improved stored context coverage for weak policy / inflation / oil buckets, but modern daily oil anomalies still expose a live-retrieval gap
+- the engine now guarantees at least one stored driver row per anomaly by falling back to an explicit `dataset_backdrop` source when no article or curated historical event matches
 
 ## What Should Improve Next
 
@@ -241,6 +242,7 @@ A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitic
   - curated macro timeline items
   - structured event tags
 - expose the first-pass primary theme when one is available
+- keep `dataset_backdrop` visibly distinct from cited articles and curated historical events so guaranteed coverage is not mistaken for sourced evidence
 
 ### Product direction
 

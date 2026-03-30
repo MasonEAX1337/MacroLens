@@ -88,6 +88,7 @@ class NewsContextRequest:
     dataset_symbol: str
     dataset_frequency: str
     timestamp: datetime
+    direction: str | None = None
     cluster_id: int | None = None
     cluster_start_timestamp: datetime | None = None
     cluster_end_timestamp: datetime | None = None
@@ -165,6 +166,39 @@ DATASET_THEME_PRIORS: dict[str, list[str]] = {
     "A229RX0": ["consumer_demand", "fiscal_policy", "labor_market"],
     "SP500": ["market_stress", "fed_policy", "geopolitics"],
     "BTC": ["market_stress", "fed_policy"],
+}
+
+DATASET_SOURCE_URLS: dict[str, str] = {
+    "BTC": "https://www.coingecko.com/en/coins/bitcoin",
+    "CPIAUCSL": "https://fred.stlouisfed.org/series/CPIAUCSL",
+    "FEDFUNDS": "https://fred.stlouisfed.org/series/FEDFUNDS",
+    "DCOILWTICO": "https://fred.stlouisfed.org/series/DCOILWTICO",
+    "SP500": "https://fred.stlouisfed.org/series/SP500",
+    "CSUSHPISA": "https://fred.stlouisfed.org/series/CSUSHPISA",
+    "MORTGAGE30US": "https://fred.stlouisfed.org/series/MORTGAGE30US",
+    "A229RX0": "https://fred.stlouisfed.org/series/A229RX0",
+}
+
+DATASET_DRIVER_FALLBACK_SUMMARIES: dict[str, str] = {
+    "BTC": "This move most likely reflects a mix of global risk sentiment, liquidity expectations, and crypto-specific market positioning rather than a single traced macro headline.",
+    "CPIAUCSL": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers.",
+    "FEDFUNDS": "This rate move most likely reflects changing Federal Reserve policy expectations tied to inflation data, labor-market conditions, banking stress, financial conditions, or recession risk.",
+    "DCOILWTICO": "This oil move most likely reflects changing global demand expectations, OPEC or OPEC+ supply policy, inventories, refinery disruptions, sanctions, geopolitical risk, or broader recession and trade fears.",
+    "SP500": "This market move most likely reflects changing growth expectations, interest-rate repricing, earnings sentiment, and broader risk appetite rather than a single traced headline.",
+    "CSUSHPISA": "This housing-price move most likely reflects mortgage-rate pressure, affordability, credit availability, labor and income conditions, and broader housing demand shifts.",
+    "MORTGAGE30US": "This mortgage-rate move most likely reflects Treasury-yield moves, Fed policy expectations, mortgage-spread changes, banking conditions, and housing demand pressure.",
+    "A229RX0": "This disposable-income move most likely reflects wages, employment conditions, fiscal transfers, taxes and benefits, and inflation-adjusted purchasing-power changes.",
+}
+
+DATASET_DISPLAY_LABELS: dict[str, str] = {
+    "BTC": "Bitcoin",
+    "CPIAUCSL": "inflation",
+    "FEDFUNDS": "Fed policy",
+    "DCOILWTICO": "oil prices",
+    "SP500": "equities",
+    "CSUSHPISA": "home prices",
+    "MORTGAGE30US": "mortgage rates",
+    "A229RX0": "household income",
 }
 
 
@@ -785,6 +819,13 @@ def get_news_context_status(
     active_provider_names = article_provider_names if has_articles and article_provider_names else attempted_provider_names
     provider_label = "+".join(active_provider_names) if active_provider_names else "unknown"
     if has_articles:
+        if active_provider_names == ["dataset_backdrop"]:
+            note = "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+            return {
+                "provider": provider_label,
+                "status": "available",
+                "note": note,
+            }
         if "macro_timeline" in active_provider_names and "gdelt" in active_provider_names:
             note = "Stored citations are available from curated historical context and live article retrieval."
         elif "macro_timeline" in active_provider_names:
@@ -1048,6 +1089,7 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
             d.symbol AS dataset_symbol,
             d.frequency AS dataset_frequency,
             a.timestamp,
+            a.direction,
             ac.id AS cluster_id,
             ac.start_timestamp AS cluster_start_timestamp,
             ac.end_timestamp AS cluster_end_timestamp,
@@ -1078,6 +1120,7 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
         dataset_symbol=str(row["dataset_symbol"]),
         dataset_frequency=str(row["dataset_frequency"]),
         timestamp=ensure_utc(row["timestamp"]),
+        direction=str(row["direction"]) if row["direction"] is not None else None,
         cluster_id=int(row["cluster_id"]) if row["cluster_id"] is not None else None,
         cluster_start_timestamp=ensure_utc(row["cluster_start_timestamp"]) if row["cluster_start_timestamp"] is not None else None,
         cluster_end_timestamp=ensure_utc(row["cluster_end_timestamp"]) if row["cluster_end_timestamp"] is not None else None,
@@ -1094,7 +1137,12 @@ def annotate_articles_for_request(
     retrieval_scope, context_start, context_end = get_context_window(request)
     annotated: list[NewsArticleRecord] = []
     for article in articles:
-        effective_scope = "curated_timeline" if article.provider == "macro_timeline" else retrieval_scope
+        if article.provider == "macro_timeline":
+            effective_scope = "curated_timeline"
+        elif article.provider == "dataset_backdrop":
+            effective_scope = "dataset_backdrop"
+        else:
+            effective_scope = retrieval_scope
         event_themes = extract_event_themes(article, request)
         context_score = compute_context_score(article, request, event_themes=event_themes)
         metadata = dict(article.metadata)
@@ -1111,6 +1159,57 @@ def annotate_articles_for_request(
         )
         annotated.append(replace(article, metadata=metadata))
     return annotated
+
+
+def summarize_cluster_driver_context(request: NewsContextRequest) -> str:
+    if request.cluster_episode_kind != "cross_dataset_episode":
+        return ""
+    related_labels = [
+        DATASET_DISPLAY_LABELS.get(symbol, symbol)
+        for symbol in request.cluster_dataset_symbols
+        if symbol != request.dataset_symbol
+    ]
+    if not related_labels:
+        return ""
+    joined = ", ".join(related_labels[:3])
+    return f" This anomaly also lines up with {joined}, so a shared cross-market macro driver is plausible."
+
+
+def build_dataset_driver_fallback_article(request: NewsContextRequest) -> NewsArticleRecord:
+    dataset_summary = DATASET_DRIVER_FALLBACK_SUMMARIES.get(
+        request.dataset_symbol,
+        "No article or curated event was matched for this anomaly. The best available fallback is the dataset's usual macro driver set for this kind of move.",
+    )
+    direction_text = ""
+    if request.direction == "up":
+        direction_text = " The stored anomaly direction here was upward."
+    elif request.direction == "down":
+        direction_text = " The stored anomaly direction here was downward."
+    fallback_summary = (
+        dataset_summary
+        + summarize_cluster_driver_context(request)
+        + direction_text
+        + " Treat this as structured fallback context rather than a cited event."
+    )
+    dataset_label = DATASET_DISPLAY_LABELS.get(request.dataset_symbol, request.dataset_name)
+    return NewsArticleRecord(
+        provider="dataset_backdrop",
+        article_url=DATASET_SOURCE_URLS.get(request.dataset_symbol, "https://fred.stlouisfed.org/"),
+        title=f"Likely macro drivers for {dataset_label}",
+        domain="structured-fallback",
+        language="English",
+        source_country="United States",
+        published_at=ensure_utc(request.timestamp),
+        search_query=f"dataset_backdrop:{request.dataset_symbol}",
+        relevance_rank=1,
+        metadata={
+            "source_kind": "dataset_driver_fallback",
+            "driver_summary": fallback_summary,
+            "event_themes": DATASET_THEME_PRIORS.get(request.dataset_symbol, [])[:3],
+            "primary_theme": next(iter(DATASET_THEME_PRIORS.get(request.dataset_symbol, [])), None),
+            "context_score": 0.22,
+        },
+    )
 
 
 def replace_news_context(
@@ -1202,6 +1301,12 @@ def run_news_context_for_anomaly(db: Session, anomaly_id: int) -> int:
     for provider in get_news_context_providers(request):
         articles = annotate_articles_for_request(provider.fetch(request), request)
         inserted += replace_news_context(db, anomaly_id, provider.provider_name, articles)
+    if inserted == 0:
+        fallback_article = annotate_articles_for_request(
+            [build_dataset_driver_fallback_article(request)],
+            request,
+        )
+        inserted += replace_news_context(db, anomaly_id, "dataset_backdrop", fallback_article)
     return inserted
 
 

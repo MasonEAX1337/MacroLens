@@ -38,6 +38,7 @@ class NewsContextEvidence:
     event_themes: list[str] = None
     primary_theme: str | None = None
     source_kind: str | None = None
+    driver_summary: str | None = None
     historical_event_id: str | None = None
     historical_event_summary: str | None = None
     historical_event_type: str | None = None
@@ -130,6 +131,7 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
                 "event_themes": item.event_themes or [],
                 "primary_theme": item.primary_theme,
                 "source_kind": item.source_kind,
+                "driver_summary": item.driver_summary,
                 "historical_event_id": item.historical_event_id,
                 "historical_event_summary": item.historical_event_summary,
                 "historical_event_type": item.historical_event_type,
@@ -259,7 +261,15 @@ class RulesBasedExplanationProvider:
 
         if primary_context:
             primary_theme = format_primary_theme(primary_context.primary_theme)
-            if primary_context.provider == "macro_timeline":
+            if primary_context.source_kind == "dataset_driver_fallback":
+                driver_summary = primary_context.driver_summary
+                context_text = (
+                    "No cited article or curated historical event was matched for this anomaly. "
+                    f"The best available structured fallback suggests: {driver_summary if driver_summary else primary_context.title} "
+                    f"{f'The strongest fallback theme here is {primary_theme}. ' if primary_theme else ''}"
+                    "This should be treated as plausible driver context rather than a confirmed event."
+                )
+            elif primary_context.provider == "macro_timeline":
                 historical_summary = primary_context.historical_event_summary
                 context_text = (
                     f"Likely real-world context around this episode includes the broader historical backdrop "
@@ -384,6 +394,7 @@ def build_openai_input(context: ExplanationContext) -> str:
                 "event_themes": item.event_themes or [],
                 "primary_theme": item.primary_theme,
                 "source_kind": item.source_kind,
+                "driver_summary": item.driver_summary,
                 "historical_event_id": item.historical_event_id,
                 "historical_event_summary": item.historical_event_summary,
                 "historical_event_type": item.historical_event_type,
@@ -719,6 +730,7 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
             metadata ->> 'primary_theme' AS primary_theme,
             metadata ->> 'source_kind' AS source_kind,
+            metadata ->> 'driver_summary' AS driver_summary,
             metadata ->> 'historical_event_id' AS historical_event_id,
             metadata ->> 'historical_event_summary' AS historical_event_summary,
             metadata ->> 'historical_event_type' AS historical_event_type,

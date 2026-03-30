@@ -8,6 +8,7 @@ from app.services.news_context import (
     NewsContextRequest,
     NewsArticleRecord,
     article_match_score,
+    build_dataset_driver_fallback_article,
     build_news_query,
     build_news_queries,
     compute_context_score,
@@ -110,6 +111,25 @@ def test_build_news_queries_adds_dataset_specific_fallbacks() -> None:
     assert len(queries) >= 2
     assert "opec+" in queries[0].lower()
     assert "brent" in queries[1].lower()
+
+
+def test_build_dataset_driver_fallback_article_is_explicit_and_cautious() -> None:
+    article = build_dataset_driver_fallback_article(
+        NewsContextRequest(
+            anomaly_id=36,
+            dataset_name="Federal Funds Rate",
+            dataset_symbol="FEDFUNDS",
+            dataset_frequency="monthly",
+            timestamp=datetime(2025, 11, 1, tzinfo=timezone.utc),
+            direction="down",
+        )
+    )
+
+    assert article.provider == "dataset_backdrop"
+    assert article.metadata["source_kind"] == "dataset_driver_fallback"
+    assert "No direct article or curated historical event was matched" not in article.metadata["driver_summary"]
+    assert "structured fallback context" in article.metadata["driver_summary"]
+    assert "Fed policy" in article.title
 
 
 def test_get_context_window_uses_episode_span_for_non_isolated_clusters() -> None:
@@ -826,3 +846,16 @@ def test_news_context_status_reports_actual_article_provider_when_available() ->
 
     assert status["provider"] == "macro_timeline"
     assert status["note"] == "Stored citations are available from the curated macro timeline."
+
+
+def test_news_context_status_reports_structured_fallback_note_when_only_backdrop_exists() -> None:
+    status = get_news_context_status(
+        dataset_symbol="FEDFUNDS",
+        dataset_frequency="monthly",
+        has_articles=True,
+        attempted_provider_names=["gdelt", "macro_timeline"],
+        article_provider_names=["dataset_backdrop"],
+    )
+
+    assert status["provider"] == "dataset_backdrop"
+    assert "structured fallback backdrop" in status["note"]

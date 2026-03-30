@@ -116,6 +116,7 @@ class NewsContextRecord(BaseModel):
     event_themes: list[str] = []
     primary_theme: str | None = None
     source_kind: str | None = None
+    driver_summary: str | None = None
     historical_event_id: str | None = None
     historical_event_summary: str | None = None
     historical_event_type: str | None = None

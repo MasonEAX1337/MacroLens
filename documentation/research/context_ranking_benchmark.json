@@ -38,5 +38,21 @@
     "expected_event_ids": ["housing_boom_low_rates_2001_2006"],
     "expected_themes": ["housing", "fed_policy", "consumer_demand"],
     "notes": "The selected context should reflect the low-rate housing expansion regime."
+  },
+  {
+    "label": "July 2020 CPI anomaly should align with reopening inflation backdrop",
+    "dataset_symbol": "CPIAUCSL",
+    "timestamp": "2020-07-01T00:00:00+00:00",
+    "expected_event_ids": ["post_pandemic_inflation_and_tightening_2021_2023"],
+    "expected_themes": ["inflation", "consumer_demand", "fed_policy"],
+    "notes": "The selected context should reflect reopening-era inflation pressure rather than a generic market story."
+  },
+  {
+    "label": "April 2025 WTI drop should align with tariff and OPEC supply shock context",
+    "dataset_symbol": "DCOILWTICO",
+    "timestamp": "2025-04-04T00:00:00+00:00",
+    "expected_event_ids": ["trade_war_and_opec_supply_shock_2025"],
+    "expected_themes": ["energy_shock", "market_stress", "geopolitics"],
+    "notes": "The selected context should reflect tariff-driven recession fears and faster OPEC+ supply rather than leaving the episode empty."
   }
 ]
