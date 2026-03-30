@@ -118,6 +118,7 @@ def test_rules_based_provider_mentions_news_context_when_available() -> None:
                     context_window_end=datetime(2024, 3, 2, tzinfo=timezone.utc),
                     event_themes=["market_stress"],
                     primary_theme="market_stress",
+                    context_score=0.71,
                 )
             ],
         )
@@ -174,6 +175,7 @@ def test_rules_based_provider_prefers_macro_timeline_as_primary_driver_context()
                     historical_event_type="geopolitical_shock",
                     historical_event_regions=["Global", "Europe", "United States"],
                     historical_event_confidence=0.95,
+                    context_score=0.94,
                 ),
             ],
         )
@@ -182,6 +184,61 @@ def test_rules_based_provider_prefers_macro_timeline_as_primary_driver_context()
     assert "broader historical backdrop" in result.generated_text
     assert "How War in Ukraine Is Reverberating Across World's Regions" in result.generated_text
     assert "Russia's invasion of Ukraine intensified a geopolitical shock" in result.generated_text
+
+
+def test_rules_based_provider_prefers_higher_scored_context_even_when_provider_is_weaker() -> None:
+    provider = RulesBasedExplanationProvider()
+    result = provider.generate(
+        build_context(
+            [],
+            news_context=[
+                NewsContextEvidence(
+                    provider="macro_timeline",
+                    article_url="https://example.com/timeline",
+                    title="Broad regime background",
+                    domain="example.com",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2022, 3, 15, tzinfo=timezone.utc),
+                    search_query="macro_timeline:test",
+                    relevance_rank=1,
+                    retrieval_scope="curated_timeline",
+                    timing_relation="after",
+                    context_window_start=datetime(2022, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2022, 3, 4, tzinfo=timezone.utc),
+                    event_themes=["geopolitics"],
+                    primary_theme="geopolitics",
+                    source_kind="historical_event_registry",
+                    historical_event_id="test_regime",
+                    historical_event_summary="Very broad regime context.",
+                    historical_event_type="regime",
+                    historical_event_regions=["Global"],
+                    historical_event_confidence=0.4,
+                    context_score=0.55,
+                ),
+                NewsContextEvidence(
+                    provider="gdelt",
+                    article_url="https://example.com/live",
+                    title="Fed weighs response to banking stress",
+                    domain="example.com",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                    search_query='("federal reserve" AND "banking stress")',
+                    relevance_rank=1,
+                    retrieval_scope="episode",
+                    timing_relation="during",
+                    context_window_start=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2024, 3, 2, tzinfo=timezone.utc),
+                    event_themes=["banking_stress", "fed_policy"],
+                    primary_theme="banking_stress",
+                    context_score=0.89,
+                ),
+            ],
+        )
+    )
+
+    assert "Fed weighs response to banking stress" in result.generated_text
 
 
 def test_openai_provider_builds_responses_request(monkeypatch) -> None:

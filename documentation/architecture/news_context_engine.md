@@ -70,6 +70,7 @@ For each anomaly, the engine:
 - stores article citations with rank and provenance
 - extracts first-pass event themes from article titles and query context
 - carries structured historical-event metadata when the curated registry is the source
+- computes a deterministic semantic context score used for ranking and explanation selection
 
 Operationally, the live provider is now treated as a recent-context provider rather than a universal historical archive.
 
@@ -101,6 +102,7 @@ Stored fields include:
 - historical event type
 - historical event regions
 - historical event confidence
+- context score
 
 The retrieval scope is now explicit:
 
@@ -121,6 +123,20 @@ It now stores explicit event-registry fields such as:
 - confidence
 
 That matters because the explanation layer can now use the event meaning directly instead of only repeating a title.
+
+The engine now also reranks context candidates semantically.
+
+That score is still simple and deterministic.
+It currently blends:
+
+- timing fit
+- source type
+- theme overlap
+- dataset-title match
+- event specificity
+
+This is not yet a learned ranker.
+It is a conservative replacement for pure provider-order selection.
 
 The current theme extraction layer is intentionally narrow.
 
@@ -196,19 +212,24 @@ A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitic
 - article ranking now prefers episode-during context first, then slightly leading context, then lagging context
 - the anomaly API now distinguishes between available citations and limited provider coverage for empty news-context results
 - provider ordering now prefers curated macro-timeline context over generic live articles when both point at the same episode
+- semantic context score now ranks candidates before provider order, so a stronger live article can beat a weaker broad backdrop
 - stored context now records whether the item was retrieved against an anomaly window, an episode window, or curated timeline coverage
+- recent targeted validation improved stored context coverage for weak policy / inflation / oil buckets, but modern daily oil anomalies still expose a live-retrieval gap
 
 ## What Should Improve Next
 
 ### Retrieval quality
 
 - better dataset-specific query templates
+- avoid over-constraining clustered live queries when dataset-specific overrides and episode hints are both present
 - domain filtering
 - duplicate suppression
 - title-cleaning normalization
 - semantic reranking over stored context candidates
 - continued expansion of curated historical coverage where live retrieval is predictably weak
+- keep widening curated coverage only where graph snapshots show persistent gaps, especially policy, inflation, and energy episodes
 - better theme assignment for broad retrospective historical sources so the explanation layer describes them more precisely
+- stronger live query templates or source handling for modern oil episodes where curated history is not an appropriate fallback
 
 ### Trust and provenance
 

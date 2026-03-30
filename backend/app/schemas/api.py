@@ -121,6 +121,7 @@ class NewsContextRecord(BaseModel):
     historical_event_type: str | None = None
     historical_event_regions: list[str] = []
     historical_event_confidence: float | None = None
+    context_score: float | None = None
 
 
 class NewsContextStatus(BaseModel):

@@ -357,6 +357,30 @@ To compare only Gemini-generated explanations:
 .\.venv\Scripts\python scripts\explanations\view_explanations.py --provider gemini --limit 5
 ```
 
+### Evaluate context ranking against the current benchmark set
+
+To check whether the top-ranked context matches the expected macro backdrop on a small set of known episodes:
+
+```powershell
+.\.venv\Scripts\python scripts\evaluation\evaluate_context_ranking.py
+```
+
+This uses the benchmark cases stored in:
+
+- [documentation/research/context_ranking_benchmark.json](documentation/research/context_ranking_benchmark.json)
+
+### Generate an internal graph quality snapshot
+
+To inspect anomaly supply, cluster quality, and context coverage in one report:
+
+```powershell
+.\.venv\Scripts\python scripts\evaluation\report_graph_quality.py
+```
+
+This also saves the latest JSON snapshot to:
+
+- [documentation/research/latest_graph_quality_snapshot.json](documentation/research/latest_graph_quality_snapshot.json)
+
 ### Recompute the full evidence graph from stored data
 
 If you change detection logic or want to rebuild downstream evidence without refetching source datasets:

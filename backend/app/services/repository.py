@@ -268,10 +268,12 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             metadata ->> 'historical_event_summary' AS historical_event_summary,
             metadata ->> 'historical_event_type' AS historical_event_type,
             COALESCE(metadata -> 'historical_event_regions', '[]'::jsonb) AS historical_event_regions,
-            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence
+            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence,
+            CAST(metadata ->> 'context_score' AS DOUBLE PRECISION) AS context_score
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY
+            CAST(COALESCE(metadata ->> 'context_score', '0') AS DOUBLE PRECISION) DESC,
             CASE provider
                 WHEN 'macro_timeline' THEN 0
                 WHEN 'gdelt' THEN 1

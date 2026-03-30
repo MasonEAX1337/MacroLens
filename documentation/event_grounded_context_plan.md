@@ -234,6 +234,30 @@ Users should not have to infer whether a paragraph came from:
 3. explanation rewrite to prioritize real-world drivers
 4. UI separation between drivers, articles, and market evidence
 5. expand curated macro event coverage
+6. semantic reranking between live articles and registry-backed historical context
+
+## Implemented So Far
+
+The following pieces are now materially in place:
+
+- episode-level context retrieval for clustered anomalies
+- explicit timing labels relative to episode windows
+- explanation behavior that prefers real-world context when credible context exists
+- UI split between likely drivers, supporting articles, and market relationships
+- deterministic theme extraction
+- hybrid retrieval using:
+  - live GDELT articles
+  - curated historical fallback
+- a small structured historical event registry carried through contextual evidence
+
+## Remaining Work
+
+The main missing pieces are now:
+
+- stronger semantic reranking of context candidates
+- richer event extraction beyond first-pass themes
+- broader but still disciplined historical event coverage
+- provider or source evaluation to decide when a live article should beat a registry entry
 
 ## Narrow Next Sprint
 

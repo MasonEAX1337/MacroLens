@@ -1,0 +1,42 @@
+[
+  {
+    "label": "March 2022 Fed hike should align with Ukraine shock context",
+    "dataset_symbol": "FEDFUNDS",
+    "timestamp": "2022-03-01T00:00:00+00:00",
+    "expected_event_ids": ["ukraine_war_energy_inflation_2022"],
+    "expected_themes": ["geopolitics", "energy_shock", "inflation"],
+    "notes": "The top driver should reflect the March 2022 geopolitical and inflation shock rather than only generic market movement."
+  },
+  {
+    "label": "March 2022 WTI spike should align with Ukraine shock context",
+    "dataset_symbol": "DCOILWTICO",
+    "timestamp": "2022-03-04T00:00:00+00:00",
+    "expected_event_ids": ["ukraine_war_energy_inflation_2022"],
+    "expected_themes": ["geopolitics", "energy_shock"],
+    "notes": "WTI should match the same geopolitical shock that drove the broader energy move."
+  },
+  {
+    "label": "October 2008 oil collapse should align with crisis context",
+    "dataset_symbol": "DCOILWTICO",
+    "timestamp": "2008-10-08T00:00:00+00:00",
+    "expected_event_ids": ["subprime_mortgage_crisis"],
+    "expected_themes": ["housing", "banking_stress", "market_stress"],
+    "notes": "The selected context should point to the financial crisis backdrop."
+  },
+  {
+    "label": "February 1991 CPI should align with Gulf War recession context",
+    "dataset_symbol": "CPIAUCSL",
+    "timestamp": "1991-02-01T00:00:00+00:00",
+    "expected_event_ids": ["gulf_war_oil_recession_1990_1991"],
+    "expected_themes": ["geopolitics", "energy_shock", "inflation"],
+    "notes": "This case checks that older CPI anomalies no longer fall back to pure correlation-only explanations."
+  },
+  {
+    "label": "August 2003 housing anomaly should align with housing boom backdrop",
+    "dataset_symbol": "CSUSHPISA",
+    "timestamp": "2003-08-01T00:00:00+00:00",
+    "expected_event_ids": ["housing_boom_low_rates_2001_2006"],
+    "expected_themes": ["housing", "fed_policy", "consumer_demand"],
+    "notes": "The selected context should reflect the low-rate housing expansion regime."
+  }
+]

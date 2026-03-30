@@ -23,9 +23,25 @@ DATASET_NEWS_TERMS: dict[str, list[str]] = {
 }
 
 DATASET_NEWS_QUERY_OVERRIDES: dict[str, str] = {
+    "CPIAUCSL": '(("inflation" OR "consumer price index" OR CPI OR "consumer prices" OR "price pressures") AND ("federal reserve" OR wages OR energy OR gasoline OR housing OR "supply chain" OR economy OR reopening))',
+    "FEDFUNDS": '(("federal reserve" OR FOMC OR "interest rates" OR "rate hike" OR "rate cut" OR "fed funds" OR "monetary policy") AND (inflation OR jobs OR payrolls OR recession OR banking OR economy OR treasury OR markets OR "financial conditions"))',
+    "DCOILWTICO": '(("oil prices" OR crude OR WTI OR OPEC OR "OPEC+" OR "energy prices") AND (supply OR demand OR sanctions OR war OR geopolitics OR refinery OR production OR inventory OR output OR shipping))',
     "CSUSHPISA": '(("home prices" OR "house prices" OR "home values" OR "case shiller") AND (housing OR "real estate" OR homes))',
     "MORTGAGE30US": '(("mortgage rates" OR mortgage OR refinancing OR refinance OR "home loans") AND (housing OR homebuyers OR affordability))',
     "A229RX0": '((("disposable income" OR "personal income" OR "household income") AND (income OR households OR wages)) OR ("stimulus checks" OR stimulus OR "relief package" OR benefits OR paycheck))',
+}
+
+DATASET_NEWS_FALLBACK_QUERIES: dict[str, tuple[str, ...]] = {
+    "DCOILWTICO": (
+        '(("oil" OR crude OR WTI OR Brent OR "oil market" OR "energy market") AND (prices OR markets OR demand OR supply OR OPEC OR "OPEC+" OR output OR sanctions OR war OR tariffs OR trade OR recession))',
+        '(("oil prices" OR crude OR WTI OR Brent) AND (drop OR slump OR rebound OR surge OR rout OR selloff OR volatility))',
+    ),
+    "FEDFUNDS": (
+        '(("federal reserve" OR FOMC OR "interest rates" OR "rate decision" OR "rate cut" OR "rate hike") AND (inflation OR jobs OR treasury OR economy OR recession OR banking))',
+    ),
+    "CPIAUCSL": (
+        '(("inflation" OR CPI OR "consumer prices") AND (fed OR energy OR housing OR wages OR demand OR prices))',
+    ),
 }
 
 DATASET_TITLE_KEYWORDS: dict[str, list[str]] = {
@@ -193,6 +209,27 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="great_inflation_build_up_1964_1978",
+        dataset_symbols=frozenset({"CPIAUCSL", "FEDFUNDS", "DCOILWTICO", "MORTGAGE30US", "SP500"}),
+        start_at=utc_datetime(1964, 1, 1),
+        end_at=utc_datetime(1978, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(1978, 12, 1),
+        title="Federal Reserve History: The Great Inflation",
+        summary="The buildup to the Great Inflation combined persistent price pressure, recurring energy shocks, and uneven policy tightening well before the Volcker-era peak.",
+        event_type="inflation_regime",
+        regions=("United States",),
+        themes=("inflation", "fed_policy", "energy_shock"),
+        confidence=0.84,
+        article_url="https://www.federalreservehistory.org/essays/great-inflation",
+        domain="federalreservehistory.org",
+        search_query="macro_timeline:great_inflation_build_up_1964_1978",
+        metadata={
+            "timeline_id": "great_inflation_build_up_1964_1978",
+            "coverage": "1964-1978 inflation buildup before the Volcker tightening peak",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
         event_id="great_inflation",
         dataset_symbols=frozenset({"MORTGAGE30US", "FEDFUNDS", "CPIAUCSL", "DCOILWTICO"}),
         start_at=utc_datetime(1979, 8, 1),
@@ -214,6 +251,27 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="oil_shock_1973_1975",
+        dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "SP500"}),
+        start_at=utc_datetime(1973, 10, 1),
+        end_at=utc_datetime(1975, 4, 30, 23, 59, 59),
+        published_at=utc_datetime(2013, 11, 22),
+        title="Federal Reserve History: Oil Shock of 1973-74",
+        summary="The 1973-1974 oil embargo sharply raised energy prices and compounded inflationary pressure during a broader macroeconomic downturn.",
+        event_type="oil_shock",
+        regions=("Global", "United States", "Middle East"),
+        themes=("energy_shock", "geopolitics", "inflation"),
+        confidence=0.94,
+        article_url="https://www.federalreservehistory.org/essays/oil-shock-of-1973-74",
+        domain="federalreservehistory.org",
+        search_query="macro_timeline:oil_shock_1973_1975",
+        metadata={
+            "timeline_id": "oil_shock_1973_1975",
+            "coverage": "1973-1975 oil embargo and inflationary shock",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
         event_id="ukraine_war_energy_inflation_2022",
         dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "MORTGAGE30US", "SP500"}),
         start_at=utc_datetime(2022, 2, 1),
@@ -231,6 +289,90 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         metadata={
             "timeline_id": "ukraine_war_energy_inflation_2022",
             "coverage": "2022 energy, inflation, and policy shock after Russia's invasion of Ukraine",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        event_id="pandemic_crash_and_lockdown_2020",
+        dataset_symbols=frozenset({"DCOILWTICO", "FEDFUNDS", "SP500", "CPIAUCSL", "MORTGAGE30US", "A229RX0"}),
+        start_at=utc_datetime(2020, 3, 1),
+        end_at=utc_datetime(2020, 10, 31, 23, 59, 59),
+        published_at=utc_datetime(2020, 3, 23),
+        title="IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+        summary="The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+        event_type="pandemic_shock",
+        regions=("Global", "United States"),
+        themes=("market_stress", "consumer_demand", "fed_policy", "energy_shock"),
+        confidence=0.95,
+        article_url="https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+        domain="imf.org",
+        search_query="macro_timeline:pandemic_crash_and_lockdown_2020",
+        metadata={
+            "timeline_id": "pandemic_crash_and_lockdown_2020",
+            "coverage": "2020 pandemic crash, lockdown recession, and demand collapse",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        event_id="oil_collapse_2014_2016",
+        dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "SP500"}),
+        start_at=utc_datetime(2014, 6, 1),
+        end_at=utc_datetime(2016, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(2015, 12, 1),
+        title="IMF Blog: How Low Oil Prices Can Help the Global Economy",
+        summary="The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+        event_type="oil_price_collapse",
+        regions=("Global",),
+        themes=("energy_shock", "inflation", "consumer_demand"),
+        confidence=0.84,
+        article_url="https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+        domain="imf.org",
+        search_query="macro_timeline:oil_collapse_2014_2016",
+        metadata={
+            "timeline_id": "oil_collapse_2014_2016",
+            "coverage": "2014-2016 oil oversupply and demand slowdown",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        event_id="post_pandemic_inflation_and_tightening_2021_2023",
+        dataset_symbols=frozenset({"CPIAUCSL", "FEDFUNDS", "DCOILWTICO", "MORTGAGE30US", "A229RX0", "SP500"}),
+        start_at=utc_datetime(2020, 6, 1),
+        end_at=utc_datetime(2023, 12, 31, 23, 59, 59),
+        published_at=utc_datetime(2022, 9, 9),
+        title="IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+        summary="Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+        event_type="inflation_surge",
+        regions=("Global", "United States"),
+        themes=("inflation", "energy_shock", "fed_policy", "consumer_demand"),
+        confidence=0.9,
+        article_url="https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+        domain="imf.org",
+        search_query="macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+        metadata={
+            "timeline_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "coverage": "2020-2023 reopening, inflation surge, and policy tightening",
+            "evidence_kind": "curated_historical_context",
+        },
+    ),
+    MacroTimelineEntry(
+        event_id="trade_war_and_opec_supply_shock_2025",
+        dataset_symbols=frozenset({"DCOILWTICO", "SP500"}),
+        start_at=utc_datetime(2025, 4, 1),
+        end_at=utc_datetime(2025, 4, 15, 23, 59, 59),
+        published_at=utc_datetime(2025, 4, 8),
+        title="EIA: Crude oil prices fell sharply as tariffs and faster OPEC+ supply hit demand expectations",
+        summary="Early-April 2025 oil prices fell sharply as new U.S. tariff measures raised recession fears while OPEC+ accelerated planned output increases, weakening demand expectations and risk sentiment.",
+        event_type="oil_market_shock",
+        regions=("Global", "United States"),
+        themes=("energy_shock", "market_stress", "geopolitics"),
+        confidence=0.87,
+        article_url="https://www.eia.gov/outlooks/steo/archives/apr25.pdf",
+        domain="eia.gov",
+        search_query="macro_timeline:trade_war_and_opec_supply_shock_2025",
+        metadata={
+            "timeline_id": "trade_war_and_opec_supply_shock_2025",
+            "coverage": "April 2025 tariff shock and faster OPEC+ supply increase",
             "evidence_kind": "curated_historical_context",
         },
     ),
@@ -518,6 +660,7 @@ def wait_for_gdelt_rate_limit(min_interval_seconds: float) -> None:
 
 def build_news_query(request: NewsContextRequest, language: str) -> str:
     override = DATASET_NEWS_QUERY_OVERRIDES.get(request.dataset_symbol)
+    base_terms = DATASET_NEWS_TERMS.get(request.dataset_symbol, [f'"{request.dataset_name}"'])
     episode_hint_terms: list[str] = []
     retrieval_scope, _, _ = get_context_window(request)
     if retrieval_scope == "episode":
@@ -529,13 +672,29 @@ def build_news_query(request: NewsContextRequest, language: str) -> str:
     if override:
         if episode_hint_terms:
             joined_hints = " OR ".join(episode_hint_terms)
-            return f"({override}) AND ({joined_hints}) sourcelang:{language.lower()}"
+            joined_base_terms = " OR ".join(base_terms)
+            companion_query = f"(({joined_base_terms}) AND ({joined_hints}))"
+            return f"(({override}) OR {companion_query}) sourcelang:{language.lower()}"
         return f"{override} sourcelang:{language.lower()}"
-    terms = DATASET_NEWS_TERMS.get(request.dataset_symbol, [f'"{request.dataset_name}"'])
+    terms = base_terms
     if episode_hint_terms:
         terms = [*terms, *episode_hint_terms]
     joined_terms = " OR ".join(terms)
     return f"({joined_terms}) sourcelang:{language.lower()}"
+
+
+def build_news_queries(request: NewsContextRequest, language: str) -> list[str]:
+    queries = [build_news_query(request, language)]
+    for fallback_query in DATASET_NEWS_FALLBACK_QUERIES.get(request.dataset_symbol, ()):
+        queries.append(f"{fallback_query} sourcelang:{language.lower()}")
+    deduped_queries: list[str] = []
+    seen_queries: set[str] = set()
+    for query in queries:
+        if query in seen_queries:
+            continue
+        deduped_queries.append(query)
+        seen_queries.add(query)
+    return deduped_queries
 
 
 def extract_event_themes(
@@ -558,6 +717,57 @@ def extract_event_themes(
 
     ranked = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
     return [theme for theme, _score in ranked[:3]]
+
+
+def compute_context_score(
+    article: NewsArticleRecord,
+    request: NewsContextRequest,
+    *,
+    event_themes: list[str],
+) -> float:
+    timing_relation = classify_article_timing_for_request(article, request)
+    timing_score = {
+        "during": 1.0,
+        "before": 0.88,
+        "after": 0.58,
+        "unknown": 0.4,
+    }.get(timing_relation, 0.4)
+
+    source_kind = article.metadata.get("source_kind")
+    if source_kind == "historical_event_registry":
+        source_score = 0.92
+    elif article.provider == "gdelt":
+        source_score = 0.72
+    else:
+        source_score = 0.6
+
+    dataset_theme_priors = set(DATASET_THEME_PRIORS.get(request.dataset_symbol, []))
+    cluster_theme_priors: set[str] = set()
+    for symbol in request.cluster_dataset_symbols:
+        cluster_theme_priors.update(DATASET_THEME_PRIORS.get(symbol, []))
+    combined_theme_priors = dataset_theme_priors | cluster_theme_priors
+    theme_overlap_count = len(combined_theme_priors & set(event_themes))
+    theme_score = min(theme_overlap_count / 2.0, 1.0)
+
+    keyword_score = article_match_score(article, request)
+    keyword_component = min(keyword_score / 3.0, 1.0)
+
+    specificity_score = 0.55
+    if source_kind == "historical_event_registry":
+        specificity_score = 0.8
+        if article.metadata.get("historical_event_summary"):
+            specificity_score = 0.9
+    elif event_themes:
+        specificity_score = 0.7
+
+    overall = (
+        timing_score * 0.35
+        + source_score * 0.2
+        + theme_score * 0.25
+        + keyword_component * 0.1
+        + specificity_score * 0.1
+    )
+    return round(overall, 6)
 
 
 def get_fetch_record_limit(max_articles: int) -> int:
@@ -649,81 +859,84 @@ class GDELTNewsContextProvider:
 
     def fetch(self, request: NewsContextRequest) -> list[NewsArticleRecord]:
         start, end = get_search_window(request, self.window_days)
-        query = build_news_query(request, self.language)
-        payload: dict[str, object] = {}
-        for attempt in range(settings.gdelt_retry_attempts):
-            wait_for_gdelt_rate_limit(settings.gdelt_min_interval_seconds)
-            try:
-                response = httpx.get(
-                    f"{self.base_url}/doc",
-                    params={
-                        "query": query,
-                        "mode": "ArtList",
-                        "format": "json",
-                        "sort": "datedesc",
-                        "maxrecords": get_fetch_record_limit(self.max_articles),
-                        "startdatetime": format_gdelt_timestamp(start),
-                        "enddatetime": format_gdelt_timestamp(end),
-                    },
-                    timeout=self.timeout_seconds,
-                )
-            except httpx.RequestError:
-                if attempt < settings.gdelt_retry_attempts - 1:
-                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
-                    continue
-                return []
-            try:
-                response.raise_for_status()
-            except httpx.HTTPStatusError:
-                if response.status_code == 429 and attempt < settings.gdelt_retry_attempts - 1:
-                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
-                    continue
-                return []
-            try:
-                payload = response.json()
-                break
-            except ValueError:
-                if (
-                    "Please limit requests" in response.text
-                    and attempt < settings.gdelt_retry_attempts - 1
-                ):
-                    time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
-                    continue
-                return []
+        for query in build_news_queries(request, self.language):
+            payload: dict[str, object] = {}
+            for attempt in range(settings.gdelt_retry_attempts):
+                wait_for_gdelt_rate_limit(settings.gdelt_min_interval_seconds)
+                try:
+                    response = httpx.get(
+                        f"{self.base_url}/doc",
+                        params={
+                            "query": query,
+                            "mode": "ArtList",
+                            "format": "json",
+                            "sort": "datedesc",
+                            "maxrecords": get_fetch_record_limit(self.max_articles),
+                            "startdatetime": format_gdelt_timestamp(start),
+                            "enddatetime": format_gdelt_timestamp(end),
+                        },
+                        timeout=self.timeout_seconds,
+                    )
+                except httpx.RequestError:
+                    if attempt < settings.gdelt_retry_attempts - 1:
+                        time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
+                        continue
+                    return []
+                try:
+                    response.raise_for_status()
+                except httpx.HTTPStatusError:
+                    if response.status_code == 429 and attempt < settings.gdelt_retry_attempts - 1:
+                        time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
+                        continue
+                    return []
+                try:
+                    payload = response.json()
+                    break
+                except ValueError:
+                    if (
+                        "Please limit requests" in response.text
+                        and attempt < settings.gdelt_retry_attempts - 1
+                    ):
+                        time.sleep(settings.gdelt_retry_backoff_seconds * (attempt + 1))
+                        continue
+                    return []
 
-        articles: list[NewsArticleRecord] = []
-        for index, item in enumerate(payload.get("articles", []), start=1):
-            if not isinstance(item, dict):
-                continue
-            title = item.get("title")
-            article_url = item.get("url")
-            if not isinstance(title, str) or not title.strip():
-                continue
-            if not isinstance(article_url, str) or not article_url.strip():
-                continue
-            articles.append(
-                NewsArticleRecord(
-                    provider=self.provider_name,
-                    article_url=article_url.strip(),
-                    title=title.strip(),
-                    domain=item.get("domain"),
-                    language=item.get("language"),
-                    source_country=item.get("sourcecountry"),
-                    published_at=parse_gdelt_seendate(item.get("seendate")),
-                    search_query=query,
-                    relevance_rank=index,
-                    metadata={
-                        "social_image": item.get("socialimage"),
-                        "url_mobile": item.get("url_mobile"),
-                    },
+            articles: list[NewsArticleRecord] = []
+            for index, item in enumerate(payload.get("articles", []), start=1):
+                if not isinstance(item, dict):
+                    continue
+                title = item.get("title")
+                article_url = item.get("url")
+                if not isinstance(title, str) or not title.strip():
+                    continue
+                if not isinstance(article_url, str) or not article_url.strip():
+                    continue
+                articles.append(
+                    NewsArticleRecord(
+                        provider=self.provider_name,
+                        article_url=article_url.strip(),
+                        title=title.strip(),
+                        domain=item.get("domain"),
+                        language=item.get("language"),
+                        source_country=item.get("sourcecountry"),
+                        published_at=parse_gdelt_seendate(item.get("seendate")),
+                        search_query=query,
+                        relevance_rank=index,
+                        metadata={
+                            "social_image": item.get("socialimage"),
+                            "url_mobile": item.get("url_mobile"),
+                        },
+                    )
                 )
+            ranked_articles = rank_and_filter_articles(
+                articles,
+                request,
+                window_days=self.window_days,
+                max_articles=self.max_articles,
             )
-        return rank_and_filter_articles(
-            articles,
-            request,
-            window_days=self.window_days,
-            max_articles=self.max_articles,
-        )
+            if ranked_articles:
+                return ranked_articles
+        return []
 
 
 class MacroTimelineNewsContextProvider:
@@ -883,6 +1096,7 @@ def annotate_articles_for_request(
     for article in articles:
         effective_scope = "curated_timeline" if article.provider == "macro_timeline" else retrieval_scope
         event_themes = extract_event_themes(article, request)
+        context_score = compute_context_score(article, request, event_themes=event_themes)
         metadata = dict(article.metadata)
         metadata.update(
             {
@@ -892,6 +1106,7 @@ def annotate_articles_for_request(
                 "timing_relation": classify_article_timing_for_request(article, request),
                 "event_themes": event_themes,
                 "primary_theme": event_themes[0] if event_themes else None,
+                "context_score": context_score,
             }
         )
         annotated.append(replace(article, metadata=metadata))

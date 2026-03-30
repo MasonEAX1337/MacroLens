@@ -9,6 +9,8 @@ from app.services.news_context import (
     NewsArticleRecord,
     article_match_score,
     build_news_query,
+    build_news_queries,
+    compute_context_score,
     extract_event_themes,
     get_context_window,
     get_fetch_record_limit,
@@ -70,6 +72,44 @@ def test_build_news_query_adds_episode_hint_terms_for_clustered_request() -> Non
 
     assert "federal reserve" in query.lower()
     assert "energy" in query.lower() or "oil" in query.lower()
+
+
+def test_build_news_query_keeps_override_query_when_episode_hints_exist() -> None:
+    request = NewsContextRequest(
+        anomaly_id=33,
+        dataset_name="Consumer Price Index",
+        dataset_symbol="CPIAUCSL",
+        dataset_frequency="monthly",
+        timestamp=datetime(2022, 8, 1, tzinfo=timezone.utc),
+        cluster_id=21,
+        cluster_start_timestamp=datetime(2022, 7, 1, tzinfo=timezone.utc),
+        cluster_end_timestamp=datetime(2022, 8, 1, tzinfo=timezone.utc),
+        cluster_episode_kind="cross_dataset_episode",
+        cluster_dataset_symbols=("CPIAUCSL", "FEDFUNDS", "DCOILWTICO"),
+    )
+
+    query = build_news_query(request, "English")
+
+    assert '"consumer price index"' in query.lower()
+    assert "price pressures" in query.lower()
+    assert " OR ((" in query
+    assert "interest rates" in query.lower() or "oil" in query.lower()
+
+
+def test_build_news_queries_adds_dataset_specific_fallbacks() -> None:
+    request = NewsContextRequest(
+        anomaly_id=34,
+        dataset_name="WTI Oil Price",
+        dataset_symbol="DCOILWTICO",
+        dataset_frequency="daily",
+        timestamp=datetime(2025, 4, 4, tzinfo=timezone.utc),
+    )
+
+    queries = build_news_queries(request, "English")
+
+    assert len(queries) >= 2
+    assert "opec+" in queries[0].lower()
+    assert "brent" in queries[1].lower()
 
 
 def test_get_context_window_uses_episode_span_for_non_isolated_clusters() -> None:
@@ -296,6 +336,64 @@ def test_gdelt_provider_filters_articles_outside_requested_window(monkeypatch) -
     assert articles == []
 
 
+def test_gdelt_provider_retries_with_fallback_query_for_oil_when_primary_returns_empty(monkeypatch) -> None:
+    captured_queries: list[str] = []
+
+    class MockResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self._payload = payload
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return self._payload
+
+    def mock_get(url, params, timeout):  # noqa: ANN001, ARG001
+        query = params["query"]
+        captured_queries.append(query)
+        if len(captured_queries) == 1:
+            return MockResponse({"articles": []})
+        return MockResponse(
+            {
+                "articles": [
+                    {
+                        "url": "https://example.com/oil",
+                        "title": "Oil prices slide as OPEC+ output and demand fears hit markets",
+                        "seendate": "20250404T120000Z",
+                        "domain": "example.com",
+                        "language": "English",
+                        "sourcecountry": "United States",
+                    }
+                ]
+            }
+        )
+
+    monkeypatch.setattr("app.services.news_context.httpx.get", mock_get)
+
+    provider = GDELTNewsContextProvider(
+        base_url="https://api.gdeltproject.org/api/v2/doc",
+        window_days=7,
+        max_articles=3,
+        language="English",
+        timeout_seconds=11.0,
+    )
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=35,
+            dataset_name="WTI Oil Price",
+            dataset_symbol="DCOILWTICO",
+            dataset_frequency="daily",
+            timestamp=datetime(2025, 4, 4, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(captured_queries) == 2
+    assert "brent" in captured_queries[1].lower()
+    assert len(articles) == 1
+    assert "opec+" in articles[0].title.lower()
+
+
 def test_gdelt_provider_returns_empty_list_after_rate_limit(monkeypatch) -> None:
     class MockResponse:
         status_code = 429
@@ -419,6 +517,59 @@ def test_extract_event_themes_finds_macro_driver_tags() -> None:
     assert "banking_stress" in themes
 
 
+def test_context_score_prefers_thematic_registry_context_over_generic_article() -> None:
+    request = NewsContextRequest(
+        anomaly_id=9,
+        dataset_name="Federal Funds Rate",
+        dataset_symbol="FEDFUNDS",
+        dataset_frequency="monthly",
+        timestamp=datetime(2022, 3, 1, tzinfo=timezone.utc),
+        cluster_id=7,
+        cluster_start_timestamp=datetime(2022, 3, 1, tzinfo=timezone.utc),
+        cluster_end_timestamp=datetime(2022, 3, 4, tzinfo=timezone.utc),
+        cluster_episode_kind="cross_dataset_episode",
+        cluster_dataset_symbols=("FEDFUNDS", "DCOILWTICO", "SP500"),
+    )
+
+    generic_article = NewsArticleRecord(
+        provider="gdelt",
+        article_url="https://example.com/article",
+        title="Markets move as investors react",
+        domain="example.com",
+        language="English",
+        source_country="United States",
+        published_at=datetime(2022, 3, 2, tzinfo=timezone.utc),
+        search_query="markets",
+        relevance_rank=1,
+        metadata={},
+    )
+    registry_article = NewsArticleRecord(
+        provider="macro_timeline",
+        article_url="https://example.com/timeline",
+        title="IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+        domain="imf.org",
+        language="English",
+        source_country="United States",
+        published_at=datetime(2022, 3, 15, tzinfo=timezone.utc),
+        search_query="macro_timeline:ukraine_war_energy_inflation_2022",
+        relevance_rank=1,
+        metadata={
+            "source_kind": "historical_event_registry",
+            "historical_event_summary": "Russia's invasion of Ukraine intensified a geopolitical shock.",
+            "event_themes": ["geopolitics", "energy_shock", "inflation"],
+        },
+    )
+
+    generic_score = compute_context_score(generic_article, request, event_themes=[])
+    registry_score = compute_context_score(
+        registry_article,
+        request,
+        event_themes=["geopolitics", "energy_shock", "inflation"],
+    )
+
+    assert registry_score > generic_score
+
+
 def test_household_macro_uses_wider_frequency_aware_windows() -> None:
     monthly_request = NewsContextRequest(
         anomaly_id=210,
@@ -457,10 +608,9 @@ def test_macro_timeline_provider_returns_curated_household_context() -> None:
         )
     )
 
-    assert len(articles) == 1
+    assert any("Economic impact payments" in article.title for article in articles)
     assert articles[0].provider == "macro_timeline"
-    assert "Economic impact payments" in articles[0].title
-    assert articles[0].domain == "irs.gov"
+    assert any(article.domain == "irs.gov" for article in articles)
 
 
 def test_macro_timeline_provider_returns_1991_gulf_war_backdrop_for_cpi() -> None:
@@ -483,6 +633,25 @@ def test_macro_timeline_provider_returns_1991_gulf_war_backdrop_for_cpi() -> Non
     assert articles[0].metadata["historical_event_type"] == "oil_recession_shock"
     assert articles[0].metadata["source_kind"] == "historical_event_registry"
     assert articles[0].metadata["event_themes"][0] == "geopolitics"
+
+
+def test_macro_timeline_provider_returns_inflation_build_up_backdrop_for_1965_fed() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=304,
+            dataset_name="Federal Funds Rate",
+            dataset_symbol="FEDFUNDS",
+            dataset_frequency="monthly",
+            timestamp=datetime(1965, 12, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(articles) == 1
+    assert articles[0].metadata["historical_event_id"] == "great_inflation_build_up_1964_1978"
+    assert articles[0].metadata["historical_event_type"] == "inflation_regime"
+    assert "buildup" in articles[0].metadata["historical_event_summary"].lower()
 
 
 def test_macro_timeline_provider_returns_housing_boom_backdrop_for_case_shiller() -> None:
@@ -522,8 +691,58 @@ def test_macro_timeline_provider_can_match_cluster_context_not_just_primary_data
         )
     )
 
-    assert len(articles) == 1
-    assert "Ukraine" in articles[0].title
+    assert len(articles) >= 1
+    assert any("Ukraine" in article.title for article in articles)
+
+
+def test_macro_timeline_provider_returns_reopening_backdrop_for_2020_cpi() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=305,
+            dataset_name="Consumer Price Index",
+            dataset_symbol="CPIAUCSL",
+            dataset_frequency="monthly",
+            timestamp=datetime(2020, 7, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(articles) >= 1
+    matching_article = next(
+        article
+        for article in articles
+        if article.metadata["historical_event_id"] == "post_pandemic_inflation_and_tightening_2021_2023"
+    )
+    assert "reopening" in matching_article.metadata["historical_event_summary"].lower()
+
+
+def test_macro_timeline_provider_returns_april_2025_oil_backdrop() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=306,
+            dataset_name="WTI Oil Price",
+            dataset_symbol="DCOILWTICO",
+            dataset_frequency="daily",
+            timestamp=datetime(2025, 4, 4, tzinfo=timezone.utc),
+            cluster_id=60,
+            cluster_start_timestamp=datetime(2025, 4, 4, tzinfo=timezone.utc),
+            cluster_end_timestamp=datetime(2025, 4, 4, tzinfo=timezone.utc),
+            cluster_episode_kind="cross_dataset_episode",
+            cluster_dataset_symbols=("DCOILWTICO", "SP500"),
+        )
+    )
+
+    assert len(articles) >= 1
+    matching_article = next(
+        article
+        for article in articles
+        if article.metadata["historical_event_id"] == "trade_war_and_opec_supply_shock_2025"
+    )
+    assert "opec" in matching_article.metadata["historical_event_summary"].lower()
+    assert matching_article.domain == "eia.gov"
 
 
 def test_all_series_use_hybrid_provider_names_by_default() -> None:

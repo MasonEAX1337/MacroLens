@@ -437,3 +437,59 @@ MacroLens can be called MVP-complete when all of the following are true:
 - The weakest thing in the repo right now is no longer the UI shell. It is the combination of uneven contextual coverage, still-early second-detector tuning, and still-coarse episode quality.
 
 The next phase should deepen trust, not broaden complexity.
+
+## Implementation Status Snapshot
+
+### Materially implemented
+
+- persisted anomaly detection and correlations
+- persisted episode clustering with first-pass episode-quality metadata
+- propagation timeline with evidence-strength decomposition
+- leading-indicator discovery with support drilldown and comparison
+- hosted and rules-based explanation generation
+- episode-level context retrieval
+- first-pass theme extraction
+- hybrid historical fallback
+- structured historical event registry fields inside contextual evidence
+- UI separation between likely drivers, supporting articles, and market relationships
+
+### Partially implemented
+
+- evidence transparency:
+  - several evidence-quality signals are visible
+  - but there is no dedicated evidence-quality panel or internal dashboard yet
+- explanation quality:
+  - explanations are more event-grounded than before
+  - but there is no provider evaluation harness or explanation decomposition UI
+- historical event system:
+  - the registry model now exists
+  - but it still lives inside `news_context.metadata` rather than a dedicated persisted event table
+
+### Still missing
+
+- internal evidence and episode quality dashboard
+- internal evidence and episode quality dashboard
+  - first step can be script-based quality snapshots before a dedicated UI exists
+- dataset-by-dataset event audit tooling
+- benchmark macro episode evaluation set
+- cluster browser
+- episode-first homepage
+- saved investigations
+- explanation provenance drilldown
+- provider comparison harness
+- careful dataset expansion
+- higher-level interfaces such as Ask MacroLens or regime explorer
+
+### Best next step
+
+The next bottleneck is now split across two narrower issues:
+
+- context selection quality
+- targeted coverage gaps in `DCOILWTICO`, `FEDFUNDS`, and `CPIAUCSL`
+
+That means the best next steps are:
+
+- benchmark-backed improvements to semantic context reranking
+- targeted policy / inflation / energy query and historical-coverage improvements
+- a benchmark macro episode evaluation set
+- internal evidence and episode diagnostics

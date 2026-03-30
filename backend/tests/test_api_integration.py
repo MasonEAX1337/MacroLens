@@ -39,6 +39,7 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     assert payload["news_context"][0]["retrieval_scope"] == "episode"
     assert payload["news_context"][0]["timing_relation"] == "during"
     assert payload["news_context"][0]["primary_theme"] == "market_stress"
+    assert payload["news_context"][0]["context_score"] is not None
     assert payload["news_context_status"]["status"] == "available"
     assert payload["explanations"][0]["provider"] == "gemini"
 

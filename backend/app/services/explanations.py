@@ -43,6 +43,7 @@ class NewsContextEvidence:
     historical_event_type: str | None = None
     historical_event_regions: list[str] = None
     historical_event_confidence: float | None = None
+    context_score: float | None = None
 
 
 @dataclass(frozen=True)
@@ -134,6 +135,7 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
                 "historical_event_type": item.historical_event_type,
                 "historical_event_regions": item.historical_event_regions or [],
                 "historical_event_confidence": item.historical_event_confidence,
+                "context_score": item.context_score,
             }
             for item in context.news_context
         ],
@@ -184,7 +186,7 @@ def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvide
     if not context.news_context:
         return None
 
-    def sort_key(item: NewsContextEvidence) -> tuple[int, int, int, int]:
+    def sort_key(item: NewsContextEvidence) -> tuple[float, int, int, int, int]:
         timing_relation = item.timing_relation or "unknown"
         if timing_relation == "during":
             timing_rank = 0
@@ -201,7 +203,8 @@ def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvide
             provider_rank = 1
         theme_rank = 0 if item.primary_theme else 1
         relevance_rank = item.relevance_rank if item.relevance_rank > 0 else 999
-        return (timing_rank, provider_rank, theme_rank, relevance_rank)
+        context_score = -(item.context_score if item.context_score is not None else 0.0)
+        return (context_score, timing_rank, provider_rank, theme_rank, relevance_rank)
 
     return sorted(context.news_context, key=sort_key)[0]
 
@@ -386,6 +389,7 @@ def build_openai_input(context: ExplanationContext) -> str:
                 "historical_event_type": item.historical_event_type,
                 "historical_event_regions": item.historical_event_regions or [],
                 "historical_event_confidence": item.historical_event_confidence,
+                "context_score": item.context_score,
                 "language": item.language,
                 "source_country": item.source_country,
                 "search_query": item.search_query,
@@ -719,10 +723,12 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             metadata ->> 'historical_event_summary' AS historical_event_summary,
             metadata ->> 'historical_event_type' AS historical_event_type,
             COALESCE(metadata -> 'historical_event_regions', '[]'::jsonb) AS historical_event_regions,
-            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence
+            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence,
+            CAST(metadata ->> 'context_score' AS DOUBLE PRECISION) AS context_score
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY
+            CAST(COALESCE(metadata ->> 'context_score', '0') AS DOUBLE PRECISION) DESC,
             CASE provider
                 WHEN 'macro_timeline' THEN 0
                 WHEN 'gdelt' THEN 1
