@@ -255,23 +255,37 @@ The explanation path is now usable, which changes the task. The problem is no lo
 
 The danger is no longer that the provider fails to respond. The danger is that it responds fluently while overstating evidence.
 
-### Priority 2: Deepen hybrid contextual evidence
+### Priority 2: Upgrade contextual retrieval into event-grounded context
 
 The first news layer proved the evidence model.
-The new macro-timeline layer fixed a real household gap.
-The remaining problem is now coverage quality rather than architecture.
+The macro-timeline layer fixed part of the household gap.
+The remaining problem is no longer just sparse coverage.
+The remaining problem is that the system still explains too many anomalies with market co-movement instead of real-world event context.
 
 #### Highest-value improvements
 
-- expand curated macro-timeline coverage for additional policy and household regimes
-- improve live-retrieval quality where GDELT is still noisy
-- decide where curated historical context should replace live retrieval entirely for older regimes
-- better time-window interpretation in the UI and explainer
-- optional domain filtering or source weighting for live retrieval
+- shift retrieval from anomaly-only search toward episode-level context retrieval
+- separate context into:
+  - live articles
+  - curated macro timeline
+  - structured event tags
+- improve dataset-aware query generation and topic coverage where GDELT is still noisy
+- extract event themes so the app can talk about:
+  - banking stress
+  - inflation surprises
+  - energy shocks
+  - geopolitical escalation
+  - policy shifts
+- change explanation priority so likely real-world drivers lead when credible context exists
+- improve UI framing so users can distinguish:
+  - likely drivers
+  - supporting articles
+  - market relationships
 
 #### Main risk
 
-Weak contextual evidence can make the product feel smarter while actually making it less trustworthy.
+Weak contextual evidence can make the product sound more causal than it really is.
+That means retrieval quality and explanation restraint matter more than sheer article count.
 
 ### Priority 3: Validate and improve change-point detection
 
@@ -352,7 +366,7 @@ Do not overbuild orchestration yet.
 ## Recommended Build Order From Here
 
 1. compare and harden hosted provider behavior
-2. deepen hybrid contextual evidence
+2. upgrade contextual retrieval into event-grounded context
 3. improve change-point credibility through evaluation and tuning
 4. deepen episode quality beyond the first-pass frequency-aware clusterer
 5. continue frontend investigation improvements on top of better episodes
@@ -368,7 +382,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 ### Sprint Deliverables
 
 1. hosted-provider comparison pass
-2. news-context quality improvements
+2. event-grounded context improvements
 3. deeper episode-quality improvement pass
 4. targeted frontend follow-up work on top of better episodes
 
@@ -380,13 +394,14 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 - document provider selection criteria
 - decide whether the rules-based provider should remain the default
 
-#### Retrieval
+#### Context
 
-- tighten dataset-specific GDELT queries
-- document rate-limit behavior and retry policy
+- add episode-level context retrieval for clustered anomalies
+- tighten dataset-specific live queries
 - inspect retrieved articles for relevance drift
-- evaluate whether household macro terms need source weighting because they are broader and noisier than asset-specific queries
-- expand curated timeline coverage where recent-only live retrieval is the wrong tool
+- document rate-limit behavior and retry policy
+- evaluate where curated historical context is better than live retrieval
+- add structured event or theme extraction so explanations can talk about real-world drivers rather than only nearby market movements
 
 #### Frontend
 

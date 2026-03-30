@@ -72,6 +72,12 @@ class NewsContextRequest:
     dataset_symbol: str
     dataset_frequency: str
     timestamp: datetime
+    cluster_id: int | None = None
+    cluster_start_timestamp: datetime | None = None
+    cluster_end_timestamp: datetime | None = None
+    cluster_episode_kind: str | None = None
+    cluster_quality_band: str | None = None
+    cluster_dataset_symbols: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -102,6 +108,18 @@ class MacroTimelineEntry:
 
 
 HOUSEHOLD_NEWS_SYMBOLS = {"CSUSHPISA", "MORTGAGE30US", "A229RX0"}
+EPISODE_RETRIEVAL_EPISODE_KINDS = {"single_dataset_wave", "cross_dataset_episode"}
+
+DATASET_EVENT_HINT_TERMS: dict[str, list[str]] = {
+    "BTC": ["crypto", '"risk assets"'],
+    "CPIAUCSL": ["inflation", '"consumer prices"'],
+    "FEDFUNDS": ['"federal reserve"', '"interest rates"'],
+    "DCOILWTICO": ["oil", "energy"],
+    "SP500": ['"stock market"', "equities"],
+    "CSUSHPISA": ["housing", '"home prices"'],
+    "MORTGAGE30US": ['"mortgage rates"', "housing"],
+    "A229RX0": ['"household income"', '"consumer spending"'],
+}
 
 
 class NewsContextProvider(Protocol):
@@ -224,6 +242,74 @@ def classify_article_timing(published_at: datetime | None, anomaly_timestamp: da
     return "concurrent"
 
 
+def get_context_window(request: NewsContextRequest) -> tuple[str, datetime, datetime]:
+    if (
+        request.cluster_id is not None
+        and request.cluster_start_timestamp is not None
+        and request.cluster_end_timestamp is not None
+        and request.cluster_episode_kind in EPISODE_RETRIEVAL_EPISODE_KINDS
+    ):
+        return (
+            "episode",
+            ensure_utc(request.cluster_start_timestamp),
+            ensure_utc(request.cluster_end_timestamp),
+        )
+    anomaly_timestamp = ensure_utc(request.timestamp)
+    return ("anomaly", anomaly_timestamp, anomaly_timestamp)
+
+
+def get_search_window(request: NewsContextRequest, base_window_days: int) -> tuple[datetime, datetime]:
+    _, context_start, context_end = get_context_window(request)
+    effective_window_days = get_effective_window_days(request, base_window_days)
+    search_start = context_start - timedelta(days=effective_window_days)
+    search_end = context_end + timedelta(days=effective_window_days, hours=23, minutes=59, seconds=59)
+    return search_start, search_end
+
+
+def get_article_distance_from_window(
+    published_at: datetime | None,
+    window_start: datetime,
+    window_end: datetime,
+) -> int | None:
+    if published_at is None:
+        return None
+    published_date = ensure_utc(published_at).date()
+    start_date = ensure_utc(window_start).date()
+    end_date = ensure_utc(window_end).date()
+    if published_date < start_date:
+        return (start_date - published_date).days
+    if published_date > end_date:
+        return (published_date - end_date).days
+    return 0
+
+
+def classify_article_timing_for_request(article: NewsArticleRecord, request: NewsContextRequest) -> str:
+    scope, context_start, context_end = get_context_window(request)
+    if article.published_at is None:
+        return "unknown"
+    published_date = ensure_utc(article.published_at).date()
+    start_date = context_start.date()
+    end_date = context_end.date()
+    if published_date < start_date:
+        return "before"
+    if published_date > end_date:
+        return "after"
+    if scope == "anomaly":
+        return "during"
+    return "during"
+
+
+def describe_article_timing_for_request(article: NewsArticleRecord, request: NewsContextRequest) -> str:
+    timing_relation = classify_article_timing_for_request(article, request)
+    if timing_relation == "before":
+        return "before the episode"
+    if timing_relation == "during":
+        return "during the episode"
+    if timing_relation == "after":
+        return "after the episode"
+    return "unknown timing"
+
+
 def article_matches_dataset(article: NewsArticleRecord, request: NewsContextRequest) -> bool:
     return article_match_score(article, request) > 0
 
@@ -252,11 +338,13 @@ def article_within_window(
     *,
     grace_days: int = 2,
 ) -> bool:
-    day_offset = compute_article_day_offset(article.published_at, request.timestamp)
-    if day_offset is None:
+    scope, context_start, context_end = get_context_window(request)
+    del scope
+    distance = get_article_distance_from_window(article.published_at, context_start, context_end)
+    if distance is None:
         return False
     effective_window_days = get_effective_window_days(request, window_days)
-    return abs(day_offset) <= effective_window_days + grace_days
+    return distance <= effective_window_days + grace_days
 
 
 def rank_and_filter_articles(
@@ -280,17 +368,20 @@ def rank_and_filter_articles(
         filtered.append(article)
 
     def sort_key(article: NewsArticleRecord) -> tuple[int, int, int, int]:
-        day_offset = compute_article_day_offset(article.published_at, request.timestamp)
+        timing_relation = classify_article_timing_for_request(article, request)
+        scope, context_start, context_end = get_context_window(request)
+        del scope
+        distance = get_article_distance_from_window(article.published_at, context_start, context_end)
         keyword_score = article_match_score(article, request)
-        if day_offset is None:
+        if distance is None:
             return (-keyword_score, 3, 999, article.relevance_rank)
-        if day_offset < 0:
+        if timing_relation == "during":
             timing_bucket = 0
-        elif day_offset == 0:
+        elif timing_relation == "before":
             timing_bucket = 1
         else:
             timing_bucket = 2
-        return (-keyword_score, timing_bucket, abs(day_offset), article.relevance_rank)
+        return (-keyword_score, timing_bucket, distance, article.relevance_rank)
 
     ranked = sorted(filtered, key=sort_key)[:max_articles]
     return [
@@ -310,9 +401,22 @@ def wait_for_gdelt_rate_limit(min_interval_seconds: float) -> None:
 
 def build_news_query(request: NewsContextRequest, language: str) -> str:
     override = DATASET_NEWS_QUERY_OVERRIDES.get(request.dataset_symbol)
+    episode_hint_terms: list[str] = []
+    retrieval_scope, _, _ = get_context_window(request)
+    if retrieval_scope == "episode":
+        for symbol in request.cluster_dataset_symbols:
+            if symbol == request.dataset_symbol:
+                continue
+            episode_hint_terms.extend(DATASET_EVENT_HINT_TERMS.get(symbol, []))
+        episode_hint_terms = list(dict.fromkeys(episode_hint_terms))[:3]
     if override:
+        if episode_hint_terms:
+            joined_hints = " OR ".join(episode_hint_terms)
+            return f"({override}) AND ({joined_hints}) sourcelang:{language.lower()}"
         return f"{override} sourcelang:{language.lower()}"
     terms = DATASET_NEWS_TERMS.get(request.dataset_symbol, [f'"{request.dataset_name}"'])
+    if episode_hint_terms:
+        terms = [*terms, *episode_hint_terms]
     joined_terms = " OR ".join(terms)
     return f"({joined_terms}) sourcelang:{language.lower()}"
 
@@ -383,9 +487,7 @@ class GDELTNewsContextProvider:
         self.timeout_seconds = timeout_seconds
 
     def fetch(self, request: NewsContextRequest) -> list[NewsArticleRecord]:
-        effective_window_days = get_effective_window_days(request, self.window_days)
-        start = request.timestamp - timedelta(days=effective_window_days)
-        end = request.timestamp + timedelta(days=effective_window_days, hours=23, minutes=59, seconds=59)
+        start, end = get_search_window(request, self.window_days)
         query = build_news_query(request, self.language)
         payload: dict[str, object] = {}
         for attempt in range(settings.gdelt_retry_attempts):
@@ -562,9 +664,24 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
             d.name AS dataset_name,
             d.symbol AS dataset_symbol,
             d.frequency AS dataset_frequency,
-            a.timestamp
+            a.timestamp,
+            ac.id AS cluster_id,
+            ac.start_timestamp AS cluster_start_timestamp,
+            ac.end_timestamp AS cluster_end_timestamp,
+            ac.episode_kind AS cluster_episode_kind,
+            ac.quality_band AS cluster_quality_band,
+            ARRAY(
+                SELECT DISTINCT d2.symbol
+                FROM anomaly_cluster_members AS acm2
+                JOIN anomalies AS a2 ON a2.id = acm2.anomaly_id
+                JOIN datasets AS d2 ON d2.id = a2.dataset_id
+                WHERE acm2.cluster_id = ac.id
+                ORDER BY d2.symbol
+            ) AS cluster_dataset_symbols
         FROM anomalies AS a
         JOIN datasets AS d ON d.id = a.dataset_id
+        LEFT JOIN anomaly_cluster_members AS acm ON acm.anomaly_id = a.id
+        LEFT JOIN anomaly_clusters AS ac ON ac.id = acm.cluster_id
         WHERE a.id = :anomaly_id
         """
     )
@@ -578,7 +695,34 @@ def load_news_context_request(db: Session, anomaly_id: int) -> NewsContextReques
         dataset_symbol=str(row["dataset_symbol"]),
         dataset_frequency=str(row["dataset_frequency"]),
         timestamp=ensure_utc(row["timestamp"]),
+        cluster_id=int(row["cluster_id"]) if row["cluster_id"] is not None else None,
+        cluster_start_timestamp=ensure_utc(row["cluster_start_timestamp"]) if row["cluster_start_timestamp"] is not None else None,
+        cluster_end_timestamp=ensure_utc(row["cluster_end_timestamp"]) if row["cluster_end_timestamp"] is not None else None,
+        cluster_episode_kind=str(row["cluster_episode_kind"]) if row["cluster_episode_kind"] is not None else None,
+        cluster_quality_band=str(row["cluster_quality_band"]) if row["cluster_quality_band"] is not None else None,
+        cluster_dataset_symbols=tuple(row["cluster_dataset_symbols"] or ()),
     )
+
+
+def annotate_articles_for_request(
+    articles: list[NewsArticleRecord],
+    request: NewsContextRequest,
+) -> list[NewsArticleRecord]:
+    retrieval_scope, context_start, context_end = get_context_window(request)
+    annotated: list[NewsArticleRecord] = []
+    for article in articles:
+        effective_scope = "curated_timeline" if article.provider == "macro_timeline" else retrieval_scope
+        metadata = dict(article.metadata)
+        metadata.update(
+            {
+                "retrieval_scope": effective_scope,
+                "context_window_start": context_start.isoformat(),
+                "context_window_end": context_end.isoformat(),
+                "timing_relation": classify_article_timing_for_request(article, request),
+            }
+        )
+        annotated.append(replace(article, metadata=metadata))
+    return annotated
 
 
 def replace_news_context(
@@ -668,7 +812,7 @@ def run_news_context_for_anomaly(db: Session, anomaly_id: int) -> int:
         return 0
     inserted = 0
     for provider in get_news_context_providers(request):
-        articles = provider.fetch(request)
+        articles = annotate_articles_for_request(provider.fetch(request), request)
         inserted += replace_news_context(db, anomaly_id, provider.provider_name, articles)
     return inserted
 

@@ -233,7 +233,7 @@ def seeded_event_graph(db_session: Session) -> dict[str, int]:
             "published_at": datetime(2026, 2, 6, 12, 0, tzinfo=timezone.utc),
             "search_query": '("bitcoin" OR btc OR crypto) sourcelang:english',
             "relevance_rank": 1,
-            "metadata": "{}",
+            "metadata": '{"retrieval_scope":"episode","timing_relation":"during","context_window_start":"2026-02-06T00:00:00+00:00","context_window_end":"2026-02-16T00:00:00+00:00"}',
         },
     )
     db_session.execute(

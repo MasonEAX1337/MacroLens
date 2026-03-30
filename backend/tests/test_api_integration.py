@@ -36,6 +36,8 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     assert payload["correlations"][0]["related_dataset_name"] == "S&P 500 Index"
     assert payload["news_context"][0]["title"] == "Bitcoin Selloff Deepens as Risk Assets Weaken"
     assert payload["news_context"][0]["provider"] == "gdelt"
+    assert payload["news_context"][0]["retrieval_scope"] == "episode"
+    assert payload["news_context"][0]["timing_relation"] == "during"
     assert payload["news_context_status"]["status"] == "available"
     assert payload["explanations"][0]["provider"] == "gemini"
 

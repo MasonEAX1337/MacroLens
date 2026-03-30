@@ -109,6 +109,10 @@ class NewsContextRecord(BaseModel):
     published_at: datetime | None = None
     search_query: str
     relevance_rank: int
+    retrieval_scope: str | None = None
+    timing_relation: str | None = None
+    context_window_start: datetime | None = None
+    context_window_end: datetime | None = None
 
 
 class NewsContextStatus(BaseModel):

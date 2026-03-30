@@ -157,6 +157,71 @@ function describeArticleTiming(publishedAt, anomalyTimestamp) {
   return "same day";
 }
 
+function getContextTimingClass(item, anomalyTimestamp) {
+  if (item.timing_relation === "before") {
+    return "leading";
+  }
+  if (item.timing_relation === "during") {
+    return "concurrent";
+  }
+  if (item.timing_relation === "after") {
+    return "lagging";
+  }
+  return classifyArticleTiming(item.published_at, anomalyTimestamp);
+}
+
+function describeContextTiming(item, anomalyTimestamp) {
+  if (item.timing_relation === "before") {
+    return "before the episode";
+  }
+  if (item.timing_relation === "during") {
+    return "during the episode";
+  }
+  if (item.timing_relation === "after") {
+    return "after the episode";
+  }
+  return describeArticleTiming(item.published_at, anomalyTimestamp);
+}
+
+function formatRetrievalScope(scope) {
+  if (scope === "episode") {
+    return "episode window";
+  }
+  if (scope === "anomaly") {
+    return "anomaly window";
+  }
+  if (scope === "curated_timeline") {
+    return "curated timeline";
+  }
+  return "stored context";
+}
+
+function splitContextEvidence(detail) {
+  if (!detail || detail.news_context.length === 0) {
+    return { likelyDrivers: [], supportingArticles: [] };
+  }
+
+  const likelyDrivers = [];
+  const supportingArticles = [];
+
+  detail.news_context.forEach((item, index) => {
+    const timingRelation = item.timing_relation ?? "unknown";
+    const isLikelyDriver =
+      index === 0 ||
+      item.provider === "macro_timeline" ||
+      timingRelation === "during" ||
+      timingRelation === "before";
+
+    if (isLikelyDriver && likelyDrivers.length < 2) {
+      likelyDrivers.push(item);
+      return;
+    }
+    supportingArticles.push(item);
+  });
+
+  return { likelyDrivers, supportingArticles };
+}
+
 function describeClusterSpan(cluster) {
   if (!cluster) {
     return "n/a";
@@ -828,6 +893,10 @@ export default function App() {
     () => buildEvidenceSummary(selectedAnomalyDetail),
     [selectedAnomalyDetail],
   );
+  const contextEvidence = useMemo(
+    () => splitContextEvidence(selectedAnomalyDetail),
+    [selectedAnomalyDetail],
+  );
 
   useEffect(() => {
     if (filteredChartData.length === 0) {
@@ -1459,11 +1528,11 @@ export default function App() {
 
                 <section className="detail-section">
                   <header>
-                    <p className="panel-label">News context</p>
+                    <p className="panel-label">Likely real-world drivers</p>
                   </header>
-                  {selectedAnomalyDetail.news_context.length > 0 ? (
+                  {contextEvidence.likelyDrivers.length > 0 ? (
                     <div className="news-list">
-                      {selectedAnomalyDetail.news_context.map((item) => (
+                      {contextEvidence.likelyDrivers.map((item) => (
                         <article className="news-card" key={`${item.article_url}-${item.relevance_rank}`}>
                           <div className="news-card-copy">
                             <h3>
@@ -1477,15 +1546,15 @@ export default function App() {
                             </p>
                             <div className="news-card-tags">
                               <span
-                                className={`timing-badge ${classifyArticleTiming(
-                                  item.published_at,
+                                className={`timing-badge ${getContextTimingClass(
+                                  item,
                                   selectedAnomalyDetail.timestamp,
                                 )}`}
                               >
-                                {describeArticleTiming(item.published_at, selectedAnomalyDetail.timestamp)}
+                                {describeContextTiming(item, selectedAnomalyDetail.timestamp)}
                               </span>
                               <span className="timing-note">
-                                {classifyArticleTiming(item.published_at, selectedAnomalyDetail.timestamp)}
+                                {formatRetrievalScope(item.retrieval_scope)}
                               </span>
                             </div>
                           </div>
@@ -1498,13 +1567,55 @@ export default function App() {
                     </div>
                   ) : (
                     <div className="empty-card">
-                      <p>No news context is stored for this event yet.</p>
+                      <p>No likely real-world driver context is stored for this event yet.</p>
                       <div className={`news-status-note ${selectedAnomalyDetail.news_context_status.status}`}>
                         {selectedAnomalyDetail.news_context_status.note}
                       </div>
                     </div>
                   )}
                 </section>
+
+                {contextEvidence.supportingArticles.length > 0 ? (
+                  <section className="detail-section">
+                    <header>
+                      <p className="panel-label">Supporting articles</p>
+                    </header>
+                    <div className="news-list">
+                      {contextEvidence.supportingArticles.map((item) => (
+                        <article className="news-card" key={`${item.article_url}-${item.relevance_rank}`}>
+                          <div className="news-card-copy">
+                            <h3>
+                              <a href={item.article_url} target="_blank" rel="noreferrer">
+                                {item.title}
+                              </a>
+                            </h3>
+                            <p>
+                              {item.domain ?? item.provider}
+                              {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
+                            </p>
+                            <div className="news-card-tags">
+                              <span
+                                className={`timing-badge ${getContextTimingClass(
+                                  item,
+                                  selectedAnomalyDetail.timestamp,
+                                )}`}
+                              >
+                                {describeContextTiming(item, selectedAnomalyDetail.timestamp)}
+                              </span>
+                              <span className="timing-note">
+                                {formatRetrievalScope(item.retrieval_scope)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="news-card-meta">
+                            <strong>#{item.relevance_rank}</strong>
+                            <span>{item.provider}</span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
 
                 <section className="detail-section">
                   <header>

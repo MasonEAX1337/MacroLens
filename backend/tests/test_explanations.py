@@ -112,11 +112,16 @@ def test_rules_based_provider_mentions_news_context_when_available() -> None:
                     published_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
                     search_query='("bitcoin") sourcelang:english',
                     relevance_rank=1,
+                    retrieval_scope="episode",
+                    timing_relation="during",
+                    context_window_start=datetime(2024, 2, 28, tzinfo=timezone.utc),
+                    context_window_end=datetime(2024, 3, 2, tzinfo=timezone.utc),
                 )
             ],
         )
     )
 
+    assert "Likely real-world context" in result.generated_text
     assert "Bitcoin Selloff Deepens as Risk Assets Weaken" in result.generated_text
     assert "example.com" in result.generated_text
 
@@ -308,6 +313,10 @@ def test_hosted_provider_input_includes_news_context() -> None:
                     published_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
                     search_query='("inflation" OR "consumer price index") sourcelang:english',
                     relevance_rank=1,
+                    retrieval_scope="episode",
+                    timing_relation="during",
+                    context_window_start=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2024, 3, 3, tzinfo=timezone.utc),
                 )
             ],
         )
@@ -318,6 +327,8 @@ def test_hosted_provider_input_includes_news_context() -> None:
     assert '"provider": "gdelt"' in payload
     assert '"timing_class": "concurrent"' in payload
     assert '"timing_interpretation": "on the same day as the anomaly"' in payload
+    assert '"retrieval_scope": "episode"' in payload
+    assert '"timing_relation": "during"' in payload
 
 
 def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driver() -> None:
@@ -343,11 +354,15 @@ def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driv
                     published_at=datetime(2020, 3, 30, tzinfo=timezone.utc),
                     search_query="macro_timeline:economic_impact_payments_2020",
                     relevance_rank=1,
+                    retrieval_scope="curated_timeline",
+                    timing_relation="during",
+                    context_window_start=datetime(2020, 3, 1, tzinfo=timezone.utc),
+                    context_window_end=datetime(2020, 4, 1, tzinfo=timezone.utc),
                 )
             ],
         )
     )
 
     assert '"provider": "macro_timeline"' in payload
-    assert "Reference the strongest stored correlation evidence first when correlations exist." in payload
+    assert "Lead with likely real-world context when the supplied news or timeline evidence is credible." in payload
     assert "Treat macro_timeline items as historical regime context, not as the primary driver unless no stronger structured evidence exists." in payload

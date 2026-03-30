@@ -15,7 +15,7 @@ The current sequence is:
 
 1. detect anomaly
 2. compute stored correlations
-3. retrieve article context around the anomaly window
+3. retrieve article context around the anomaly or episode window
 4. persist article citations in PostgreSQL
 5. allow the explanation layer to use both structured and contextual evidence
 
@@ -55,14 +55,18 @@ The engine now uses two contextual providers:
 For each anomaly, the engine:
 
 - loads the anomaly timestamp, dataset symbol, and dataset frequency
+- checks whether the anomaly belongs to a non-trivial stored cluster
 - chooses one or more providers based on the series type
+- derives either:
+  - an anomaly-centered context window
+  - or an episode-centered context window based on cluster span
 - adjusts the effective search window for slower weekly and monthly series
-- builds a dataset-aware keyword query for live retrieval
+- builds a dataset-aware keyword query for live retrieval, with narrow extra hint terms when an episode contains multiple datasets
 - searches within a configurable date window using a deeper raw candidate pool than the final stored article count
 - filters titles that do not look relevant to the dataset
 - suppresses duplicate article titles
 - adds curated historical entries when the anomaly lands inside a known macro regime
-- ranks surviving articles by provider priority, timing, and original provider order
+- ranks surviving articles by provider priority, episode timing, and original provider order
 - stores article citations with rank and provenance
 
 Operationally, the live provider is now treated as a recent-context provider rather than a universal historical archive.
@@ -83,6 +87,18 @@ Stored fields include:
 - seen timestamp
 - search query
 - relevance rank
+- retrieval scope
+- timing relation
+- context window start
+- context window end
+
+The retrieval scope is now explicit:
+
+- `anomaly`
+- `episode`
+- `curated_timeline`
+
+That matters because slower clustered episodes should no longer pretend that every context item was found from a single-day anomaly lookup.
 
 ## Why GDELT Was Chosen First
 
@@ -123,9 +139,10 @@ It reflects a first-principles distinction:
 - explanations are instructed to treat `macro_timeline` items as broad background, not direct causal proof
 - provider failures degrade to empty news context rather than crashing explanation generation
 - the coordinated evidence-refresh workflow now commits news-context refreshes per anomaly so long backfills are resumable
-- article ranking prefers leading and same-day context over clearly lagging context
+- article ranking now prefers episode-during context first, then slightly leading context, then lagging context
 - the anomaly API now distinguishes between available citations and limited provider coverage for empty news-context results
 - provider ordering surfaces curated household context before weaker live retrieval when both exist
+- stored context now records whether the item was retrieved against an anomaly window, an episode window, or curated timeline coverage
 
 ## What Should Improve Next
 
@@ -135,16 +152,37 @@ It reflects a first-principles distinction:
 - domain filtering
 - duplicate suppression
 - title-cleaning normalization
+- event and theme extraction on top of retrieved articles
 
 ### Trust and provenance
 
 - expose search query and provider more clearly in the UI
-- show whether articles are before, during, or after the anomaly
+- show whether context is before, during, or after the anomaly or episode
 - keep article citations inspectable
+- distinguish:
+  - live articles
+  - curated macro timeline items
+  - structured event tags
+
+### Product direction
+
+The next major step is not just "more articles."
+It is a shift toward **event-grounded context**.
+
+That means the system should increasingly answer:
+
+- what likely happened in the real world
+
+before it answers:
+
+- what else moved statistically
+
+Correlations should remain supporting evidence.
+They should not keep dominating explanations when better real-world context is available.
 
 ### Longer-term
 
 - expand curated macro-timeline coverage beyond the first household regimes
 - add a second live provider for comparison if GDELT remains too noisy
 - add semantic reranking over stored article candidates
-- use extracted event entities rather than only raw titles
+- use extracted event entities and macro themes rather than only raw titles

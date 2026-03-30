@@ -31,6 +31,10 @@ class NewsContextEvidence:
     published_at: datetime | None
     search_query: str
     relevance_rank: int
+    retrieval_scope: str | None = None
+    timing_relation: str | None = None
+    context_window_start: datetime | None = None
+    context_window_end: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -110,6 +114,10 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
                 "timing_interpretation": describe_article_timing(item.published_at, context.timestamp),
                 "search_query": item.search_query,
                 "relevance_rank": item.relevance_rank,
+                "retrieval_scope": item.retrieval_scope,
+                "timing_relation": item.timing_relation,
+                "context_window_start": item.context_window_start.isoformat() if item.context_window_start else None,
+                "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
             }
             for item in context.news_context
         ],
@@ -156,6 +164,40 @@ def classify_article_timing(published_at: datetime | None, anomaly_timestamp: da
     return "leading"
 
 
+def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvidence | None:
+    if not context.news_context:
+        return None
+
+    def sort_key(item: NewsContextEvidence) -> tuple[int, int]:
+        timing_relation = item.timing_relation or "unknown"
+        if timing_relation == "during":
+            timing_rank = 0
+        elif timing_relation == "before":
+            timing_rank = 1
+        elif timing_relation == "after":
+            timing_rank = 3
+        else:
+            timing_rank = 4
+        provider_rank = 2
+        if item.provider == "gdelt":
+            provider_rank = 0
+        elif item.provider == "macro_timeline":
+            provider_rank = 1
+        return (timing_rank, provider_rank)
+
+    return sorted(context.news_context, key=sort_key)[0]
+
+
+def describe_context_timing(item: NewsContextEvidence, context: ExplanationContext) -> str:
+    if item.timing_relation == "before":
+        return "before the episode window"
+    if item.timing_relation == "during":
+        return "during the episode window"
+    if item.timing_relation == "after":
+        return "after the episode window"
+    return describe_article_timing(item.published_at, context.timestamp)
+
+
 class RulesBasedExplanationProvider:
     provider_name = "rules_based"
 
@@ -165,6 +207,7 @@ class RulesBasedExplanationProvider:
     def generate(self, context: ExplanationContext) -> GeneratedExplanation:
         event_date = context.timestamp.strftime("%B %d, %Y")
         move_word = "increase" if context.direction == "up" else "decline" if context.direction == "down" else "move"
+        primary_context = choose_primary_context_item(context)
         if context.cluster_episode_kind == "cross_dataset_episode":
             episode_text = (
                 f"This anomaly sits inside a broader cross-dataset episode spanning about {context.cluster_span_days + 1} day(s) "
@@ -187,12 +230,28 @@ class RulesBasedExplanationProvider:
         else:
             episode_quality_text = "The stored episode context is relatively broad for the current evidence graph."
 
+        if primary_context:
+            if primary_context.provider == "macro_timeline":
+                context_text = (
+                    f"Likely real-world context around this episode includes the broader historical backdrop "
+                    f"'{primary_context.title}', which provides regime context {describe_context_timing(primary_context, context)}."
+                )
+            else:
+                context_text = (
+                    f"Likely real-world context around this episode included reporting such as "
+                    f"'{primary_context.title}'"
+                    f"{f' from {primary_context.domain}' if primary_context.domain else ''}, "
+                    f"appearing {describe_context_timing(primary_context, context)}."
+                )
+        else:
+            context_text = ""
+
         if context.correlations:
             top = context.correlations[0]
             lag_phrase = "the same time" if top.lag_days == 0 else f"about {abs(top.lag_days)} day(s) later" if top.lag_days > 0 else f"about {abs(top.lag_days)} day(s) earlier"
             relationship = "moved in the same direction as" if top.correlation_score >= 0 else "moved opposite to"
             correlation_text = (
-                f"The strongest related signal was {top.related_dataset_name}, which {relationship} "
+                f"Supporting market structure included {top.related_dataset_name}, which {relationship} "
                 f"{context.dataset_name} around {lag_phrase} "
                 f"(correlation {top.correlation_score:.2f})."
             )
@@ -205,14 +264,7 @@ class RulesBasedExplanationProvider:
             )
             uncertainty = "Confidence is limited because the event does not yet have strong supporting correlations."
 
-        if context.news_context:
-            top_article = context.news_context[0]
-            news_text = (
-                f"Stored news context in the event window included '{top_article.title}'"
-                f"{f' from {top_article.domain}' if top_article.domain else ''}, published "
-                f"{describe_article_timing(top_article.published_at, context.timestamp)}."
-            )
-        else:
+        if not context.news_context:
             if context.dataset_symbol in HOUSEHOLD_NEWS_SYMBOLS:
                 news_text = (
                     "No supporting news context was stored for this anomaly, and broad household macro topics are still weak with the current news provider."
@@ -223,11 +275,13 @@ class RulesBasedExplanationProvider:
                 )
             else:
                 news_text = "No supporting news context was stored for this anomaly."
+        else:
+            news_text = ""
 
         generated_text = (
             f"{context.dataset_name} showed an unusual {move_word} on {event_date} "
             f"with a severity score of {context.severity_score:.2f} using {context.detection_method} detection. "
-            f"{episode_text} {episode_quality_text} {correlation_text} {news_text} {uncertainty}"
+            f"{context_text} {episode_text} {episode_quality_text} {correlation_text} {news_text} {uncertainty}"
         )
         return GeneratedExplanation(
             provider=self.provider_name,
@@ -244,6 +298,7 @@ def build_openai_instructions() -> str:
         "Do not claim causality as certainty. "
         "Do not introduce outside facts that are not present in the evidence. "
         "If the evidence is weak or correlations are sparse, say so clearly. "
+        "If credible real-world context exists, lead with it before discussing market relationships. "
         "Do not describe lagging evidence as a likely driver of the anomaly. "
         "If the supplied cluster_quality_band is low, do not frame the anomaly as part of a broad macro episode. "
         "Treat macro_timeline items as broad historical background, not as the strongest direct evidence. "
@@ -288,6 +343,10 @@ def build_openai_input(context: ExplanationContext) -> str:
                 "published_at": item.published_at.isoformat() if item.published_at else None,
                 "timing_class": classify_article_timing(item.published_at, context.timestamp),
                 "timing_interpretation": describe_article_timing(item.published_at, context.timestamp),
+                "timing_relation": item.timing_relation,
+                "retrieval_scope": item.retrieval_scope,
+                "context_window_start": item.context_window_start.isoformat() if item.context_window_start else None,
+                "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
                 "language": item.language,
                 "source_country": item.source_country,
                 "search_query": item.search_query,
@@ -298,12 +357,12 @@ def build_openai_input(context: ExplanationContext) -> str:
         ],
         "output_requirements": [
             "Use plain English.",
-            "Reference the strongest stored correlation evidence first when correlations exist.",
+            "Lead with likely real-world context when the supplied news or timeline evidence is credible.",
             "State uncertainty when evidence is limited.",
             "Do not mention unavailable news or events.",
             "Respect the supplied lag interpretation exactly.",
             "Do not present lagging evidence as a likely cause of the anomaly.",
-            "Prefer 'the strongest stored relationship was' over broad causal phrasing.",
+            "Use correlations as supporting structure rather than the main driver when context exists.",
             "If cluster_quality_band is low, describe the episode context as limited rather than broad.",
             "If stored news context exists, use it as contextual evidence and cite it by title or source.",
             "Treat lagging news context as retrospective context, not proof of the original driver.",
@@ -344,7 +403,7 @@ def build_gemini_system_instruction() -> str:
     return (
         "Explain the supplied economic anomaly using only the provided evidence. "
         "Write 3 to 4 concise sentences. "
-        "Reference the strongest supporting relationships. "
+        "Lead with likely real-world context when credible contextual evidence exists. "
         "Do not invent external events or facts. "
         "Do not claim causality as certainty. "
         "If the evidence is weak, state that clearly. "
@@ -609,7 +668,11 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             source_country,
             published_at,
             search_query,
-            relevance_rank
+            relevance_rank,
+            metadata ->> 'retrieval_scope' AS retrieval_scope,
+            metadata ->> 'timing_relation' AS timing_relation,
+            CAST(metadata ->> 'context_window_start' AS TIMESTAMPTZ) AS context_window_start,
+            CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY

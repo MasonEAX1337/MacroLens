@@ -9,6 +9,7 @@ from app.services.news_context import (
     NewsArticleRecord,
     article_match_score,
     build_news_query,
+    get_context_window,
     get_fetch_record_limit,
     get_effective_window_days,
     get_active_news_context_provider_names,
@@ -48,6 +49,46 @@ def test_build_news_query_uses_household_macro_terms() -> None:
     assert '"mortgage rates"' in query
     assert "affordability" in query
     assert "sourcelang:english" in query
+
+
+def test_build_news_query_adds_episode_hint_terms_for_clustered_request() -> None:
+    request = NewsContextRequest(
+        anomaly_id=3,
+        dataset_name="Consumer Price Index",
+        dataset_symbol="CPIAUCSL",
+        dataset_frequency="monthly",
+        timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        cluster_id=11,
+        cluster_start_timestamp=datetime(2026, 2, 1, tzinfo=timezone.utc),
+        cluster_end_timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        cluster_episode_kind="cross_dataset_episode",
+        cluster_dataset_symbols=("CPIAUCSL", "FEDFUNDS", "DCOILWTICO"),
+    )
+
+    query = build_news_query(request, "English")
+
+    assert "federal reserve" in query.lower()
+    assert "energy" in query.lower() or "oil" in query.lower()
+
+
+def test_get_context_window_uses_episode_span_for_non_isolated_clusters() -> None:
+    request = NewsContextRequest(
+        anomaly_id=4,
+        dataset_name="Consumer Price Index",
+        dataset_symbol="CPIAUCSL",
+        dataset_frequency="monthly",
+        timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        cluster_id=12,
+        cluster_start_timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        cluster_end_timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        cluster_episode_kind="cross_dataset_episode",
+    )
+
+    scope, start, end = get_context_window(request)
+
+    assert scope == "episode"
+    assert start == datetime(2026, 1, 1, tzinfo=timezone.utc)
+    assert end == datetime(2026, 3, 1, tzinfo=timezone.utc)
 
 
 def test_gdelt_provider_builds_expected_request(monkeypatch) -> None:
@@ -105,6 +146,48 @@ def test_gdelt_provider_builds_expected_request(monkeypatch) -> None:
     assert articles[0].title == "Bitcoin volatility jumps"
     assert articles[0].provider == "gdelt"
     assert articles[0].published_at == datetime(2026, 3, 1, 12, 0, tzinfo=timezone.utc)
+
+
+def test_gdelt_provider_uses_episode_window_for_clustered_requests(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class MockResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return {"articles": []}
+
+    def mock_get(url, params, timeout):  # noqa: ANN001
+        captured["params"] = params
+        return MockResponse()
+
+    monkeypatch.setattr("app.services.news_context.httpx.get", mock_get)
+
+    provider = GDELTNewsContextProvider(
+        base_url="https://api.gdeltproject.org/api/v2/doc",
+        window_days=7,
+        max_articles=3,
+        language="English",
+        timeout_seconds=11.0,
+    )
+    provider.fetch(
+        NewsContextRequest(
+            anomaly_id=1,
+            dataset_name="Consumer Price Index",
+            dataset_symbol="CPIAUCSL",
+            dataset_frequency="monthly",
+            timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+            cluster_id=2,
+            cluster_start_timestamp=datetime(2026, 2, 1, tzinfo=timezone.utc),
+            cluster_end_timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+            cluster_episode_kind="cross_dataset_episode",
+            cluster_dataset_symbols=("CPIAUCSL", "FEDFUNDS"),
+        )
+    )
+
+    assert captured["params"]["startdatetime"] == "20260111000000"
+    assert captured["params"]["enddatetime"] == "20260322235959"
 
 
 def test_gdelt_provider_filters_duplicates_and_off_topic_titles(monkeypatch) -> None:

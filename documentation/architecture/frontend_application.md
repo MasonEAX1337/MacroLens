@@ -40,7 +40,8 @@ The frontend currently includes:
 - propagation timeline section
 - propagation score decomposition
 - evidence provenance section
-- cited news context section
+- likely real-world drivers section
+- supporting articles section
 - article timing badges
 - correlation cards
 - explanation cards
@@ -82,6 +83,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - global multi-dataset view now exists without breaking the focused single-series investigation flow
 - anomaly list and chart reinforce each other
 - evidence panel is easy to scan
+- the event panel now separates likely drivers from supporting articles and from market relationships
 - frontend is wired to live backend data rather than placeholder content
 
 ## Current Weaknesses
@@ -91,6 +93,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - no explicit raw evidence payload view
 - the 3D constellation adds a meaningful visual layer, but it also increases bundle size and needs performance discipline
 - episode-quality labels are now visible, but the UI still does not show why a mixed-frequency episode was grouped the way it was
+- the likely-driver section is still only as strong as the retrieval and ranking beneath it; the UI framing is now better than the underlying event extraction
 
 ## Next Improvements
 
@@ -100,6 +103,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - richer comparison semantics inside the constellation view
 - explicit raw evidence payload view
 - stronger explanation of why a cluster was labeled low, medium, or high quality
+- deeper event-driver extraction so the likely-driver section is not just article-first forever
 
 ### Second-order improvements
 
