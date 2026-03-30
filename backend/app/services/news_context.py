@@ -121,6 +121,30 @@ DATASET_EVENT_HINT_TERMS: dict[str, list[str]] = {
     "A229RX0": ['"household income"', '"consumer spending"'],
 }
 
+EVENT_THEME_KEYWORDS: dict[str, list[str]] = {
+    "fed_policy": ["federal reserve", "fed", "rate hike", "rate cut", "powell", "policy meeting"],
+    "inflation": ["inflation", "consumer prices", "cpi", "price pressures"],
+    "energy_shock": ["oil", "crude", "opec", "energy prices", "gas prices"],
+    "geopolitics": ["war", "ukraine", "russia", "middle east", "conflict", "invasion", "sanctions"],
+    "banking_stress": ["banking stress", "bank failure", "svb", "regional bank", "credit stress"],
+    "housing": ["housing", "home prices", "house prices", "mortgage", "affordability", "real estate"],
+    "labor_market": ["jobs", "employment", "unemployment", "payrolls", "labor market"],
+    "fiscal_policy": ["stimulus", "relief package", "spending bill", "tax", "fiscal"],
+    "consumer_demand": ["consumer spending", "demand", "retail sales"],
+    "market_stress": ["selloff", "sell off", "risk assets", "market stress", "risk-off", "volatility"],
+}
+
+DATASET_THEME_PRIORS: dict[str, list[str]] = {
+    "CPIAUCSL": ["inflation", "energy_shock", "fed_policy"],
+    "FEDFUNDS": ["fed_policy", "banking_stress", "inflation"],
+    "DCOILWTICO": ["energy_shock", "geopolitics", "inflation"],
+    "CSUSHPISA": ["housing", "fed_policy"],
+    "MORTGAGE30US": ["housing", "fed_policy", "banking_stress"],
+    "A229RX0": ["consumer_demand", "fiscal_policy", "labor_market"],
+    "SP500": ["market_stress", "fed_policy", "geopolitics"],
+    "BTC": ["market_stress", "fed_policy"],
+}
+
 
 class NewsContextProvider(Protocol):
     provider_name: str
@@ -421,6 +445,24 @@ def build_news_query(request: NewsContextRequest, language: str) -> str:
     return f"({joined_terms}) sourcelang:{language.lower()}"
 
 
+def extract_event_themes(
+    article: NewsArticleRecord,
+    request: NewsContextRequest,
+) -> list[str]:
+    searchable_text = normalize_text(f"{article.title} {article.search_query}")
+    scores: dict[str, int] = {}
+    dataset_priors = set(DATASET_THEME_PRIORS.get(request.dataset_symbol, []))
+
+    for theme, keywords in EVENT_THEME_KEYWORDS.items():
+        keyword_hits = sum(1 for keyword in keywords if normalize_text(keyword) in searchable_text)
+        if keyword_hits <= 0:
+            continue
+        scores[theme] = keyword_hits + (1 if theme in dataset_priors else 0)
+
+    ranked = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
+    return [theme for theme, _score in ranked[:3]]
+
+
 def get_fetch_record_limit(max_articles: int) -> int:
     return min(max(max_articles * 5, 10), 50)
 
@@ -712,6 +754,7 @@ def annotate_articles_for_request(
     annotated: list[NewsArticleRecord] = []
     for article in articles:
         effective_scope = "curated_timeline" if article.provider == "macro_timeline" else retrieval_scope
+        event_themes = extract_event_themes(article, request)
         metadata = dict(article.metadata)
         metadata.update(
             {
@@ -719,6 +762,8 @@ def annotate_articles_for_request(
                 "context_window_start": context_start.isoformat(),
                 "context_window_end": context_end.isoformat(),
                 "timing_relation": classify_article_timing_for_request(article, request),
+                "event_themes": event_themes,
+                "primary_theme": event_themes[0] if event_themes else None,
             }
         )
         annotated.append(replace(article, metadata=metadata))

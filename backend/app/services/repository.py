@@ -260,7 +260,9 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             metadata ->> 'retrieval_scope' AS retrieval_scope,
             metadata ->> 'timing_relation' AS timing_relation,
             CAST(metadata ->> 'context_window_start' AS TIMESTAMPTZ) AS context_window_start,
-            CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end
+            CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end,
+            COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
+            metadata ->> 'primary_theme' AS primary_theme
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY

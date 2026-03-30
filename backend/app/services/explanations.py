@@ -35,6 +35,8 @@ class NewsContextEvidence:
     timing_relation: str | None = None
     context_window_start: datetime | None = None
     context_window_end: datetime | None = None
+    event_themes: list[str] = None
+    primary_theme: str | None = None
 
 
 @dataclass(frozen=True)
@@ -118,6 +120,8 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
                 "timing_relation": item.timing_relation,
                 "context_window_start": item.context_window_start.isoformat() if item.context_window_start else None,
                 "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
+                "event_themes": item.event_themes or [],
+                "primary_theme": item.primary_theme,
             }
             for item in context.news_context
         ],
@@ -198,6 +202,12 @@ def describe_context_timing(item: NewsContextEvidence, context: ExplanationConte
     return describe_article_timing(item.published_at, context.timestamp)
 
 
+def format_primary_theme(theme: str | None) -> str | None:
+    if not theme:
+        return None
+    return theme.replace("_", " ")
+
+
 class RulesBasedExplanationProvider:
     provider_name = "rules_based"
 
@@ -231,14 +241,19 @@ class RulesBasedExplanationProvider:
             episode_quality_text = "The stored episode context is relatively broad for the current evidence graph."
 
         if primary_context:
+            primary_theme = format_primary_theme(primary_context.primary_theme)
             if primary_context.provider == "macro_timeline":
                 context_text = (
                     f"Likely real-world context around this episode includes the broader historical backdrop "
-                    f"'{primary_context.title}', which provides regime context {describe_context_timing(primary_context, context)}."
+                    f"'{primary_context.title}', which provides"
+                    f"{f' {primary_theme} ' if primary_theme else ' '}"
+                    f"regime context {describe_context_timing(primary_context, context)}."
                 )
             else:
                 context_text = (
-                    f"Likely real-world context around this episode included reporting such as "
+                    f"Likely real-world context around this episode points to"
+                    f"{f' {primary_theme}' if primary_theme else ' broader macro developments'}, "
+                    f"with reporting such as "
                     f"'{primary_context.title}'"
                     f"{f' from {primary_context.domain}' if primary_context.domain else ''}, "
                     f"appearing {describe_context_timing(primary_context, context)}."
@@ -347,6 +362,8 @@ def build_openai_input(context: ExplanationContext) -> str:
                 "retrieval_scope": item.retrieval_scope,
                 "context_window_start": item.context_window_start.isoformat() if item.context_window_start else None,
                 "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
+                "event_themes": item.event_themes or [],
+                "primary_theme": item.primary_theme,
                 "language": item.language,
                 "source_country": item.source_country,
                 "search_query": item.search_query,
@@ -672,7 +689,9 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             metadata ->> 'retrieval_scope' AS retrieval_scope,
             metadata ->> 'timing_relation' AS timing_relation,
             CAST(metadata ->> 'context_window_start' AS TIMESTAMPTZ) AS context_window_start,
-            CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end
+            CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end,
+            COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
+            metadata ->> 'primary_theme' AS primary_theme
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY

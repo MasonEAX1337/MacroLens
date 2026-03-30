@@ -116,12 +116,15 @@ def test_rules_based_provider_mentions_news_context_when_available() -> None:
                     timing_relation="during",
                     context_window_start=datetime(2024, 2, 28, tzinfo=timezone.utc),
                     context_window_end=datetime(2024, 3, 2, tzinfo=timezone.utc),
+                    event_themes=["market_stress"],
+                    primary_theme="market_stress",
                 )
             ],
         )
     )
 
     assert "Likely real-world context" in result.generated_text
+    assert "market stress" in result.generated_text
     assert "Bitcoin Selloff Deepens as Risk Assets Weaken" in result.generated_text
     assert "example.com" in result.generated_text
 
@@ -317,6 +320,8 @@ def test_hosted_provider_input_includes_news_context() -> None:
                     timing_relation="during",
                     context_window_start=datetime(2024, 3, 1, tzinfo=timezone.utc),
                     context_window_end=datetime(2024, 3, 3, tzinfo=timezone.utc),
+                    event_themes=["inflation"],
+                    primary_theme="inflation",
                 )
             ],
         )
@@ -329,6 +334,7 @@ def test_hosted_provider_input_includes_news_context() -> None:
     assert '"timing_interpretation": "on the same day as the anomaly"' in payload
     assert '"retrieval_scope": "episode"' in payload
     assert '"timing_relation": "during"' in payload
+    assert '"primary_theme": "inflation"' in payload
 
 
 def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driver() -> None:
@@ -358,6 +364,8 @@ def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driv
                     timing_relation="during",
                     context_window_start=datetime(2020, 3, 1, tzinfo=timezone.utc),
                     context_window_end=datetime(2020, 4, 1, tzinfo=timezone.utc),
+                    event_themes=["fiscal_policy"],
+                    primary_theme="fiscal_policy",
                 )
             ],
         )

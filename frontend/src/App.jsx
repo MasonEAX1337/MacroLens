@@ -196,6 +196,13 @@ function formatRetrievalScope(scope) {
   return "stored context";
 }
 
+function formatEventTheme(theme) {
+  if (!theme) {
+    return null;
+  }
+  return theme.replace(/_/g, " ");
+}
+
 function splitContextEvidence(detail) {
   if (!detail || detail.news_context.length === 0) {
     return { likelyDrivers: [], supportingArticles: [] };
@@ -1545,6 +1552,11 @@ export default function App() {
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
                             <div className="news-card-tags">
+                              {item.primary_theme ? (
+                                <span className="context-theme-badge">
+                                  {formatEventTheme(item.primary_theme)}
+                                </span>
+                              ) : null}
                               <span
                                 className={`timing-badge ${getContextTimingClass(
                                   item,
@@ -1594,6 +1606,11 @@ export default function App() {
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
                             <div className="news-card-tags">
+                              {item.primary_theme ? (
+                                <span className="context-theme-badge">
+                                  {formatEventTheme(item.primary_theme)}
+                                </span>
+                              ) : null}
                               <span
                                 className={`timing-badge ${getContextTimingClass(
                                   item,

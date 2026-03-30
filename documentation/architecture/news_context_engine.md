@@ -68,6 +68,7 @@ For each anomaly, the engine:
 - adds curated historical entries when the anomaly lands inside a known macro regime
 - ranks surviving articles by provider priority, episode timing, and original provider order
 - stores article citations with rank and provenance
+- extracts first-pass event themes from article titles and query context
 
 Operationally, the live provider is now treated as a recent-context provider rather than a universal historical archive.
 
@@ -91,6 +92,8 @@ Stored fields include:
 - timing relation
 - context window start
 - context window end
+- event themes
+- primary theme
 
 The retrieval scope is now explicit:
 
@@ -99,6 +102,25 @@ The retrieval scope is now explicit:
 - `curated_timeline`
 
 That matters because slower clustered episodes should no longer pretend that every context item was found from a single-day anomaly lookup.
+
+The current theme extraction layer is intentionally narrow.
+
+It is not a full semantic event model.
+It is a deterministic tagging pass over:
+
+- article title
+- search query context
+- dataset-specific theme priors
+
+That first pass is enough to let the app say things like:
+
+- banking stress
+- fed policy
+- inflation
+- housing
+- market stress
+
+without pretending it has solved macro event understanding.
 
 ## Why GDELT Was Chosen First
 
@@ -163,6 +185,7 @@ It reflects a first-principles distinction:
   - live articles
   - curated macro timeline items
   - structured event tags
+- expose the first-pass primary theme when one is available
 
 ### Product direction
 

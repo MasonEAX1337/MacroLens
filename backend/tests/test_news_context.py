@@ -9,6 +9,7 @@ from app.services.news_context import (
     NewsArticleRecord,
     article_match_score,
     build_news_query,
+    extract_event_themes,
     get_context_window,
     get_fetch_record_limit,
     get_effective_window_days,
@@ -387,6 +388,35 @@ def test_income_titles_can_match_broader_relief_language() -> None:
     )
 
     assert score >= 2
+
+
+def test_extract_event_themes_finds_macro_driver_tags() -> None:
+    request = NewsContextRequest(
+        anomaly_id=8,
+        dataset_name="Federal Funds Rate",
+        dataset_symbol="FEDFUNDS",
+        dataset_frequency="monthly",
+        timestamp=datetime(2026, 3, 1, tzinfo=timezone.utc),
+    )
+
+    themes = extract_event_themes(
+        NewsArticleRecord(
+            provider="gdelt",
+            article_url="https://example.com/fed",
+            title="Federal Reserve signals rate cut after banking stress spreads",
+            domain="example.com",
+            language="English",
+            source_country="United States",
+            published_at=datetime(2026, 3, 2, tzinfo=timezone.utc),
+            search_query="",
+            relevance_rank=1,
+            metadata={},
+        ),
+        request,
+    )
+
+    assert "fed_policy" in themes
+    assert "banking_stress" in themes
 
 
 def test_household_macro_uses_wider_frequency_aware_windows() -> None:

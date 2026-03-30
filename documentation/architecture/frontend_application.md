@@ -42,6 +42,7 @@ The frontend currently includes:
 - evidence provenance section
 - likely real-world drivers section
 - supporting articles section
+- first-pass event-theme badges on likely-driver cards
 - article timing badges
 - correlation cards
 - explanation cards
@@ -84,6 +85,7 @@ The goal is not ornamental style. The goal is to make the system feel intentiona
 - anomaly list and chart reinforce each other
 - evidence panel is easy to scan
 - the event panel now separates likely drivers from supporting articles and from market relationships
+- likely-driver cards now show first-pass event-theme labels when the backend can extract one
 - frontend is wired to live backend data rather than placeholder content
 
 ## Current Weaknesses

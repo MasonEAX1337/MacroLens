@@ -113,6 +113,8 @@ class NewsContextRecord(BaseModel):
     timing_relation: str | None = None
     context_window_start: datetime | None = None
     context_window_end: datetime | None = None
+    event_themes: list[str] = []
+    primary_theme: str | None = None
 
 
 class NewsContextStatus(BaseModel):

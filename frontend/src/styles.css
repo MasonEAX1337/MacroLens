@@ -879,6 +879,18 @@ body {
   font-weight: 700;
 }
 
+.context-theme-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: rgba(14, 116, 144, 0.12);
+  color: #0f766e;
+  text-transform: capitalize;
+}
+
 .timing-badge.leading {
   background: rgba(15, 118, 110, 0.12);
   color: #0f766e;
