@@ -164,7 +164,8 @@ A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitic
 - curated macro-timeline coverage is still intentionally sparse and does not cover every anomaly
 - article timestamps are "seen" timestamps, not guaranteed publication timestamps
 - historical coverage quality varies by topic and era
-- the current curated set helps on episodes like March 2022 and October 2008, but many older anomalies such as early-1990s CPI or 2003 housing still have no real-world context
+- the current curated set now helps on episodes like March 2022, October 2008, early-1990s CPI, and early-2000s housing
+- some historical anomalies still remain uncovered because the curated set is selective and live retrieval is still age-limited
 
 ## Current Guardrails
 
@@ -188,6 +189,7 @@ A 2022 oil anomaly and a 2022 Fed anomaly can both belong to the same geopolitic
 - title-cleaning normalization
 - semantic reranking over stored context candidates
 - continued expansion of curated historical coverage where live retrieval is predictably weak
+- better theme assignment for broad retrospective historical sources so the explanation layer describes them more precisely
 
 ### Trust and provenance
 

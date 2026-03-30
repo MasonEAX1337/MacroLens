@@ -172,7 +172,7 @@ def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvide
     if not context.news_context:
         return None
 
-    def sort_key(item: NewsContextEvidence) -> tuple[int, int]:
+    def sort_key(item: NewsContextEvidence) -> tuple[int, int, int, int]:
         timing_relation = item.timing_relation or "unknown"
         if timing_relation == "during":
             timing_rank = 0
@@ -187,7 +187,9 @@ def choose_primary_context_item(context: ExplanationContext) -> NewsContextEvide
             provider_rank = 0
         elif item.provider == "gdelt":
             provider_rank = 1
-        return (timing_rank, provider_rank)
+        theme_rank = 0 if item.primary_theme else 1
+        relevance_rank = item.relevance_rank if item.relevance_rank > 0 else 999
+        return (timing_rank, provider_rank, theme_rank, relevance_rank)
 
     return sorted(context.news_context, key=sort_key)[0]
 

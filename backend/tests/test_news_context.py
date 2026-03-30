@@ -463,6 +463,42 @@ def test_macro_timeline_provider_returns_curated_household_context() -> None:
     assert articles[0].domain == "irs.gov"
 
 
+def test_macro_timeline_provider_returns_1991_gulf_war_backdrop_for_cpi() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=302,
+            dataset_name="Consumer Price Index",
+            dataset_symbol="CPIAUCSL",
+            dataset_frequency="monthly",
+            timestamp=datetime(1991, 2, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(articles) == 1
+    assert "Out of the Ballpark" in articles[0].title
+    assert articles[0].domain == "imf.org"
+
+
+def test_macro_timeline_provider_returns_housing_boom_backdrop_for_case_shiller() -> None:
+    provider = MacroTimelineNewsContextProvider(max_articles=5)
+
+    articles = provider.fetch(
+        NewsContextRequest(
+            anomaly_id=303,
+            dataset_name="Case-Shiller U.S. National Home Price Index",
+            dataset_symbol="CSUSHPISA",
+            dataset_frequency="monthly",
+            timestamp=datetime(2003, 8, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    assert len(articles) == 1
+    assert "Great Recession and Its Aftermath" in articles[0].title
+    assert articles[0].domain == "federalreservehistory.org"
+
+
 def test_macro_timeline_provider_can_match_cluster_context_not_just_primary_dataset() -> None:
     provider = MacroTimelineNewsContextProvider(max_articles=5)
 
