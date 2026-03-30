@@ -37,6 +37,12 @@ class NewsContextEvidence:
     context_window_end: datetime | None = None
     event_themes: list[str] = None
     primary_theme: str | None = None
+    source_kind: str | None = None
+    historical_event_id: str | None = None
+    historical_event_summary: str | None = None
+    historical_event_type: str | None = None
+    historical_event_regions: list[str] = None
+    historical_event_confidence: float | None = None
 
 
 @dataclass(frozen=True)
@@ -122,6 +128,12 @@ def build_explanation_evidence(context: ExplanationContext) -> dict[str, object]
                 "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
                 "event_themes": item.event_themes or [],
                 "primary_theme": item.primary_theme,
+                "source_kind": item.source_kind,
+                "historical_event_id": item.historical_event_id,
+                "historical_event_summary": item.historical_event_summary,
+                "historical_event_type": item.historical_event_type,
+                "historical_event_regions": item.historical_event_regions or [],
+                "historical_event_confidence": item.historical_event_confidence,
             }
             for item in context.news_context
         ],
@@ -245,11 +257,13 @@ class RulesBasedExplanationProvider:
         if primary_context:
             primary_theme = format_primary_theme(primary_context.primary_theme)
             if primary_context.provider == "macro_timeline":
+                historical_summary = primary_context.historical_event_summary
                 context_text = (
                     f"Likely real-world context around this episode includes the broader historical backdrop "
-                    f"'{primary_context.title}', which provides"
-                    f"{f' {primary_theme} ' if primary_theme else ' '}"
-                    f"regime context {describe_context_timing(primary_context, context)}."
+                    f"'{primary_context.title}'. "
+                    f"{historical_summary if historical_summary else 'This provides broader regime context for the move.'} "
+                    f"{f'The strongest registry theme here is {primary_theme}. ' if primary_theme else ''}"
+                    f"This context was matched {describe_context_timing(primary_context, context)}."
                 )
             else:
                 context_text = (
@@ -366,6 +380,12 @@ def build_openai_input(context: ExplanationContext) -> str:
                 "context_window_end": item.context_window_end.isoformat() if item.context_window_end else None,
                 "event_themes": item.event_themes or [],
                 "primary_theme": item.primary_theme,
+                "source_kind": item.source_kind,
+                "historical_event_id": item.historical_event_id,
+                "historical_event_summary": item.historical_event_summary,
+                "historical_event_type": item.historical_event_type,
+                "historical_event_regions": item.historical_event_regions or [],
+                "historical_event_confidence": item.historical_event_confidence,
                 "language": item.language,
                 "source_country": item.source_country,
                 "search_query": item.search_query,
@@ -693,7 +713,13 @@ def load_explanation_context(db: Session, anomaly_id: int) -> ExplanationContext
             CAST(metadata ->> 'context_window_start' AS TIMESTAMPTZ) AS context_window_start,
             CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end,
             COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
-            metadata ->> 'primary_theme' AS primary_theme
+            metadata ->> 'primary_theme' AS primary_theme,
+            metadata ->> 'source_kind' AS source_kind,
+            metadata ->> 'historical_event_id' AS historical_event_id,
+            metadata ->> 'historical_event_summary' AS historical_event_summary,
+            metadata ->> 'historical_event_type' AS historical_event_type,
+            COALESCE(metadata -> 'historical_event_regions', '[]'::jsonb) AS historical_event_regions,
+            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY

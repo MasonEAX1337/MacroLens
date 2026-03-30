@@ -168,6 +168,12 @@ def test_rules_based_provider_prefers_macro_timeline_as_primary_driver_context()
                     context_window_end=datetime(2022, 3, 4, tzinfo=timezone.utc),
                     event_themes=["geopolitics", "energy_shock"],
                     primary_theme="geopolitics",
+                    source_kind="historical_event_registry",
+                    historical_event_id="ukraine_war_energy_inflation_2022",
+                    historical_event_summary="Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations.",
+                    historical_event_type="geopolitical_shock",
+                    historical_event_regions=["Global", "Europe", "United States"],
+                    historical_event_confidence=0.95,
                 ),
             ],
         )
@@ -175,6 +181,7 @@ def test_rules_based_provider_prefers_macro_timeline_as_primary_driver_context()
 
     assert "broader historical backdrop" in result.generated_text
     assert "How War in Ukraine Is Reverberating Across World's Regions" in result.generated_text
+    assert "Russia's invasion of Ukraine intensified a geopolitical shock" in result.generated_text
 
 
 def test_openai_provider_builds_responses_request(monkeypatch) -> None:
@@ -414,11 +421,19 @@ def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driv
                     context_window_end=datetime(2020, 4, 1, tzinfo=timezone.utc),
                     event_themes=["fiscal_policy"],
                     primary_theme="fiscal_policy",
+                    source_kind="historical_event_registry",
+                    historical_event_id="economic_impact_payments_2020",
+                    historical_event_summary="Pandemic relief payments temporarily boosted household disposable income during the first COVID shock.",
+                    historical_event_type="fiscal_support",
+                    historical_event_regions=["United States"],
+                    historical_event_confidence=0.95,
                 )
             ],
         )
     )
 
     assert '"provider": "macro_timeline"' in payload
+    assert '"source_kind": "historical_event_registry"' in payload
+    assert '"historical_event_id": "economic_impact_payments_2020"' in payload
     assert "Lead with likely real-world context when the supplied news or timeline evidence is credible." in payload
     assert "Treat macro_timeline items as historical regime context, not as the primary driver unless no stronger structured evidence exists." in payload

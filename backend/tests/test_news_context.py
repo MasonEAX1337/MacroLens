@@ -479,6 +479,10 @@ def test_macro_timeline_provider_returns_1991_gulf_war_backdrop_for_cpi() -> Non
     assert len(articles) == 1
     assert "Out of the Ballpark" in articles[0].title
     assert articles[0].domain == "imf.org"
+    assert articles[0].metadata["historical_event_id"] == "gulf_war_oil_recession_1990_1991"
+    assert articles[0].metadata["historical_event_type"] == "oil_recession_shock"
+    assert articles[0].metadata["source_kind"] == "historical_event_registry"
+    assert articles[0].metadata["event_themes"][0] == "geopolitics"
 
 
 def test_macro_timeline_provider_returns_housing_boom_backdrop_for_case_shiller() -> None:
@@ -497,6 +501,7 @@ def test_macro_timeline_provider_returns_housing_boom_backdrop_for_case_shiller(
     assert len(articles) == 1
     assert "Great Recession and Its Aftermath" in articles[0].title
     assert articles[0].domain == "federalreservehistory.org"
+    assert "housing expansion" in articles[0].metadata["historical_event_summary"].lower()
 
 
 def test_macro_timeline_provider_can_match_cluster_context_not_just_primary_dataset() -> None:

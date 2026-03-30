@@ -96,11 +96,17 @@ class NewsArticleRecord:
 
 @dataclass(frozen=True)
 class MacroTimelineEntry:
+    event_id: str
     dataset_symbols: frozenset[str]
     start_at: datetime
     end_at: datetime
     published_at: datetime
     title: str
+    summary: str
+    event_type: str
+    regions: tuple[str, ...]
+    themes: tuple[str, ...]
+    confidence: float
     article_url: str
     domain: str
     search_query: str
@@ -166,11 +172,17 @@ def utc_datetime(
 
 MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
     MacroTimelineEntry(
+        event_id="subprime_mortgage_crisis",
         dataset_symbols=frozenset({"CSUSHPISA", "MORTGAGE30US", "SP500", "FEDFUNDS", "DCOILWTICO"}),
         start_at=utc_datetime(2007, 1, 1),
         end_at=utc_datetime(2010, 12, 31, 23, 59, 59),
         published_at=utc_datetime(2008, 9, 15),
         title="Federal Reserve History: Subprime Mortgage Crisis",
+        summary="The U.S. housing bust, mortgage-credit deterioration, and financial-system stress drove a broader crisis across housing-sensitive assets, credit conditions, and policy expectations.",
+        event_type="financial_crisis",
+        regions=("United States",),
+        themes=("housing", "banking_stress", "fed_policy", "market_stress"),
+        confidence=0.93,
         article_url="https://www.federalreservehistory.org/essays/subprime-mortgage-crisis",
         domain="federalreservehistory.org",
         search_query="macro_timeline:subprime_mortgage_crisis",
@@ -181,11 +193,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="great_inflation",
         dataset_symbols=frozenset({"MORTGAGE30US", "FEDFUNDS", "CPIAUCSL", "DCOILWTICO"}),
         start_at=utc_datetime(1979, 8, 1),
         end_at=utc_datetime(1982, 12, 31, 23, 59, 59),
         published_at=utc_datetime(1979, 10, 6),
         title="Federal Reserve History: The Great Inflation",
+        summary="Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+        event_type="inflation_regime",
+        regions=("United States",),
+        themes=("inflation", "fed_policy", "energy_shock"),
+        confidence=0.92,
         article_url="https://www.federalreservehistory.org/essays/great-inflation",
         domain="federalreservehistory.org",
         search_query="macro_timeline:great_inflation",
@@ -196,11 +214,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="ukraine_war_energy_inflation_2022",
         dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "MORTGAGE30US", "SP500"}),
         start_at=utc_datetime(2022, 2, 1),
         end_at=utc_datetime(2022, 6, 30, 23, 59, 59),
         published_at=utc_datetime(2022, 3, 15),
         title="IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+        summary="Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations.",
+        event_type="geopolitical_shock",
+        regions=("Global", "Europe", "United States"),
+        themes=("geopolitics", "energy_shock", "inflation", "market_stress"),
+        confidence=0.95,
         article_url="https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
         domain="imf.org",
         search_query="macro_timeline:ukraine_war_energy_inflation_2022",
@@ -211,11 +235,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="gulf_war_oil_recession_1990_1991",
         dataset_symbols=frozenset({"DCOILWTICO", "CPIAUCSL", "FEDFUNDS", "MORTGAGE30US", "SP500", "A229RX0"}),
         start_at=utc_datetime(1990, 7, 1),
         end_at=utc_datetime(1991, 6, 30, 23, 59, 59),
         published_at=utc_datetime(2009, 6, 1),
         title="IMF Finance & Development: Out of the Ballpark",
+        summary="The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+        event_type="oil_recession_shock",
+        regions=("Global", "United States", "Middle East"),
+        themes=("geopolitics", "energy_shock", "inflation", "market_stress"),
+        confidence=0.85,
         article_url="https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
         domain="imf.org",
         search_query="macro_timeline:gulf_war_oil_recession_1990_1991",
@@ -226,11 +256,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="housing_boom_low_rates_2001_2006",
         dataset_symbols=frozenset({"CSUSHPISA", "MORTGAGE30US", "FEDFUNDS", "A229RX0", "SP500"}),
         start_at=utc_datetime(2001, 1, 1),
         end_at=utc_datetime(2006, 12, 31, 23, 59, 59),
         published_at=utc_datetime(2013, 11, 22),
         title="Federal Reserve History: The Great Recession and Its Aftermath",
+        summary="Low rates, strong mortgage credit, and rising housing demand supported a long housing expansion before the later bust.",
+        event_type="housing_regime",
+        regions=("United States",),
+        themes=("housing", "fed_policy", "consumer_demand"),
+        confidence=0.8,
         article_url="https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath",
         domain="federalreservehistory.org",
         search_query="macro_timeline:housing_boom_low_rates_2001_2006",
@@ -241,11 +277,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="economic_impact_payments_2020",
         dataset_symbols=frozenset({"A229RX0"}),
         start_at=utc_datetime(2020, 3, 1),
         end_at=utc_datetime(2020, 6, 30, 23, 59, 59),
         published_at=utc_datetime(2020, 3, 30),
         title="IRS: Economic impact payments: What you need to know",
+        summary="Pandemic relief payments temporarily boosted household disposable income during the first COVID shock.",
+        event_type="fiscal_support",
+        regions=("United States",),
+        themes=("fiscal_policy", "consumer_demand"),
+        confidence=0.95,
         article_url="https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
         domain="irs.gov",
         search_query="macro_timeline:economic_impact_payments_2020",
@@ -256,11 +298,17 @@ MACRO_TIMELINE_ENTRIES: tuple[MacroTimelineEntry, ...] = (
         },
     ),
     MacroTimelineEntry(
+        event_id="economic_impact_payments_2021",
         dataset_symbols=frozenset({"A229RX0"}),
         start_at=utc_datetime(2021, 3, 1),
         end_at=utc_datetime(2021, 12, 31, 23, 59, 59),
         published_at=utc_datetime(2021, 3, 12),
         title="IRS: Third-round Economic Impact Payments issued in 2021",
+        summary="Third-round stimulus and plus-up payments supported household income during the post-pandemic recovery period.",
+        event_type="fiscal_support",
+        regions=("United States",),
+        themes=("fiscal_policy", "consumer_demand"),
+        confidence=0.95,
         article_url="https://www.irs.gov/individuals/understanding-your-letter-6475",
         domain="irs.gov",
         search_query="macro_timeline:economic_impact_payments_2021",
@@ -494,6 +542,10 @@ def extract_event_themes(
     article: NewsArticleRecord,
     request: NewsContextRequest,
 ) -> list[str]:
+    preset_themes = article.metadata.get("event_themes")
+    if isinstance(preset_themes, list) and preset_themes:
+        return [str(theme) for theme in preset_themes[:3]]
+
     searchable_text = normalize_text(f"{article.title} {article.search_query}")
     scores: dict[str, int] = {}
     dataset_priors = set(DATASET_THEME_PRIORS.get(request.dataset_symbol, []))
@@ -706,7 +758,17 @@ class MacroTimelineNewsContextProvider:
                 published_at=entry.published_at,
                 search_query=entry.search_query,
                 relevance_rank=index,
-                metadata=entry.metadata,
+                metadata={
+                    **entry.metadata,
+                    "source_kind": "historical_event_registry",
+                    "historical_event_id": entry.event_id,
+                    "historical_event_summary": entry.summary,
+                    "historical_event_type": entry.event_type,
+                    "historical_event_regions": list(entry.regions),
+                    "historical_event_confidence": entry.confidence,
+                    "event_themes": list(entry.themes),
+                    "primary_theme": entry.themes[0] if entry.themes else None,
+                },
             )
             for index, entry in enumerate(ranked_entries, start=1)
         ]

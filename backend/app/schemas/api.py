@@ -115,6 +115,12 @@ class NewsContextRecord(BaseModel):
     context_window_end: datetime | None = None
     event_themes: list[str] = []
     primary_theme: str | None = None
+    source_kind: str | None = None
+    historical_event_id: str | None = None
+    historical_event_summary: str | None = None
+    historical_event_type: str | None = None
+    historical_event_regions: list[str] = []
+    historical_event_confidence: float | None = None
 
 
 class NewsContextStatus(BaseModel):

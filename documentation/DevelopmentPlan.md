@@ -270,6 +270,7 @@ The remaining problem is that the system still explains too many anomalies with 
   - curated macro timeline
   - structured event tags
 - keep hybrid historical fallback enabled for older or weakly covered episodes
+- evolve curated historical context toward a structured event registry instead of a loose title list
 - improve dataset-aware query generation and topic coverage where GDELT is still noisy
 - extract event themes so the app can talk about:
   - banking stress

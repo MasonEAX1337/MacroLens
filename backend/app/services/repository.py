@@ -262,7 +262,13 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             CAST(metadata ->> 'context_window_start' AS TIMESTAMPTZ) AS context_window_start,
             CAST(metadata ->> 'context_window_end' AS TIMESTAMPTZ) AS context_window_end,
             COALESCE(metadata -> 'event_themes', '[]'::jsonb) AS event_themes,
-            metadata ->> 'primary_theme' AS primary_theme
+            metadata ->> 'primary_theme' AS primary_theme,
+            metadata ->> 'source_kind' AS source_kind,
+            metadata ->> 'historical_event_id' AS historical_event_id,
+            metadata ->> 'historical_event_summary' AS historical_event_summary,
+            metadata ->> 'historical_event_type' AS historical_event_type,
+            COALESCE(metadata -> 'historical_event_regions', '[]'::jsonb) AS historical_event_regions,
+            CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY

@@ -1551,6 +1551,9 @@ export default function App() {
                               {item.domain ?? item.provider}
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
+                            {item.historical_event_summary ? (
+                              <p>{item.historical_event_summary}</p>
+                            ) : null}
                             <div className="news-card-tags">
                               {item.primary_theme ? (
                                 <span className="context-theme-badge">
@@ -1605,6 +1608,9 @@ export default function App() {
                               {item.domain ?? item.provider}
                               {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
                             </p>
+                            {item.historical_event_summary ? (
+                              <p>{item.historical_event_summary}</p>
+                            ) : null}
                             <div className="news-card-tags">
                               {item.primary_theme ? (
                                 <span className="context-theme-badge">

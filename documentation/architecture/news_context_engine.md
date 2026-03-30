@@ -50,7 +50,7 @@ The engine now uses two contextual providers:
 - `macro_timeline`
 
 `gdelt` is the live retrieval path.
-`macro_timeline` is a curated historical-context path used to cover older and better-known macro regimes that keyword search handles poorly.
+`macro_timeline` is now backed by a small structured historical event registry used to cover older and better-known macro regimes that keyword search handles poorly.
 
 For each anomaly, the engine:
 
@@ -69,6 +69,7 @@ For each anomaly, the engine:
 - ranks surviving articles by provider priority, episode timing, and original provider order
 - stores article citations with rank and provenance
 - extracts first-pass event themes from article titles and query context
+- carries structured historical-event metadata when the curated registry is the source
 
 Operationally, the live provider is now treated as a recent-context provider rather than a universal historical archive.
 
@@ -95,6 +96,11 @@ Stored fields include:
 - context window end
 - event themes
 - primary theme
+- historical event id
+- historical event summary
+- historical event type
+- historical event regions
+- historical event confidence
 
 The retrieval scope is now explicit:
 
@@ -103,6 +109,18 @@ The retrieval scope is now explicit:
 - `curated_timeline`
 
 That matters because slower clustered episodes should no longer pretend that every context item was found from a single-day anomaly lookup.
+
+The curated historical path is also more structured than before.
+
+It now stores explicit event-registry fields such as:
+
+- event identifier
+- event type
+- summary
+- region set
+- confidence
+
+That matters because the explanation layer can now use the event meaning directly instead of only repeating a title.
 
 The current theme extraction layer is intentionally narrow.
 
@@ -138,6 +156,7 @@ The first provider exposed a real weakness:
 - historical macro regimes matter even when there is no single decisive headline
 
 So the system now supplements live retrieval with a curated `macro_timeline` provider for selected historical macro scenarios.
+Operationally, this provider behaves like a small historical event registry.
 
 That is a deliberate design choice, not a hack.
 
