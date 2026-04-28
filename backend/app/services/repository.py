@@ -239,7 +239,7 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
     )
     explanation_query = text(
         """
-        SELECT provider, model, generated_text, created_at
+        SELECT provider, model, generated_text, evidence, created_at
         FROM explanations
         WHERE anomaly_id = :anomaly_id
         ORDER BY created_at DESC
@@ -270,11 +270,18 @@ def fetch_anomaly_detail(db: Session, anomaly_id: int) -> AnomalyDetail:
             metadata ->> 'historical_event_type' AS historical_event_type,
             COALESCE(metadata -> 'historical_event_regions', '[]'::jsonb) AS historical_event_regions,
             CAST(metadata ->> 'historical_event_confidence' AS DOUBLE PRECISION) AS historical_event_confidence,
-            CAST(metadata ->> 'context_score' AS DOUBLE PRECISION) AS context_score
+            CAST(metadata ->> 'context_score' AS DOUBLE PRECISION) AS context_score,
+            metadata ->> 'source_type' AS source_type,
+            metadata ->> 'source_category' AS source_category,
+            metadata ->> 'driver_role' AS driver_role,
+            CAST(metadata ->> 'context_rank' AS INTEGER) AS context_rank,
+            CAST(metadata ->> 'ranking_score' AS DOUBLE PRECISION) AS ranking_score,
+            COALESCE(metadata -> 'score_components', '{}'::jsonb) AS score_components
         FROM news_context
         WHERE anomaly_id = :anomaly_id
         ORDER BY
-            CAST(COALESCE(metadata ->> 'context_score', '0') AS DOUBLE PRECISION) DESC,
+            CAST(COALESCE(metadata ->> 'context_rank', '999') AS INTEGER) ASC,
+            CAST(COALESCE(metadata ->> 'ranking_score', metadata ->> 'context_score', '0') AS DOUBLE PRECISION) DESC,
             CASE provider
                 WHEN 'macro_timeline' THEN 0
                 WHEN 'gdelt' THEN 1

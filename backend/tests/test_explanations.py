@@ -5,6 +5,7 @@ from app.services.explanations import (
     ExplanationContext,
     FallbackExplanationProvider,
     GeminiExplanationProvider,
+    build_explanation_evidence,
     NewsContextEvidence,
     build_openai_input,
     OpenAIExplanationProvider,
@@ -209,11 +210,17 @@ def test_rules_based_provider_prefers_higher_scored_context_even_when_provider_i
                     event_themes=["geopolitics"],
                     primary_theme="geopolitics",
                     source_kind="historical_event_registry",
+                    source_type="historical_registry",
+                    source_category="curated_backdrop",
+                    driver_role="backdrop_context",
                     historical_event_id="test_regime",
                     historical_event_summary="Very broad regime context.",
                     historical_event_type="regime",
                     historical_event_regions=["Global"],
                     historical_event_confidence=0.4,
+                    context_rank=2,
+                    ranking_score=0.55,
+                    score_components={"directness": 0.4, "specificity": 0.65},
                     context_score=0.55,
                 ),
                 NewsContextEvidence(
@@ -232,6 +239,12 @@ def test_rules_based_provider_prefers_higher_scored_context_even_when_provider_i
                     context_window_end=datetime(2024, 3, 2, tzinfo=timezone.utc),
                     event_themes=["banking_stress", "fed_policy"],
                     primary_theme="banking_stress",
+                    source_type="live_article",
+                    source_category="direct_reporting",
+                    driver_role="primary_driver_candidate",
+                    context_rank=1,
+                    ranking_score=0.89,
+                    score_components={"directness": 0.95, "specificity": 0.78},
                     context_score=0.89,
                 ),
             ],
@@ -468,6 +481,12 @@ def test_hosted_provider_input_includes_news_context() -> None:
                     context_window_end=datetime(2024, 3, 3, tzinfo=timezone.utc),
                     event_themes=["inflation"],
                     primary_theme="inflation",
+                    source_type="live_article",
+                    source_category="direct_reporting",
+                    driver_role="primary_driver_candidate",
+                    context_rank=1,
+                    ranking_score=0.88,
+                    score_components={"timing": 1.0, "directness": 0.95},
                 )
             ],
         )
@@ -481,6 +500,52 @@ def test_hosted_provider_input_includes_news_context() -> None:
     assert '"retrieval_scope": "episode"' in payload
     assert '"timing_relation": "during"' in payload
     assert '"primary_theme": "inflation"' in payload
+    assert '"source_type": "live_article"' in payload
+    assert '"driver_role": "primary_driver_candidate"' in payload
+    assert '"context_rank": 1' in payload
+    assert '"ranking_score": 0.88' in payload
+
+
+def test_explanation_evidence_exposes_context_ranking_metadata() -> None:
+    evidence = build_explanation_evidence(
+        build_context(
+            [],
+            news_context=[
+                NewsContextEvidence(
+                    provider="gdelt",
+                    article_url="https://example.com/fed",
+                    title="Federal Reserve weighs rate path after banking stress",
+                    domain="example.com",
+                    language="English",
+                    source_country="United States",
+                    published_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                    search_query='("federal reserve" AND "banking stress")',
+                    relevance_rank=1,
+                    retrieval_scope="episode",
+                    timing_relation="during",
+                    context_window_start=datetime(2024, 2, 29, tzinfo=timezone.utc),
+                    context_window_end=datetime(2024, 3, 3, tzinfo=timezone.utc),
+                    event_themes=["banking_stress", "fed_policy"],
+                    primary_theme="banking_stress",
+                    source_type="live_article",
+                    source_category="direct_reporting",
+                    driver_role="primary_driver_candidate",
+                    context_rank=1,
+                    ranking_score=0.91,
+                    score_components={"timing": 1.0, "directness": 0.95, "theme": 1.0},
+                    context_score=0.91,
+                )
+            ],
+        )
+    )
+
+    item = evidence["news_context"][0]
+    assert item["source_type"] == "live_article"
+    assert item["source_category"] == "direct_reporting"
+    assert item["driver_role"] == "primary_driver_candidate"
+    assert item["context_rank"] == 1
+    assert item["ranking_score"] == 0.91
+    assert item["score_components"]["directness"] == 0.95
 
 
 def test_hosted_provider_input_treats_macro_timeline_as_context_not_primary_driver() -> None:
