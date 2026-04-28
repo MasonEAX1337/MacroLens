@@ -1,0 +1,359 @@
+{
+  "id": 1078,
+  "dataset_id": 2,
+  "timestamp": "2022-08-01T00:00:00Z",
+  "severity_score": 1.20134,
+  "direction": "down",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1929,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1929,
+    "start_timestamp": "2022-07-01T00:00:00Z",
+    "end_timestamp": "2022-08-01T00:00:00Z",
+    "anchor_timestamp": "2022-07-01T00:00:00Z",
+    "span_days": 31,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 3.11472,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 1186,
+        "dataset_id": 11,
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "timestamp": "2022-07-01T00:00:00Z",
+        "severity_score": 3.11472,
+        "direction": "down",
+        "detection_method": "change_point"
+      },
+      {
+        "anomaly_id": 1078,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "2022-08-01T00:00:00Z",
+        "severity_score": 1.20134,
+        "direction": "down",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9903410516704312,
+      "lag_days": -48,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.9621136279370854,
+      "lag_days": -59,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.9420778365471322,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.7427524552882067,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": -0.6893002441995748,
+      "lag_days": -43,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "During the 2021-2023 inflation surge, the Consumer Price Index experienced a downward change point in August 2022, which the IMF attributed in retrospective analysis to broad food and energy shocks. Leading up to this anomaly, changes in the 30-Year Fixed Rate Mortgage Average and Real Disposable Personal Income Per Capita correlate with the decline. Because the cluster quality is medium, this observation represents a limited economic episode rather than a broad macro trend.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2022-08-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -48,
+            "correlation_score": 0.9903410516704312,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.9621136279370854,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9420778365471322,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.7427524552882067,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -43,
+            "correlation_score": -0.6893002441995748,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.6639,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6639,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.333333,
+              "directness": 0.405,
+              "specificity": 0.9
+            },
+            "context_window_end": "2022-08-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2022-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 39 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.20134,
+        "usage_metadata": {
+          "totalTokenCount": 1785,
+          "promptTokenCount": 1688,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1688
+            }
+          ],
+          "candidatesTokenCount": 97
+        },
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "xNbwaa_7Mq-hqtsPyfefsQY",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:48:16.885052Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual decline on August 01, 2022 with a severity score of 1.20 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Blog: How Food and Energy are Driving the Global Inflation Surge'. Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening. The strongest registry theme here is inflation. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 32 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Consumer Price Index around about 48 day(s) earlier (correlation 0.99).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2022-08-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -48,
+            "correlation_score": 0.9903410516704312,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.9621136279370854,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9420778365471322,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.7427524552882067,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -43,
+            "correlation_score": -0.6893002441995748,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.760333,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2022-08-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2022-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 39 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.20134,
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.478893Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+      "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2022-09-09T00:00:00Z",
+      "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2022-07-01T00:00:00Z",
+      "context_window_end": "2022-08-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+      "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+      "historical_event_type": "inflation_surge",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.9,
+      "context_score": 0.6639,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.6639,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.333333,
+        "directness": 0.405,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

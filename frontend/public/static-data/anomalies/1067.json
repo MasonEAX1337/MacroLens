@@ -1,0 +1,305 @@
+{
+  "id": 1067,
+  "dataset_id": 2,
+  "timestamp": "1980-07-01T00:00:00Z",
+  "severity_score": 1.1916,
+  "direction": "down",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1824,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1824,
+    "start_timestamp": "1980-07-01T00:00:00Z",
+    "end_timestamp": "1980-07-01T00:00:00Z",
+    "anchor_timestamp": "1980-07-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 1.1916,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1067,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "1980-07-01T00:00:00Z",
+        "severity_score": 1.1916,
+        "direction": "down",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.9518956328052448,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.904374022144375,
+      "lag_days": -1,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": 0.6818485965788317,
+      "lag_days": -61,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "This anomaly occurred during the period of \"The Great Inflation,\" a historical regime characterized by persistent price pressure and aggressive Federal Reserve policy. The decline in the Consumer Price Index in July 1980 coincides with a period where 30-year fixed mortgage rates and the Federal Funds Rate were moving in tandem. Because this is an isolated signal with limited evidence, the direct drivers of this specific downward change remain unclear. Supporting correlations with personal income are ignored as they represent lagging indicators that occurred after the event.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1980-07-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.9518956328052448,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -1,
+            "correlation_score": 0.904374022144375,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -61,
+            "correlation_score": 0.6818485965788317,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "leading",
+            "context_score": 0.77972,
+            "primary_theme": "inflation",
+            "ranking_score": 0.77972,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.333333,
+              "directness": 0.598,
+              "specificity": 0.9
+            },
+            "context_window_end": "1980-07-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1980-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 269 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.1916,
+        "usage_metadata": {
+          "totalTokenCount": 1518,
+          "promptTokenCount": 1416,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1416
+            }
+          ],
+          "candidatesTokenCount": 102
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "cdjwacTeEJetz7IPjdaZoAM",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:55:26.853441Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual decline on July 01, 1980 with a severity score of 1.19 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: The Great Inflation'. Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth. The strongest registry theme here is inflation. This context was matched before the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included Real Disposable Personal Income Per Capita, which moved opposite to Consumer Price Index around about 62 day(s) later (correlation -0.95).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1980-07-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.9518956328052448,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -1,
+            "correlation_score": 0.904374022144375,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -61,
+            "correlation_score": 0.6818485965788317,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "leading",
+            "context_score": 0.865333,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "1980-07-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1980-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 269 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.1916,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:02.201497Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+      "title": "Federal Reserve History: The Great Inflation",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1979-10-06T00:00:00Z",
+      "search_query": "macro_timeline:great_inflation",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "1980-07-01T00:00:00Z",
+      "context_window_end": "1980-07-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "fed_policy",
+        "energy_shock"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "great_inflation",
+      "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+      "historical_event_type": "inflation_regime",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.92,
+      "context_score": 0.77972,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.77972,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.333333,
+        "directness": 0.598,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

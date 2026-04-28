@@ -1,0 +1,1913 @@
+[
+  {
+    "related_dataset_id": 13,
+    "related_dataset_name": "Real Disposable Personal Income Per Capita",
+    "related_dataset_frequency": "monthly",
+    "target_dataset_frequency": "monthly",
+    "supporting_cluster_count": 15,
+    "target_cluster_count": 20,
+    "cluster_coverage": 0.75,
+    "average_lead_days": 50,
+    "average_correlation_score": 0.154152,
+    "average_abs_correlation_score": 0.855389,
+    "strongest_correlation_score": 0.980326,
+    "sign_consistency": 0.6,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 1.0,
+    "consistency_score": 0.848578,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1932,
+        "target_anomaly_id": 1174,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-07-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.312733446572888,
+        "target_cluster_start_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.312733446572888,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.9741698619046402,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1174,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-07-01T00:00:00Z",
+            "severity_score": 2.312733446572888,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1931,
+        "target_anomaly_id": 1187,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.525858,
+        "target_cluster_start_timestamp": "2023-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-03-15T00:00:00Z",
+        "target_cluster_span_days": 14,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.404154480863419,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.9741698619046402,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1187,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-03-01T00:00:00Z",
+            "severity_score": 1.525858,
+            "direction": "up",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1162,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2023-03-15T00:00:00Z",
+            "severity_score": 3.404154480863419,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1929,
+        "target_anomaly_id": 1186,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2022-07-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 3.11472,
+        "target_cluster_start_timestamp": "2022-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.11472,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.9067028954116702,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1186,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2022-07-01T00:00:00Z",
+            "severity_score": 3.11472,
+            "direction": "down",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1078,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2022-08-01T00:00:00Z",
+            "severity_score": 1.20134,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1921,
+        "target_anomaly_id": 1173,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2020-10-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.3303287062145044,
+        "target_cluster_start_timestamp": "2020-10-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2020-10-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.3303287062145044,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.9803262103152943,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1173,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2020-10-01T00:00:00Z",
+            "severity_score": 2.3303287062145044,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1919,
+        "target_anomaly_id": 1185,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2020-08-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 2.223777,
+        "target_cluster_start_timestamp": "2020-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2020-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.223777,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.6658211234997329,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1076,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2020-07-01T00:00:00Z",
+            "severity_score": 1.245254,
+            "direction": "up",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1185,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2020-08-01T00:00:00Z",
+            "severity_score": 2.223777,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1897,
+        "target_anomaly_id": 1184,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2013-12-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.767166,
+        "target_cluster_start_timestamp": "2013-12-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2013-12-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.767166,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.8531597486430609,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1184,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2013-12-01T00:00:00Z",
+            "severity_score": 0.767166,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1895,
+        "target_anomaly_id": 1183,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2012-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.943015,
+        "target_cluster_start_timestamp": "2012-02-21T00:00:00Z",
+        "target_cluster_end_timestamp": "2012-03-01T00:00:00Z",
+        "target_cluster_span_days": 9,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1049919211886903,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.6390482121581619,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1147,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2012-02-21T00:00:00Z",
+            "severity_score": 3.1049919211886903,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1183,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2012-03-01T00:00:00Z",
+            "severity_score": 1.943015,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1889,
+        "target_anomaly_id": 1172,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2010-02-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.999789466442838,
+        "target_cluster_start_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.999789466442838,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.885254321274655,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1172,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2010-02-01T00:00:00Z",
+            "severity_score": 2.999789466442838,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1880,
+        "target_anomaly_id": 1171,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-06-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.387084123154376,
+        "target_cluster_start_timestamp": "2007-05-24T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-06-01T00:00:00Z",
+        "target_cluster_span_days": 8,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.058815122188607,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.867233602568761,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1192,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2007-05-24T00:00:00Z",
+            "severity_score": 3.058815122188607,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1171,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-06-01T00:00:00Z",
+            "severity_score": 2.387084123154376,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1180,
+        "target_anomaly_id": 1180,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.47057,
+        "target_cluster_start_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.47057,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.695002510636465,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1180,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-03-01T00:00:00Z",
+            "severity_score": 1.47057,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1179,
+        "target_anomaly_id": 1179,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2006-04-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.66208,
+        "target_cluster_start_timestamp": "2006-04-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2006-04-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.66208,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.7954117156936853,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1179,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2006-04-01T00:00:00Z",
+            "severity_score": 1.66208,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1177,
+        "target_anomaly_id": 1177,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1991-05-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.682032,
+        "target_cluster_start_timestamp": "1991-05-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1991-05-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.682032,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.7813067345151883,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1177,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1991-05-01T00:00:00Z",
+            "severity_score": 0.682032,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1848,
+        "target_anomaly_id": 1169,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1990-11-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2336515563092165,
+        "target_cluster_start_timestamp": "1990-11-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1990-12-01T00:00:00Z",
+        "target_cluster_span_days": 30,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.950127132765727,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9745781734993965,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1169,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1990-11-01T00:00:00Z",
+            "severity_score": 2.2336515563092165,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1088,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "1990-12-01T00:00:00Z",
+            "severity_score": 2.950127132765727,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1176,
+        "target_anomaly_id": 1176,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1990-05-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.647484,
+        "target_cluster_start_timestamp": "1990-05-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1990-05-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.647484,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.9745781734993965,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1176,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1990-05-01T00:00:00Z",
+            "severity_score": 0.647484,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1842,
+        "target_anomaly_id": 1175,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1989-05-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.549648,
+        "target_cluster_start_timestamp": "1989-04-20T00:00:00Z",
+        "target_cluster_end_timestamp": "1989-05-01T00:00:00Z",
+        "target_cluster_span_days": 11,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.7584109026244685,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.8640732679014052,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1120,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "1989-04-20T00:00:00Z",
+            "severity_score": 3.7584109026244685,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1175,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1989-05-01T00:00:00Z",
+            "severity_score": 0.549648,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 2,
+    "related_dataset_name": "Consumer Price Index",
+    "related_dataset_frequency": "monthly",
+    "target_dataset_frequency": "monthly",
+    "supporting_cluster_count": 11,
+    "target_cluster_count": 20,
+    "cluster_coverage": 0.55,
+    "average_lead_days": 59,
+    "average_correlation_score": 0.24866,
+    "average_abs_correlation_score": 0.824492,
+    "strongest_correlation_score": 0.99853,
+    "sign_consistency": 0.636364,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 1.0,
+    "consistency_score": 0.797853,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1932,
+        "target_anomaly_id": 1174,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-07-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.312733446572888,
+        "target_cluster_start_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.312733446572888,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.877626024719925,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1174,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-07-01T00:00:00Z",
+            "severity_score": 2.312733446572888,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1931,
+        "target_anomaly_id": 1187,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.525858,
+        "target_cluster_start_timestamp": "2023-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-03-15T00:00:00Z",
+        "target_cluster_span_days": 14,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.404154480863419,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.877626024719925,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1187,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-03-01T00:00:00Z",
+            "severity_score": 1.525858,
+            "direction": "up",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1162,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2023-03-15T00:00:00Z",
+            "severity_score": 3.404154480863419,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1929,
+        "target_anomaly_id": 1186,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2022-07-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 3.11472,
+        "target_cluster_start_timestamp": "2022-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.11472,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9639833356067381,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1186,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2022-07-01T00:00:00Z",
+            "severity_score": 3.11472,
+            "direction": "down",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1078,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2022-08-01T00:00:00Z",
+            "severity_score": 1.20134,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1921,
+        "target_anomaly_id": 1173,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2020-10-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.3303287062145044,
+        "target_cluster_start_timestamp": "2020-10-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2020-10-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.3303287062145044,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.9985304714701264,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1173,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2020-10-01T00:00:00Z",
+            "severity_score": 2.3303287062145044,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1889,
+        "target_anomaly_id": 1172,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2010-02-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.999789466442838,
+        "target_cluster_start_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.999789466442838,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.8500495427102156,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1172,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2010-02-01T00:00:00Z",
+            "severity_score": 2.999789466442838,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1182,
+        "target_anomaly_id": 1182,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2009-05-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 2.106458,
+        "target_cluster_start_timestamp": "2009-05-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2009-05-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.106458,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.8500495427102156,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1182,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2009-05-01T00:00:00Z",
+            "severity_score": 2.106458,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1882,
+        "target_anomaly_id": 1181,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2008-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.617104,
+        "target_cluster_start_timestamp": "2008-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2008-03-01T00:00:00Z",
+        "target_cluster_span_days": 29,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.5736153466953735,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.795889122334844,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1095,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "2008-02-01T00:00:00Z",
+            "severity_score": 2.5736153466953735,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1181,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2008-03-01T00:00:00Z",
+            "severity_score": 0.617104,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1880,
+        "target_anomaly_id": 1171,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-06-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.387084123154376,
+        "target_cluster_start_timestamp": "2007-05-24T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-06-01T00:00:00Z",
+        "target_cluster_span_days": 8,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.058815122188607,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.6943414302123443,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1192,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2007-05-24T00:00:00Z",
+            "severity_score": 3.058815122188607,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1171,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-06-01T00:00:00Z",
+            "severity_score": 2.387084123154376,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1180,
+        "target_anomaly_id": 1180,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.47057,
+        "target_cluster_start_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.47057,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.6943414302123443,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1180,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-03-01T00:00:00Z",
+            "severity_score": 1.47057,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1853,
+        "target_anomaly_id": 1170,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1992-12-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2270535659680717,
+        "target_cluster_start_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.8752864490712042,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.6095381739592225,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 846,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.8752864490712042,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1170,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.2270535659680717,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1177,
+        "target_anomaly_id": 1177,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1991-05-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.682032,
+        "target_cluster_start_timestamp": "1991-05-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1991-05-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.682032,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.8574350824190275,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1177,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1991-05-01T00:00:00Z",
+            "severity_score": 0.682032,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 12,
+    "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+    "related_dataset_frequency": "weekly",
+    "target_dataset_frequency": "monthly",
+    "supporting_cluster_count": 9,
+    "target_cluster_count": 20,
+    "cluster_coverage": 0.45,
+    "average_lead_days": 47,
+    "average_correlation_score": 0.329539,
+    "average_abs_correlation_score": 0.98571,
+    "strongest_correlation_score": -0.998733,
+    "sign_consistency": 0.666667,
+    "dominant_direction": "positive",
+    "frequency_alignment": 0.85,
+    "support_confidence": 1.0,
+    "consistency_score": 0.794642,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1919,
+        "target_anomaly_id": 1185,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2020-08-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 2.223777,
+        "target_cluster_start_timestamp": "2020-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2020-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.223777,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.9688992129274664,
+        "lag_days": -47,
+        "cluster_members": [
+          {
+            "anomaly_id": 1076,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2020-07-01T00:00:00Z",
+            "severity_score": 1.245254,
+            "direction": "up",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1185,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2020-08-01T00:00:00Z",
+            "severity_score": 2.223777,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1889,
+        "target_anomaly_id": 1172,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2010-02-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.999789466442838,
+        "target_cluster_start_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.999789466442838,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.9987330700510809,
+        "lag_days": -46,
+        "cluster_members": [
+          {
+            "anomaly_id": 1172,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2010-02-01T00:00:00Z",
+            "severity_score": 2.999789466442838,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1882,
+        "target_anomaly_id": 1181,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2008-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.617104,
+        "target_cluster_start_timestamp": "2008-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2008-03-01T00:00:00Z",
+        "target_cluster_span_days": 29,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.5736153466953735,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9967667422196557,
+        "lag_days": -51,
+        "cluster_members": [
+          {
+            "anomaly_id": 1095,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "2008-02-01T00:00:00Z",
+            "severity_score": 2.5736153466953735,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1181,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2008-03-01T00:00:00Z",
+            "severity_score": 0.617104,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1880,
+        "target_anomaly_id": 1171,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-06-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.387084123154376,
+        "target_cluster_start_timestamp": "2007-05-24T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-06-01T00:00:00Z",
+        "target_cluster_span_days": 8,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.058815122188607,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9931313113419736,
+        "lag_days": -37,
+        "cluster_members": [
+          {
+            "anomaly_id": 1192,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2007-05-24T00:00:00Z",
+            "severity_score": 3.058815122188607,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1171,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-06-01T00:00:00Z",
+            "severity_score": 2.387084123154376,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1876,
+        "target_anomaly_id": 1178,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2003-08-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.529229,
+        "target_cluster_start_timestamp": "2003-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2003-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.621238422232328,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9970263668997777,
+        "lag_days": -25,
+        "cluster_members": [
+          {
+            "anomaly_id": 851,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "2003-07-01T00:00:00Z",
+            "severity_score": 2.621238422232328,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1178,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2003-08-01T00:00:00Z",
+            "severity_score": 0.529229,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1853,
+        "target_anomaly_id": 1170,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1992-12-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2270535659680717,
+        "target_cluster_start_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.8752864490712042,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9652400878831676,
+        "lag_days": -24,
+        "cluster_members": [
+          {
+            "anomaly_id": 846,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.8752864490712042,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1170,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.2270535659680717,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1848,
+        "target_anomaly_id": 1169,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1990-11-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2336515563092165,
+        "target_cluster_start_timestamp": "1990-11-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1990-12-01T00:00:00Z",
+        "target_cluster_span_days": 30,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.950127132765727,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9797525824513021,
+        "lag_days": -90,
+        "cluster_members": [
+          {
+            "anomaly_id": 1169,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1990-11-01T00:00:00Z",
+            "severity_score": 2.2336515563092165,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1088,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "1990-12-01T00:00:00Z",
+            "severity_score": 2.950127132765727,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1176,
+        "target_anomaly_id": 1176,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1990-05-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.647484,
+        "target_cluster_start_timestamp": "1990-05-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1990-05-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.647484,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.9851387351913344,
+        "lag_days": -83,
+        "cluster_members": [
+          {
+            "anomaly_id": 1176,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1990-05-01T00:00:00Z",
+            "severity_score": 0.647484,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1842,
+        "target_anomaly_id": 1175,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1989-05-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.549648,
+        "target_cluster_start_timestamp": "1989-04-20T00:00:00Z",
+        "target_cluster_end_timestamp": "1989-05-01T00:00:00Z",
+        "target_cluster_span_days": 11,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.7584109026244685,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9867055486338682,
+        "lag_days": -19,
+        "cluster_members": [
+          {
+            "anomaly_id": 1120,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "1989-04-20T00:00:00Z",
+            "severity_score": 3.7584109026244685,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1175,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1989-05-01T00:00:00Z",
+            "severity_score": 0.549648,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 3,
+    "related_dataset_name": "Federal Funds Rate",
+    "related_dataset_frequency": "monthly",
+    "target_dataset_frequency": "monthly",
+    "supporting_cluster_count": 10,
+    "target_cluster_count": 20,
+    "cluster_coverage": 0.5,
+    "average_lead_days": 61,
+    "average_correlation_score": 0.022781,
+    "average_abs_correlation_score": 0.915556,
+    "strongest_correlation_score": 0.984787,
+    "sign_consistency": 0.5,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 1.0,
+    "consistency_score": 0.783111,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": -1188,
+        "target_anomaly_id": 1188,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2025-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.003073,
+        "target_cluster_start_timestamp": "2025-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2025-03-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.003073,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.7619081060671401,
+        "lag_days": -30,
+        "cluster_members": [
+          {
+            "anomaly_id": 1188,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2025-03-01T00:00:00Z",
+            "severity_score": 1.003073,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1932,
+        "target_anomaly_id": 1174,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-07-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.312733446572888,
+        "target_cluster_start_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-07-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.312733446572888,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.9530943760873174,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1174,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-07-01T00:00:00Z",
+            "severity_score": 2.312733446572888,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1931,
+        "target_anomaly_id": 1187,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2023-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.525858,
+        "target_cluster_start_timestamp": "2023-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2023-03-15T00:00:00Z",
+        "target_cluster_span_days": 14,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.404154480863419,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.9530943760873174,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1187,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2023-03-01T00:00:00Z",
+            "severity_score": 1.525858,
+            "direction": "up",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1162,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2023-03-15T00:00:00Z",
+            "severity_score": 3.404154480863419,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1929,
+        "target_anomaly_id": 1186,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2022-07-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 3.11472,
+        "target_cluster_start_timestamp": "2022-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.11472,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.964652236720734,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 1186,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2022-07-01T00:00:00Z",
+            "severity_score": 3.11472,
+            "direction": "down",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1078,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2022-08-01T00:00:00Z",
+            "severity_score": 1.20134,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1895,
+        "target_anomaly_id": 1183,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2012-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.943015,
+        "target_cluster_start_timestamp": "2012-02-21T00:00:00Z",
+        "target_cluster_end_timestamp": "2012-03-01T00:00:00Z",
+        "target_cluster_span_days": 9,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1049919211886903,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9846658089243602,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1147,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2012-02-21T00:00:00Z",
+            "severity_score": 3.1049919211886903,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1183,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2012-03-01T00:00:00Z",
+            "severity_score": 1.943015,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1889,
+        "target_anomaly_id": 1172,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2010-02-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.999789466442838,
+        "target_cluster_start_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2010-02-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 2.999789466442838,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.8311240005808976,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1172,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2010-02-01T00:00:00Z",
+            "severity_score": 2.999789466442838,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1880,
+        "target_anomaly_id": 1171,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-06-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.387084123154376,
+        "target_cluster_start_timestamp": "2007-05-24T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-06-01T00:00:00Z",
+        "target_cluster_span_days": 8,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.058815122188607,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.8921045680043078,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1192,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2007-05-24T00:00:00Z",
+            "severity_score": 3.058815122188607,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1171,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-06-01T00:00:00Z",
+            "severity_score": 2.387084123154376,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1180,
+        "target_anomaly_id": 1180,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.47057,
+        "target_cluster_start_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.47057,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.8921045680043078,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 1180,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-03-01T00:00:00Z",
+            "severity_score": 1.47057,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1853,
+        "target_anomaly_id": 1170,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1992-12-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2270535659680717,
+        "target_cluster_start_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.8752864490712042,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9380249345321782,
+        "lag_days": -62,
+        "cluster_members": [
+          {
+            "anomaly_id": 846,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.8752864490712042,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1170,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.2270535659680717,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1842,
+        "target_anomaly_id": 1175,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1989-05-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.549648,
+        "target_cluster_start_timestamp": "1989-04-20T00:00:00Z",
+        "target_cluster_end_timestamp": "1989-05-01T00:00:00Z",
+        "target_cluster_span_days": 11,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.7584109026244685,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9847871962578735,
+        "lag_days": -90,
+        "cluster_members": [
+          {
+            "anomaly_id": 1120,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "1989-04-20T00:00:00Z",
+            "severity_score": 3.7584109026244685,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1175,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1989-05-01T00:00:00Z",
+            "severity_score": 0.549648,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 4,
+    "related_dataset_name": "WTI Oil Price",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "monthly",
+    "supporting_cluster_count": 5,
+    "target_cluster_count": 20,
+    "cluster_coverage": 0.25,
+    "average_lead_days": 72,
+    "average_correlation_score": -0.174427,
+    "average_abs_correlation_score": 0.679228,
+    "strongest_correlation_score": -0.757934,
+    "sign_consistency": 0.6,
+    "dominant_direction": "negative",
+    "frequency_alignment": 0.65,
+    "support_confidence": 1.0,
+    "consistency_score": 0.653346,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1929,
+        "target_anomaly_id": 1186,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2022-07-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 3.11472,
+        "target_cluster_start_timestamp": "2022-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.11472,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.6796545116057403,
+        "lag_days": -74,
+        "cluster_members": [
+          {
+            "anomaly_id": 1186,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2022-07-01T00:00:00Z",
+            "severity_score": 3.11472,
+            "direction": "down",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 1078,
+            "dataset_id": 2,
+            "dataset_name": "Consumer Price Index",
+            "timestamp": "2022-08-01T00:00:00Z",
+            "severity_score": 1.20134,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1895,
+        "target_anomaly_id": 1183,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2012-03-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.943015,
+        "target_cluster_start_timestamp": "2012-02-21T00:00:00Z",
+        "target_cluster_end_timestamp": "2012-03-01T00:00:00Z",
+        "target_cluster_span_days": 9,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1049919211886903,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.6275290117419279,
+        "lag_days": -89,
+        "cluster_members": [
+          {
+            "anomaly_id": 1147,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2012-02-21T00:00:00Z",
+            "severity_score": 3.1049919211886903,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1183,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2012-03-01T00:00:00Z",
+            "severity_score": 1.943015,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": -1180,
+        "target_anomaly_id": 1180,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2007-03-01T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "change_point",
+        "target_severity_score": 1.47057,
+        "target_cluster_start_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2007-03-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 1.47057,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.7579341076377677,
+        "lag_days": -52,
+        "cluster_members": [
+          {
+            "anomaly_id": 1180,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2007-03-01T00:00:00Z",
+            "severity_score": 1.47057,
+            "direction": "down",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1876,
+        "target_anomaly_id": 1178,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "2003-08-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.529229,
+        "target_cluster_start_timestamp": "2003-07-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2003-08-01T00:00:00Z",
+        "target_cluster_span_days": 31,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.621238422232328,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.63447415319295,
+        "lag_days": -84,
+        "cluster_members": [
+          {
+            "anomaly_id": 851,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "2003-07-01T00:00:00Z",
+            "severity_score": 2.621238422232328,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1178,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "2003-08-01T00:00:00Z",
+            "severity_score": 0.529229,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1853,
+        "target_anomaly_id": 1170,
+        "target_dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "target_timestamp": "1992-12-01T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 2.2270535659680717,
+        "target_cluster_start_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1992-12-01T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 2.8752864490712042,
+        "target_cluster_frequency_mix": "monthly_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": -0.6965482308223764,
+        "lag_days": -59,
+        "cluster_members": [
+          {
+            "anomaly_id": 846,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.8752864490712042,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1170,
+            "dataset_id": 11,
+            "dataset_name": "Case-Shiller U.S. National Home Price Index",
+            "timestamp": "1992-12-01T00:00:00Z",
+            "severity_score": 2.2270535659680717,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  }
+]

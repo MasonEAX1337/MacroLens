@@ -1,0 +1,66 @@
+[
+  {
+    "id": 12,
+    "name": "30-Year Fixed Rate Mortgage Average in the United States",
+    "symbol": "MORTGAGE30US",
+    "source": "FRED",
+    "description": "Average commitment rate on a 30-year fixed-rate mortgage in the United States.",
+    "frequency": "weekly"
+  },
+  {
+    "id": 1,
+    "name": "Bitcoin Price",
+    "symbol": "BTC",
+    "source": "CoinGecko",
+    "description": "Bitcoin spot price in USD.",
+    "frequency": "daily"
+  },
+  {
+    "id": 11,
+    "name": "Case-Shiller U.S. National Home Price Index",
+    "symbol": "CSUSHPISA",
+    "source": "FRED",
+    "description": "S&P CoreLogic Case-Shiller U.S. National Home Price Index.",
+    "frequency": "monthly"
+  },
+  {
+    "id": 2,
+    "name": "Consumer Price Index",
+    "symbol": "CPIAUCSL",
+    "source": "FRED",
+    "description": "Consumer Price Index for All Urban Consumers.",
+    "frequency": "monthly"
+  },
+  {
+    "id": 3,
+    "name": "Federal Funds Rate",
+    "symbol": "FEDFUNDS",
+    "source": "FRED",
+    "description": "Effective Federal Funds Rate.",
+    "frequency": "monthly"
+  },
+  {
+    "id": 13,
+    "name": "Real Disposable Personal Income Per Capita",
+    "symbol": "A229RX0",
+    "source": "FRED",
+    "description": "Real disposable personal income per capita.",
+    "frequency": "monthly"
+  },
+  {
+    "id": 10,
+    "name": "S&P 500 Index",
+    "symbol": "SP500",
+    "source": "FRED",
+    "description": "S&P 500 stock market index.",
+    "frequency": "daily"
+  },
+  {
+    "id": 4,
+    "name": "WTI Oil Price",
+    "symbol": "DCOILWTICO",
+    "source": "FRED",
+    "description": "Crude Oil Prices: West Texas Intermediate.",
+    "frequency": "daily"
+  }
+]

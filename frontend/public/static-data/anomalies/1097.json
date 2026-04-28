@@ -1,0 +1,347 @@
+{
+  "id": 1097,
+  "dataset_id": 3,
+  "timestamp": "2015-12-01T00:00:00Z",
+  "severity_score": 3.1671345740508414,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1901,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Federal Funds Rate",
+  "cluster": {
+    "id": 1901,
+    "start_timestamp": "2015-12-01T00:00:00Z",
+    "end_timestamp": "2015-12-01T00:00:00Z",
+    "anchor_timestamp": "2015-12-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 3.1671345740508414,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1097,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "2015-12-01T00:00:00Z",
+        "severity_score": 3.1671345740508414,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9880041541008625,
+      "lag_days": -57,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 10,
+      "related_dataset_name": "S&P 500 Index",
+      "correlation_score": -0.9735734461470794,
+      "lag_days": -81,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.7962931777804633,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.7549316072369888,
+      "lag_days": 52,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": -0.4920948034257621,
+      "lag_days": 31,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The December 2015 increase in the Federal Funds Rate occurred amidst the 2014-2016 oil price collapse, an event noted by the IMF for its impact on global inflation dynamics and policy expectations. Leading indicators suggest this shift followed significant movements in the S&P 500 Index and the Case-Shiller National Home Price Index, both of which showed strong correlations with the rate change. The evidence for this anomaly is limited, as the event is classified as an isolated signal with low data quality.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2015-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -57,
+            "correlation_score": 0.9880041541008625,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -81,
+            "correlation_score": -0.9735734461470794,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.7962931777804633,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 52,
+            "correlation_score": 0.7549316072369888,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 31,
+            "correlation_score": -0.4920948034257621,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "energy_shock",
+              "inflation",
+              "consumer_demand"
+            ],
+            "published_at": "2015-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:oil_collapse_2014_2016",
+            "timing_class": "concurrent",
+            "context_score": 0.67564,
+            "primary_theme": "energy_shock",
+            "ranking_score": 0.67564,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 1.0,
+              "keyword": 0.0,
+              "directness": 0.546,
+              "specificity": 0.9
+            },
+            "context_window_end": "2015-12-01T00:00:00+00:00",
+            "historical_event_id": "oil_collapse_2014_2016",
+            "context_window_start": "2015-12-01T00:00:00+00:00",
+            "historical_event_type": "oil_price_collapse",
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [
+              "Global"
+            ],
+            "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 3.1671345740508414,
+        "usage_metadata": {
+          "totalTokenCount": 1788,
+          "promptTokenCount": 1679,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1679
+            }
+          ],
+          "candidatesTokenCount": 109
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "Pdfwaam_GMPXz7IPuLak0AU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:50:16.163163Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Federal Funds Rate showed an unusual increase on December 01, 2015 with a severity score of 3.17 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Blog: How Low Oil Prices Can Help the Global Economy'. The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations. The strongest registry theme here is energy shock. This context was matched during the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Federal Funds Rate around about 57 day(s) earlier (correlation 0.99).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2015-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -57,
+            "correlation_score": 0.9880041541008625,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -81,
+            "correlation_score": -0.9735734461470794,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.7962931777804633,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 52,
+            "correlation_score": 0.7549316072369888,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 31,
+            "correlation_score": -0.4920948034257621,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "energy_shock",
+              "inflation",
+              "consumer_demand"
+            ],
+            "published_at": "2015-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:oil_collapse_2014_2016",
+            "timing_class": "concurrent",
+            "context_score": 0.749,
+            "primary_theme": "energy_shock",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "during",
+            "context_window_end": "2015-12-01T00:00:00+00:00",
+            "historical_event_id": "oil_collapse_2014_2016",
+            "context_window_start": "2015-12-01T00:00:00+00:00",
+            "historical_event_type": "oil_price_collapse",
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [
+              "Global"
+            ],
+            "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 3.1671345740508414,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.737621Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+      "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2015-12-01T00:00:00Z",
+      "search_query": "macro_timeline:oil_collapse_2014_2016",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "during",
+      "context_window_start": "2015-12-01T00:00:00Z",
+      "context_window_end": "2015-12-01T00:00:00Z",
+      "event_themes": [
+        "energy_shock",
+        "inflation",
+        "consumer_demand"
+      ],
+      "primary_theme": "energy_shock",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "oil_collapse_2014_2016",
+      "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+      "historical_event_type": "oil_price_collapse",
+      "historical_event_regions": [
+        "Global"
+      ],
+      "historical_event_confidence": 0.84,
+      "context_score": 0.67564,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.67564,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 1.0,
+        "keyword": 0.0,
+        "directness": 0.546,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

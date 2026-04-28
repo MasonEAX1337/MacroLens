@@ -1,0 +1,239 @@
+{
+  "id": 1196,
+  "dataset_id": 12,
+  "timestamp": "1979-11-16T00:00:00Z",
+  "severity_score": 0.354706,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1821,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+  "cluster": {
+    "id": 1821,
+    "start_timestamp": "1979-11-16T00:00:00Z",
+    "end_timestamp": "1979-11-16T00:00:00Z",
+    "anchor_timestamp": "1979-11-16T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 0.354706,
+    "frequency_mix": "weekly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1196,
+        "dataset_id": 12,
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "timestamp": "1979-11-16T00:00:00Z",
+        "severity_score": 0.354706,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "During the late 1970s, the United States experienced a period of high inflation and aggressive Federal Reserve monetary tightening, as documented in \"The Great Inflation\" by federalreservehistory.org. This environment of persistent price pressure likely influenced the rise in 30-year fixed mortgage rates observed in November 1979. Given the limited nature of this isolated data signal, the direct connection between these broader economic conditions and this specific weekly shift remains uncertain.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-11-16T00:00:00+00:00",
+        "correlations": [],
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "leading",
+            "context_score": 0.63972,
+            "primary_theme": "inflation",
+            "ranking_score": 0.63972,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.598,
+              "specificity": 0.9
+            },
+            "context_window_end": "1979-11-16T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1979-11-16T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 41 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "MORTGAGE30US",
+        "severity_score": 0.354706,
+        "usage_metadata": {
+          "totalTokenCount": 1226,
+          "promptTokenCount": 1131,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1131
+            }
+          ],
+          "candidatesTokenCount": 95
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "weekly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "weekly",
+        "provider_response_id": "d9jwacnIOfHmz7IPtsyr8QU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:55:31.952699Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "30-Year Fixed Rate Mortgage Average in the United States showed an unusual increase on November 16, 1979 with a severity score of 0.35 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: The Great Inflation'. Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth. The strongest registry theme here is inflation. This context was matched before the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. No strong cross-dataset relationship was stored for this anomaly, so the explanation is based only on the detected move itself.  Confidence is limited because the event does not yet have strong supporting correlations.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-11-16T00:00:00+00:00",
+        "correlations": [],
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "leading",
+            "context_score": 0.707,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "1979-11-16T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1979-11-16T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 41 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "MORTGAGE30US",
+        "severity_score": 0.354706,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "weekly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "weekly"
+      },
+      "created_at": "2026-03-30T19:49:02.248491Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+      "title": "Federal Reserve History: The Great Inflation",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1979-10-06T00:00:00Z",
+      "search_query": "macro_timeline:great_inflation",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "1979-11-16T00:00:00Z",
+      "context_window_end": "1979-11-16T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "fed_policy",
+        "energy_shock"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "great_inflation",
+      "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+      "historical_event_type": "inflation_regime",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.92,
+      "context_score": 0.63972,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.63972,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.598,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

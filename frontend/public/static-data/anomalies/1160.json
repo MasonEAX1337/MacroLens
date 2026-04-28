@@ -1,0 +1,485 @@
+{
+  "id": 1160,
+  "dataset_id": 4,
+  "timestamp": "2022-03-02T00:00:00Z",
+  "severity_score": 3.754169118446378,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1927,
+  "cluster_anomaly_count": 3,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "WTI Oil Price",
+  "cluster": {
+    "id": 1927,
+    "start_timestamp": "2022-03-01T00:00:00Z",
+    "end_timestamp": "2022-03-04T00:00:00Z",
+    "anchor_timestamp": "2022-03-02T00:00:00Z",
+    "span_days": 3,
+    "anomaly_count": 3,
+    "dataset_count": 2,
+    "peak_severity_score": 3.754169118446378,
+    "frequency_mix": "mixed",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 1099,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "2022-03-01T00:00:00Z",
+        "severity_score": 3.197710448484966,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1160,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2022-03-02T00:00:00Z",
+        "severity_score": 3.754169118446378,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1161,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2022-03-04T00:00:00Z",
+        "severity_score": 3.1766135676436478,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [
+    {
+      "source_cluster_id": 1927,
+      "target_cluster_id": 1928,
+      "target_start_timestamp": "2022-03-31T00:00:00Z",
+      "target_end_timestamp": "2022-03-31T00:00:00Z",
+      "target_anchor_timestamp": "2022-03-31T00:00:00Z",
+      "target_anchor_anomaly_id": 1201,
+      "target_anchor_dataset_id": 12,
+      "target_span_days": 0,
+      "target_anomaly_count": 1,
+      "target_dataset_count": 1,
+      "target_peak_severity_score": 0.38416,
+      "target_frequency_mix": "weekly_only",
+      "target_episode_kind": "isolated_signal",
+      "target_quality_band": "low",
+      "average_lag_days": 30,
+      "strongest_correlation_score": 0.997,
+      "supporting_link_count": 1,
+      "evidence_strength": 0.779,
+      "evidence_strength_components": {
+        "correlation_strength": 0.997,
+        "support_density": 0.333,
+        "temporal_alignment": 1.0,
+        "target_scale": 0.333,
+        "episode_quality": 0.8,
+        "overall": 0.779
+      },
+      "source_dataset_names": [
+        "Federal Funds Rate"
+      ],
+      "target_dataset_names": [
+        "30-Year Fixed Rate Mortgage Average in the United States"
+      ],
+      "evidence": [
+        {
+          "source_anomaly_id": 1099,
+          "source_dataset_name": "Federal Funds Rate",
+          "source_timestamp": "2022-03-01T00:00:00Z",
+          "target_anomaly_id": 1201,
+          "target_dataset_id": 12,
+          "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+          "target_timestamp": "2022-03-31T00:00:00Z",
+          "correlation_score": 0.9973134348830655,
+          "lag_days": 30,
+          "method": "pearson_pct_change",
+          "match_gap_days": 0.0,
+          "tolerance_days": 14
+        }
+      ]
+    }
+  ],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.8381193398687754,
+      "lag_days": 2,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 10,
+      "related_dataset_name": "S&P 500 Index",
+      "correlation_score": 0.5272401060850784,
+      "lag_days": -2,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The March 2022 rise in WTI oil prices aligns with a period of significant geopolitical instability, notably Russia's invasion of Ukraine, which created global energy supply concerns. This volatility appears supported by movements in the S&P 500 Index, which shifted two days prior to the oil price spike. Given the medium quality of this cluster, the evidence for direct drivers remains limited beyond this immediate geopolitical context.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2022-03-02T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 2,
+            "correlation_score": -0.8381193398687754,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -2,
+            "correlation_score": 0.5272401060850784,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2022-03-15T00:00:00+00:00",
+            "search_query": "macro_timeline:ukraine_war_energy_inflation_2022",
+            "timing_class": "lagging",
+            "context_score": 0.62705,
+            "primary_theme": "geopolitics",
+            "ranking_score": 0.62705,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.4275,
+              "specificity": 0.9
+            },
+            "context_window_end": "2022-03-04T00:00:00+00:00",
+            "historical_event_id": "ukraine_war_energy_inflation_2022",
+            "context_window_start": "2022-03-01T00:00:00+00:00",
+            "historical_event_type": "geopolitical_shock",
+            "timing_interpretation": "about 13 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "Europe",
+              "United States"
+            ],
+            "historical_event_summary": "Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 2,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.6239,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6239,
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.405,
+              "specificity": 0.9
+            },
+            "context_window_end": "2022-03-04T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2022-03-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 191 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.754169118446378,
+        "usage_metadata": {
+          "totalTokenCount": 2142,
+          "promptTokenCount": 2056,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2056
+            }
+          ],
+          "candidatesTokenCount": 86
+        },
+        "episode_context": {
+          "cluster_span_days": 3,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "mixed"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "0tbwafWGB5WLmtkPquek-AU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:48:30.084268Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "WTI Oil Price showed an unusual increase on March 02, 2022 with a severity score of 3.75 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Blog: How War in Ukraine Is Reverberating Across World's Regions'. Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations. The strongest registry theme here is geopolitics. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 4 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to WTI Oil Price around about 2 day(s) later (correlation -0.84).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2022-03-02T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 2,
+            "correlation_score": -0.8381193398687754,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -2,
+            "correlation_score": 0.5272401060850784,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2022-03-15T00:00:00+00:00",
+            "search_query": "macro_timeline:ukraine_war_energy_inflation_2022",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "geopolitics",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2022-03-04T00:00:00+00:00",
+            "historical_event_id": "ukraine_war_energy_inflation_2022",
+            "context_window_start": "2022-03-01T00:00:00+00:00",
+            "historical_event_type": "geopolitical_shock",
+            "timing_interpretation": "about 13 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "Europe",
+              "United States"
+            ],
+            "historical_event_summary": "Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2022-03-04T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2022-03-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 191 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.754169118446378,
+        "episode_context": {
+          "cluster_span_days": 3,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "mixed"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:01.573546Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2022/03/15/how-war-in-ukraine-is-reverberating-across-worlds-regions",
+      "title": "IMF Blog: How War in Ukraine Is Reverberating Across World's Regions",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2022-03-15T00:00:00Z",
+      "search_query": "macro_timeline:ukraine_war_energy_inflation_2022",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2022-03-01T00:00:00Z",
+      "context_window_end": "2022-03-04T00:00:00Z",
+      "event_themes": [
+        "geopolitics",
+        "energy_shock",
+        "inflation"
+      ],
+      "primary_theme": "geopolitics",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "ukraine_war_energy_inflation_2022",
+      "historical_event_summary": "Russia's invasion of Ukraine intensified a geopolitical shock that pushed up energy and inflation pressures while reshaping global risk sentiment and policy expectations.",
+      "historical_event_type": "geopolitical_shock",
+      "historical_event_regions": [
+        "Global",
+        "Europe",
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.62705,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.62705,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.4275,
+        "specificity": 0.9
+      }
+    },
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+      "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2022-09-09T00:00:00Z",
+      "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+      "relevance_rank": 2,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2022-03-01T00:00:00Z",
+      "context_window_end": "2022-03-04T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+      "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+      "historical_event_type": "inflation_surge",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.9,
+      "context_score": 0.6239,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 2,
+      "ranking_score": 0.6239,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.405,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

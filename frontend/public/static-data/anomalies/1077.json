@@ -1,0 +1,479 @@
+{
+  "id": 1077,
+  "dataset_id": 2,
+  "timestamp": "2021-04-01T00:00:00Z",
+  "severity_score": 0.704104,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1923,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1923,
+    "start_timestamp": "2021-03-01T00:00:00Z",
+    "end_timestamp": "2021-04-01T00:00:00Z",
+    "anchor_timestamp": "2021-03-01T00:00:00Z",
+    "span_days": 31,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 2.8623623768304625,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 857,
+        "dataset_id": 13,
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "timestamp": "2021-03-01T00:00:00Z",
+        "severity_score": 2.8623623768304625,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1077,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "2021-04-01T00:00:00Z",
+        "severity_score": 0.704104,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": 0.9829604158405185,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9770964064494906,
+      "lag_days": -61,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.9020927652282943,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.8215748321322665,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 10,
+      "related_dataset_name": "S&P 500 Index",
+      "correlation_score": -0.715124005477587,
+      "lag_days": 78,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The issuance of third-round Economic Impact Payments in March 2021 provided fiscal support that coincides with the April 2021 rise in the Consumer Price Index. Leading correlation data shows that fluctuations in the 30-Year Fixed Rate Mortgage and Real Disposable Personal Income Per Capita preceded this anomaly. Given the limited nature of this episode, evidence connecting these specific movements to the CPI increase remains preliminary.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2021-04-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9829604158405185,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -61,
+            "correlation_score": 0.9770964064494906,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9020927652282943,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8215748321322665,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 78,
+            "correlation_score": -0.715124005477587,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IRS: Third-round Economic Impact Payments issued in 2021",
+            "domain": "irs.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.irs.gov/individuals/understanding-your-letter-6475",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "fiscal_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2021-03-12T00:00:00+00:00",
+            "search_query": "macro_timeline:economic_impact_payments_2021",
+            "timing_class": "leading",
+            "context_score": 0.78565,
+            "primary_theme": "fiscal_policy",
+            "ranking_score": 0.78565,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 1.0,
+              "keyword": 0.0,
+              "directness": 0.6175,
+              "specificity": 0.9
+            },
+            "context_window_end": "2021-04-01T00:00:00+00:00",
+            "historical_event_id": "economic_impact_payments_2021",
+            "context_window_start": "2021-03-01T00:00:00+00:00",
+            "historical_event_type": "fiscal_support",
+            "timing_interpretation": "about 20 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Third-round stimulus and plus-up payments supported household income during the post-pandemic recovery period.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 2,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.6639,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6639,
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.333333,
+              "directness": 0.405,
+              "specificity": 0.9
+            },
+            "context_window_end": "2021-04-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2021-03-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 526 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.704104,
+        "usage_metadata": {
+          "totalTokenCount": 2374,
+          "promptTokenCount": 2291,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2291
+            }
+          ],
+          "candidatesTokenCount": 83
+        },
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "4tbwaZP_OMPXz7IPuLak0AU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:48:46.796252Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual increase on April 01, 2021 with a severity score of 0.70 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'IRS: Third-round Economic Impact Payments issued in 2021'. Third-round stimulus and plus-up payments supported household income during the post-pandemic recovery period. The strongest registry theme here is fiscal policy. This context was matched during the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 32 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included Federal Funds Rate, which moved in the same direction as Consumer Price Index around about 62 day(s) later (correlation 0.98).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2021-04-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9829604158405185,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -61,
+            "correlation_score": 0.9770964064494906,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9020927652282943,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8215748321322665,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 78,
+            "correlation_score": -0.715124005477587,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IRS: Third-round Economic Impact Payments issued in 2021",
+            "domain": "irs.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.irs.gov/individuals/understanding-your-letter-6475",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "fiscal_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2021-03-12T00:00:00+00:00",
+            "search_query": "macro_timeline:economic_impact_payments_2021",
+            "timing_class": "leading",
+            "context_score": 0.874,
+            "primary_theme": "fiscal_policy",
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "during",
+            "context_window_end": "2021-04-01T00:00:00+00:00",
+            "historical_event_id": "economic_impact_payments_2021",
+            "context_window_start": "2021-03-01T00:00:00+00:00",
+            "historical_event_type": "fiscal_support",
+            "timing_interpretation": "about 20 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Third-round stimulus and plus-up payments supported household income during the post-pandemic recovery period.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.760333,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2021-04-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2021-03-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 526 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.704104,
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.573546Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.irs.gov/individuals/understanding-your-letter-6475",
+      "title": "IRS: Third-round Economic Impact Payments issued in 2021",
+      "domain": "irs.gov",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2021-03-12T00:00:00Z",
+      "search_query": "macro_timeline:economic_impact_payments_2021",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "during",
+      "context_window_start": "2021-03-01T00:00:00Z",
+      "context_window_end": "2021-04-01T00:00:00Z",
+      "event_themes": [
+        "fiscal_policy",
+        "consumer_demand"
+      ],
+      "primary_theme": "fiscal_policy",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "economic_impact_payments_2021",
+      "historical_event_summary": "Third-round stimulus and plus-up payments supported household income during the post-pandemic recovery period.",
+      "historical_event_type": "fiscal_support",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.78565,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.78565,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 1.0,
+        "keyword": 0.0,
+        "directness": 0.6175,
+        "specificity": 0.9
+      }
+    },
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+      "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2022-09-09T00:00:00Z",
+      "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+      "relevance_rank": 2,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2021-03-01T00:00:00Z",
+      "context_window_end": "2021-04-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+      "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+      "historical_event_type": "inflation_surge",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.9,
+      "context_score": 0.6639,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 2,
+      "ranking_score": 0.6639,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.333333,
+        "directness": 0.405,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

@@ -1,0 +1,348 @@
+[
+  {
+    "related_dataset_id": 12,
+    "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+    "related_dataset_frequency": "weekly",
+    "target_dataset_frequency": "daily",
+    "supporting_cluster_count": 4,
+    "target_cluster_count": 8,
+    "cluster_coverage": 0.5,
+    "average_lead_days": 13,
+    "average_correlation_score": 0.443032,
+    "average_abs_correlation_score": 0.840372,
+    "strongest_correlation_score": 0.946622,
+    "sign_consistency": 0.75,
+    "dominant_direction": "positive",
+    "frequency_alignment": 0.85,
+    "support_confidence": 1.0,
+    "consistency_score": 0.790574,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1936,
+        "target_anomaly_id": 803,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2025-04-04T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.473646393147435,
+        "target_cluster_start_timestamp": "2025-04-04T00:00:00Z",
+        "target_cluster_end_timestamp": "2025-04-04T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.473646393147435,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.9466223563972213,
+        "lag_days": -29,
+        "cluster_members": [
+          {
+            "anomaly_id": 803,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2025-04-04T00:00:00Z",
+            "severity_score": 3.473646393147435,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1164,
+            "dataset_id": 4,
+            "dataset_name": "WTI Oil Price",
+            "timestamp": "2025-04-04T00:00:00Z",
+            "severity_score": 3.0637344287851365,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1912,
+        "target_anomaly_id": 798,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2019-08-05T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.324702077979857,
+        "target_cluster_start_timestamp": "2019-08-05T00:00:00Z",
+        "target_cluster_end_timestamp": "2019-08-05T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.324702077979857,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.8177752128177119,
+        "lag_days": -6,
+        "cluster_members": [
+          {
+            "anomaly_id": 798,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2019-08-05T00:00:00Z",
+            "severity_score": 3.324702077979857,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1908,
+        "target_anomaly_id": 796,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2018-10-10T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 4.247021689657015,
+        "target_cluster_start_timestamp": "2018-10-10T00:00:00Z",
+        "target_cluster_end_timestamp": "2018-10-10T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 4.247021689657015,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.7946801560593838,
+        "lag_days": -12,
+        "cluster_members": [
+          {
+            "anomaly_id": 796,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2018-10-10T00:00:00Z",
+            "severity_score": 4.247021689657015,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1907,
+        "target_anomaly_id": 795,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2017-11-30T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.086674552293998,
+        "target_cluster_start_timestamp": "2017-11-30T00:00:00Z",
+        "target_cluster_end_timestamp": "2017-11-30T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.086674552293998,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.8024108052518956,
+        "lag_days": -5,
+        "cluster_members": [
+          {
+            "anomaly_id": 795,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2017-11-30T00:00:00Z",
+            "severity_score": 3.086674552293998,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 4,
+    "related_dataset_name": "WTI Oil Price",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "daily",
+    "supporting_cluster_count": 5,
+    "target_cluster_count": 8,
+    "cluster_coverage": 0.625,
+    "average_lead_days": 9,
+    "average_correlation_score": 0.089775,
+    "average_abs_correlation_score": 0.487803,
+    "strongest_correlation_score": 0.574165,
+    "sign_consistency": 0.6,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 1.0,
+    "consistency_score": 0.743811,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1926,
+        "target_anomaly_id": 801,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2022-01-21T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.00663765584085,
+        "target_cluster_start_timestamp": "2022-01-21T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-01-21T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.00663765584085,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.496926435731957,
+        "lag_days": -5,
+        "cluster_members": [
+          {
+            "anomaly_id": 801,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2022-01-21T00:00:00Z",
+            "severity_score": 3.00663765584085,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1915,
+        "target_anomaly_id": 800,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2020-02-27T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.5681229047165495,
+        "target_cluster_start_timestamp": "2020-02-25T00:00:00Z",
+        "target_cluster_end_timestamp": "2020-02-27T00:00:00Z",
+        "target_cluster_span_days": 2,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.5681229047165495,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "single_dataset_wave",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.5741654249456687,
+        "lag_days": -3,
+        "cluster_members": [
+          {
+            "anomaly_id": 799,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2020-02-25T00:00:00Z",
+            "severity_score": 3.212989236756286,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 800,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2020-02-27T00:00:00Z",
+            "severity_score": 3.5681229047165495,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1909,
+        "target_anomaly_id": 797,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2019-05-13T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.020039254415972,
+        "target_cluster_start_timestamp": "2019-05-13T00:00:00Z",
+        "target_cluster_end_timestamp": "2019-05-13T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.020039254415972,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.37285302918491253,
+        "lag_days": -24,
+        "cluster_members": [
+          {
+            "anomaly_id": 797,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2019-05-13T00:00:00Z",
+            "severity_score": 3.020039254415972,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1907,
+        "target_anomaly_id": 795,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2017-11-30T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.086674552293998,
+        "target_cluster_start_timestamp": "2017-11-30T00:00:00Z",
+        "target_cluster_end_timestamp": "2017-11-30T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.086674552293998,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.5003012796401846,
+        "lag_days": -9,
+        "cluster_members": [
+          {
+            "anomaly_id": 795,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2017-11-30T00:00:00Z",
+            "severity_score": 3.086674552293998,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1903,
+        "target_anomaly_id": 792,
+        "target_dataset_name": "S&P 500 Index",
+        "target_timestamp": "2016-09-09T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 4.075085061457291,
+        "target_cluster_start_timestamp": "2016-09-09T00:00:00Z",
+        "target_cluster_end_timestamp": "2016-09-13T00:00:00Z",
+        "target_cluster_span_days": 4,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 4.075085061457291,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "single_dataset_wave",
+        "target_cluster_quality_band": "low",
+        "correlation_score": -0.49476642540380944,
+        "lag_days": -5,
+        "cluster_members": [
+          {
+            "anomaly_id": 792,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2016-09-09T00:00:00Z",
+            "severity_score": 4.075085061457291,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 793,
+            "dataset_id": 10,
+            "dataset_name": "S&P 500 Index",
+            "timestamp": "2016-09-13T00:00:00Z",
+            "severity_score": 3.1386015268823515,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  }
+]

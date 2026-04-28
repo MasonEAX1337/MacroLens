@@ -1,0 +1,429 @@
+{
+  "id": 1088,
+  "dataset_id": 3,
+  "timestamp": "1990-12-01T00:00:00Z",
+  "severity_score": 2.950127132765727,
+  "direction": "down",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1848,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "Federal Funds Rate",
+  "cluster": {
+    "id": 1848,
+    "start_timestamp": "1990-11-01T00:00:00Z",
+    "end_timestamp": "1990-12-01T00:00:00Z",
+    "anchor_timestamp": "1990-12-01T00:00:00Z",
+    "span_days": 30,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 2.950127132765727,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 1169,
+        "dataset_id": 11,
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "timestamp": "1990-11-01T00:00:00Z",
+        "severity_score": 2.2336515563092165,
+        "direction": "down",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1088,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1990-12-01T00:00:00Z",
+        "severity_score": 2.950127132765727,
+        "direction": "down",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [
+    {
+      "source_cluster_id": 1848,
+      "target_cluster_id": 1849,
+      "target_start_timestamp": "1991-01-16T00:00:00Z",
+      "target_end_timestamp": "1991-02-01T00:00:00Z",
+      "target_anchor_timestamp": "1991-01-16T00:00:00Z",
+      "target_anchor_anomaly_id": 1126,
+      "target_anchor_dataset_id": 4,
+      "target_span_days": 16,
+      "target_anomaly_count": 3,
+      "target_dataset_count": 3,
+      "target_peak_severity_score": 3.271002923091987,
+      "target_frequency_mix": "mixed",
+      "target_episode_kind": "cross_dataset_episode",
+      "target_quality_band": "high",
+      "average_lag_days": 70,
+      "strongest_correlation_score": 0.97,
+      "supporting_link_count": 2,
+      "evidence_strength": 0.926,
+      "evidence_strength_components": {
+        "correlation_strength": 0.97,
+        "support_density": 1.0,
+        "temporal_alignment": 0.738,
+        "target_scale": 1.0,
+        "episode_quality": 0.9,
+        "overall": 0.926
+      },
+      "source_dataset_names": [
+        "Case-Shiller U.S. National Home Price Index",
+        "Federal Funds Rate"
+      ],
+      "target_dataset_names": [
+        "Federal Funds Rate",
+        "WTI Oil Price"
+      ],
+      "evidence": [
+        {
+          "source_anomaly_id": 1088,
+          "source_dataset_name": "Federal Funds Rate",
+          "source_timestamp": "1990-12-01T00:00:00Z",
+          "target_anomaly_id": 1126,
+          "target_dataset_id": 4,
+          "target_dataset_name": "WTI Oil Price",
+          "target_timestamp": "1991-01-16T00:00:00Z",
+          "correlation_score": 0.7288243684564069,
+          "lag_days": 49,
+          "method": "pearson_pct_change",
+          "match_gap_days": 3.0,
+          "tolerance_days": 7
+        },
+        {
+          "source_anomaly_id": 1169,
+          "source_dataset_name": "Case-Shiller U.S. National Home Price Index",
+          "source_timestamp": "1990-11-01T00:00:00Z",
+          "target_anomaly_id": 1112,
+          "target_dataset_id": 3,
+          "target_dataset_name": "Federal Funds Rate",
+          "target_timestamp": "1991-02-01T00:00:00Z",
+          "correlation_score": 0.9704959142413452,
+          "lag_days": 90,
+          "method": "pearson_pct_change",
+          "match_gap_days": 2.0,
+          "tolerance_days": 21
+        }
+      ]
+    }
+  ],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9895691464425105,
+      "lag_days": -6,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.9704959142413451,
+      "lag_days": -90,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": 0.8696279046754909,
+      "lag_days": -59,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.7288243684564069,
+      "lag_days": 49,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.7080364542325459,
+      "lag_days": 30,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The 1990-1991 recession, identified in the IMF's \"Out of the Ballpark\" report, provides historical context involving geopolitical uncertainty and energy shocks during this period. The reduction in the Federal Funds Rate corresponds with shifts in the 30-year fixed rate mortgage average, which moved six days prior to the anomaly. Changes in the Case-Shiller U.S. National Home Price Index and the Consumer Price Index also preceded this rate adjustment by 90 and 59 days, respectively. Given the limited cluster quality of this event, these correlations provide only partial insight into the drivers of the rate change.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1990-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": 0.9895691464425105,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -90,
+            "correlation_score": 0.9704959142413451,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": 0.8696279046754909,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 49,
+            "correlation_score": 0.7288243684564069,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 30,
+            "correlation_score": -0.7080364542325459,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.52075,
+            "primary_theme": "geopolitics",
+            "ranking_score": 0.52075,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.3825,
+              "specificity": 0.9
+            },
+            "context_window_end": "1990-12-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1990-11-01T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6757 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 2.950127132765727,
+        "usage_metadata": {
+          "totalTokenCount": 1828,
+          "promptTokenCount": 1696,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1696
+            }
+          ],
+          "candidatesTokenCount": 132
+        },
+        "episode_context": {
+          "cluster_span_days": 30,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "DtjwaaXWFJfkz7IP_NOIkQk",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:53:46.055159Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Federal Funds Rate showed an unusual decline on December 01, 1990 with a severity score of 2.95 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Finance & Development: Out of the Ballpark'. The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop. The strongest registry theme here is geopolitics. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 31 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Federal Funds Rate around about 6 day(s) earlier (correlation 0.99).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1990-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": 0.9895691464425105,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -90,
+            "correlation_score": 0.9704959142413451,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": 0.8696279046754909,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 49,
+            "correlation_score": 0.7288243684564069,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 30,
+            "correlation_score": -0.7080364542325459,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.602,
+            "primary_theme": "geopolitics",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "1990-12-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1990-11-01T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6757 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 2.950127132765727,
+        "episode_context": {
+          "cluster_span_days": 30,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:02.058954Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+      "title": "IMF Finance & Development: Out of the Ballpark",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2009-06-01T00:00:00Z",
+      "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "1990-11-01T00:00:00Z",
+      "context_window_end": "1990-12-01T00:00:00Z",
+      "event_themes": [
+        "geopolitics",
+        "energy_shock",
+        "inflation"
+      ],
+      "primary_theme": "geopolitics",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "gulf_war_oil_recession_1990_1991",
+      "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+      "historical_event_type": "oil_recession_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States",
+        "Middle East"
+      ],
+      "historical_event_confidence": 0.85,
+      "context_score": 0.52075,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.52075,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.3825,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

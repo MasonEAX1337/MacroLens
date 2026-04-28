@@ -1,0 +1,314 @@
+{
+  "id": 1106,
+  "dataset_id": 3,
+  "timestamp": "1979-10-01T00:00:00Z",
+  "severity_score": 1.05974,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1820,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "single_dataset_wave",
+  "cluster_quality_band": "low",
+  "dataset_name": "Federal Funds Rate",
+  "cluster": {
+    "id": 1820,
+    "start_timestamp": "1979-10-01T00:00:00Z",
+    "end_timestamp": "1979-10-01T00:00:00Z",
+    "anchor_timestamp": "1979-10-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 2,
+    "dataset_count": 1,
+    "peak_severity_score": 3.0134580519695016,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "single_dataset_wave",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1085,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1979-10-01T00:00:00Z",
+        "severity_score": 3.0134580519695016,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1106,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1979-10-01T00:00:00Z",
+        "severity_score": 1.05974,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.9995994334159273,
+      "lag_days": -48,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": 0.8382900971358024,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": 0.7382528105142028,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The October 1979 increase in the Federal Funds Rate occurred within a period of persistent inflation, as described in the Federal Reserve History essay \"The Great Inflation.\" The shift in rates was preceded by changes in real disposable personal income per capita and 30-year fixed mortgage rates, which served as leading indicators. Given the low quality of the anomaly cluster, this event should be viewed as a limited instance rather than part of a broader macro episode. Other evidence regarding consumer prices reflects trends that occurred after the rate change and therefore do not function as drivers.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-10-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -48,
+            "correlation_score": -0.9995994334159273,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.8382900971358024,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.7382528105142028,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "lagging",
+            "context_score": 0.66516,
+            "primary_theme": "inflation",
+            "ranking_score": 0.66516,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.333333,
+              "directness": 0.414,
+              "specificity": 0.9
+            },
+            "context_window_end": "1979-10-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1979-10-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 5 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 1.05974,
+        "usage_metadata": {
+          "totalTokenCount": 1530,
+          "promptTokenCount": 1417,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1417
+            }
+          ],
+          "candidatesTokenCount": 113
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "single_dataset_wave",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "e9jwaZ8Z5Z7Psg-_9KiACA",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:55:35.222733Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Federal Funds Rate showed an unusual increase on October 01, 1979 with a severity score of 1.06 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: The Great Inflation'. Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth. The strongest registry theme here is inflation. This context was matched after the episode window. This anomaly is part of a single-dataset wave spanning about 1 day(s). The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to Federal Funds Rate around about 48 day(s) earlier (correlation -1.00).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-10-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -48,
+            "correlation_score": -0.9995994334159273,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.8382900971358024,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.7382528105142028,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1979-10-06T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation",
+            "timing_class": "lagging",
+            "context_score": 0.760333,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "1979-10-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation",
+            "context_window_start": "1979-10-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 5 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+            "historical_event_confidence": 0.92
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 1.05974,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "single_dataset_wave",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:02.248491Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+      "title": "Federal Reserve History: The Great Inflation",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1979-10-06T00:00:00Z",
+      "search_query": "macro_timeline:great_inflation",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "1979-10-01T00:00:00Z",
+      "context_window_end": "1979-10-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "fed_policy",
+        "energy_shock"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "great_inflation",
+      "historical_event_summary": "Persistently high inflation and aggressive Federal Reserve tightening defined a broad regime of price pressure, high rates, and slower growth.",
+      "historical_event_type": "inflation_regime",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.92,
+      "context_score": 0.66516,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.66516,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.333333,
+        "directness": 0.414,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

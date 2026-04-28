@@ -1,0 +1,257 @@
+{
+  "id": 1146,
+  "dataset_id": 4,
+  "timestamp": "2011-08-08T00:00:00Z",
+  "severity_score": 3.4038540327166147,
+  "direction": "down",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1894,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "WTI Oil Price",
+  "cluster": {
+    "id": 1894,
+    "start_timestamp": "2011-08-08T00:00:00Z",
+    "end_timestamp": "2011-08-08T00:00:00Z",
+    "anchor_timestamp": "2011-08-08T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 3.4038540327166147,
+    "frequency_mix": "daily_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1146,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2011-08-08T00:00:00Z",
+        "severity_score": 3.4038540327166147,
+        "direction": "down",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.7451285284509692,
+      "lag_days": 0,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The decline in WTI oil prices on August 8, 2011, occurred within a limited episode context. According to the \"Likely macro drivers for oil prices\" structured fallback, this movement potentially reflects shifts in global demand expectations, geopolitical risks, or broader concerns regarding economic recession. The concurrent movement in the 30-Year Fixed Rate Mortgage average provides supporting evidence of broader financial market shifts on that day. Due to the low quality of the anomaly cluster, this event should be viewed as an isolated signal rather than part of a larger trend.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2011-08-08T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 0,
+            "correlation_score": 0.7451285284509692,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for oil prices",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "energy_shock",
+              "geopolitics",
+              "inflation"
+            ],
+            "published_at": "2011-08-08T00:00:00+00:00",
+            "search_query": "dataset_backdrop:DCOILWTICO",
+            "timing_class": "concurrent",
+            "context_score": 0.6312,
+            "primary_theme": "energy_shock",
+            "ranking_score": 0.6312,
+            "driver_summary": "This oil move most likely reflects changing global demand expectations, OPEC or OPEC+ supply policy, inventories, refinery disruptions, sanctions, geopolitical risk, or broader recession and trade fears. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.333333,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "2011-08-08T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "2011-08-08T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.4038540327166147,
+        "usage_metadata": {
+          "totalTokenCount": 1353,
+          "promptTokenCount": 1240,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1240
+            }
+          ],
+          "candidatesTokenCount": 113
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "W9fwaamaG7esz7IP2uy26QU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:50:46.825015Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "WTI Oil Price showed an unusual decline on August 08, 2011 with a severity score of 3.40 using z_score detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This oil move most likely reflects changing global demand expectations, OPEC or OPEC+ supply policy, inventories, refinery disruptions, sanctions, geopolitical risk, or broader recession and trade fears. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is energy shock. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as WTI Oil Price around the same time (correlation 0.75).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2011-08-08T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 0,
+            "correlation_score": 0.7451285284509692,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for oil prices",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "energy_shock",
+              "geopolitics",
+              "inflation"
+            ],
+            "published_at": "2011-08-08T00:00:00+00:00",
+            "search_query": "dataset_backdrop:DCOILWTICO",
+            "timing_class": "concurrent",
+            "context_score": 0.823333,
+            "primary_theme": "energy_shock",
+            "driver_summary": "This oil move most likely reflects changing global demand expectations, OPEC or OPEC+ supply policy, inventories, refinery disruptions, sanctions, geopolitical risk, or broader recession and trade fears. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "2011-08-08T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "2011-08-08T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.4038540327166147,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:51:16.156904Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
+      "title": "Likely macro drivers for oil prices",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2011-08-08T00:00:00Z",
+      "search_query": "dataset_backdrop:DCOILWTICO",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "2011-08-08T00:00:00Z",
+      "context_window_end": "2011-08-08T00:00:00Z",
+      "event_themes": [
+        "energy_shock",
+        "geopolitics",
+        "inflation"
+      ],
+      "primary_theme": "energy_shock",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This oil move most likely reflects changing global demand expectations, OPEC or OPEC+ supply policy, inventories, refinery disruptions, sanctions, geopolitical risk, or broader recession and trade fears. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6312,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6312,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.333333,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}

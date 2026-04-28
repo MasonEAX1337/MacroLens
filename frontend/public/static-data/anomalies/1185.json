@@ -1,0 +1,485 @@
+{
+  "id": 1185,
+  "dataset_id": 11,
+  "timestamp": "2020-08-01T00:00:00Z",
+  "severity_score": 2.223777,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1919,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "Case-Shiller U.S. National Home Price Index",
+  "cluster": {
+    "id": 1919,
+    "start_timestamp": "2020-07-01T00:00:00Z",
+    "end_timestamp": "2020-08-01T00:00:00Z",
+    "anchor_timestamp": "2020-08-01T00:00:00Z",
+    "span_days": 31,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 2.223777,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 1076,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "2020-07-01T00:00:00Z",
+        "severity_score": 1.245254,
+        "direction": "up",
+        "detection_method": "change_point"
+      },
+      {
+        "anomaly_id": 1185,
+        "dataset_id": 11,
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "timestamp": "2020-08-01T00:00:00Z",
+        "severity_score": 2.223777,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.9688992129274664,
+      "lag_days": -47,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": 0.9331212362886375,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.763995776918679,
+      "lag_days": 71,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.7597552910152179,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.6658211234997329,
+      "lag_days": -30,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The August 2020 increase in the Case-Shiller U.S. National Home Price Index occurred against the backdrop of the pandemic-related market stress described in the IMF\u2019s report, \"The Great Lockdown: Worst Economic Downturn Since the Great Depression.\" Leading data suggests this movement was associated with a notable drop in 30-year fixed-rate mortgages, which preceded the anomaly by 47 days. Additionally, changes in real disposable personal income per capita, occurring 30 days prior, may have influenced the timing of this market shift. Because the cluster quality for this event is medium, it is best to view these factors as limited context rather than part of a broad, definitive macro episode.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2020-08-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -47,
+            "correlation_score": -0.9688992129274664,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9331212362886375,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 71,
+            "correlation_score": 0.763995776918679,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.7597552910152179,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": -0.6658211234997329,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "news_context": [
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.64245,
+            "primary_theme": "market_stress",
+            "ranking_score": 0.64245,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.6175,
+              "specificity": 0.9
+            },
+            "context_window_end": "2020-08-01T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-07-01T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 131 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 2,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.6239,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6239,
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.405,
+              "specificity": 0.9
+            },
+            "context_window_end": "2020-08-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2020-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 769 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          }
+        ],
+        "dataset_symbol": "CSUSHPISA",
+        "severity_score": 2.223777,
+        "usage_metadata": {
+          "totalTokenCount": 2499,
+          "promptTokenCount": 2353,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2353
+            }
+          ],
+          "candidatesTokenCount": 146
+        },
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "9Nbwaf_WHtznz7IPhsTT8AU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:49:04.496770Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Case-Shiller U.S. National Home Price Index showed an unusual increase on August 01, 2020 with a severity score of 2.22 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Blog: How Food and Energy are Driving the Global Inflation Surge'. Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening. The strongest registry theme here is inflation. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 32 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to Case-Shiller U.S. National Home Price Index around about 47 day(s) earlier (correlation -0.97).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2020-08-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -47,
+            "correlation_score": -0.9688992129274664,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": 0.9331212362886375,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 71,
+            "correlation_score": 0.763995776918679,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.7597552910152179,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": -0.6658211234997329,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "2022-09-09T00:00:00+00:00",
+            "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2020-08-01T00:00:00+00:00",
+            "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+            "context_window_start": "2020-07-01T00:00:00+00:00",
+            "historical_event_type": "inflation_surge",
+            "timing_interpretation": "about 769 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+            "historical_event_confidence": 0.9
+          },
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.707,
+            "primary_theme": "market_stress",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2020-08-01T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-07-01T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 131 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          }
+        ],
+        "dataset_symbol": "CSUSHPISA",
+        "severity_score": 2.223777,
+        "episode_context": {
+          "cluster_span_days": 31,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.634039Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+      "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2020-03-23T00:00:00Z",
+      "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2020-07-01T00:00:00Z",
+      "context_window_end": "2020-08-01T00:00:00Z",
+      "event_themes": [
+        "market_stress",
+        "consumer_demand",
+        "fed_policy"
+      ],
+      "primary_theme": "market_stress",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "pandemic_crash_and_lockdown_2020",
+      "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+      "historical_event_type": "pandemic_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.64245,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.64245,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.6175,
+        "specificity": 0.9
+      }
+    },
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2022/09/09/cotw-how-food-and-energy-are-driving-the-global-inflation-surge",
+      "title": "IMF Blog: How Food and Energy are Driving the Global Inflation Surge",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2022-09-09T00:00:00Z",
+      "search_query": "macro_timeline:post_pandemic_inflation_and_tightening_2021_2023",
+      "relevance_rank": 2,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2020-07-01T00:00:00Z",
+      "context_window_end": "2020-08-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "post_pandemic_inflation_and_tightening_2021_2023",
+      "historical_event_summary": "Post-pandemic reopening, supply constraints, fiscal support, and energy shocks helped drive a broad inflation surge that fed into faster policy tightening.",
+      "historical_event_type": "inflation_surge",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.9,
+      "context_score": 0.6239,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 2,
+      "ranking_score": 0.6239,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.405,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

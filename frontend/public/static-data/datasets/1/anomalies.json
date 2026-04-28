@@ -1,0 +1,72 @@
+[
+  {
+    "id": 662,
+    "dataset_id": 1,
+    "timestamp": "2026-02-06T00:00:00Z",
+    "severity_score": 3.239220126934421,
+    "direction": "down",
+    "detection_method": "z_score",
+    "episode_filter_status": null,
+    "episode_filter_reason": null,
+    "cluster_id": 1941,
+    "cluster_anomaly_count": 3,
+    "cluster_episode_kind": "single_dataset_wave",
+    "cluster_quality_band": "medium"
+  },
+  {
+    "id": 661,
+    "dataset_id": 1,
+    "timestamp": "2026-02-01T00:00:00Z",
+    "severity_score": 3.1370289390012713,
+    "direction": "down",
+    "detection_method": "z_score",
+    "episode_filter_status": null,
+    "episode_filter_reason": null,
+    "cluster_id": 1941,
+    "cluster_anomaly_count": 3,
+    "cluster_episode_kind": "single_dataset_wave",
+    "cluster_quality_band": "medium"
+  },
+  {
+    "id": 663,
+    "dataset_id": 1,
+    "timestamp": "2026-02-01T00:00:00Z",
+    "severity_score": 1.159228,
+    "direction": "down",
+    "detection_method": "change_point",
+    "episode_filter_status": null,
+    "episode_filter_reason": null,
+    "cluster_id": 1941,
+    "cluster_anomaly_count": 3,
+    "cluster_episode_kind": "single_dataset_wave",
+    "cluster_quality_band": "medium"
+  },
+  {
+    "id": 660,
+    "dataset_id": 1,
+    "timestamp": "2025-07-11T00:00:00Z",
+    "severity_score": 3.1997367408869244,
+    "direction": "up",
+    "detection_method": "z_score",
+    "episode_filter_status": null,
+    "episode_filter_reason": null,
+    "cluster_id": 1939,
+    "cluster_anomaly_count": 1,
+    "cluster_episode_kind": "isolated_signal",
+    "cluster_quality_band": "low"
+  },
+  {
+    "id": 659,
+    "dataset_id": 1,
+    "timestamp": "2025-04-23T00:00:00Z",
+    "severity_score": 3.020295976384246,
+    "direction": "up",
+    "detection_method": "z_score",
+    "episode_filter_status": null,
+    "episode_filter_reason": null,
+    "cluster_id": 1937,
+    "cluster_anomaly_count": 1,
+    "cluster_episode_kind": "isolated_signal",
+    "cluster_quality_band": "low"
+  }
+]

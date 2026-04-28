@@ -1,0 +1,470 @@
+{
+  "id": 856,
+  "dataset_id": 13,
+  "timestamp": "2020-04-01T00:00:00Z",
+  "severity_score": 3.2857535031147647,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1917,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Real Disposable Personal Income Per Capita",
+  "cluster": {
+    "id": 1917,
+    "start_timestamp": "2020-04-01T00:00:00Z",
+    "end_timestamp": "2020-04-01T00:00:00Z",
+    "anchor_timestamp": "2020-04-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 3.2857535031147647,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 856,
+        "dataset_id": 13,
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "timestamp": "2020-04-01T00:00:00Z",
+        "severity_score": 3.2857535031147647,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.9946469359800348,
+      "lag_days": -6,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": 0.9347053580337857,
+      "lag_days": -30,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": 0.923913575666582,
+      "lag_days": -30,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": -0.8946746876810759,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": -0.7334160369906199,
+      "lag_days": -8,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The increase in Real Disposable Personal Income Per Capita in April 2020 aligns with the implementation of fiscal stimulus measures, specifically the Economic Impact Payments noted by the IRS. This policy intervention provided direct support to households during the onset of the pandemic-related economic downturn described by the IMF. While correlations with indicators like mortgage rates and the Consumer Price Index exist, the evidence for a direct link to these variables is limited. Because this anomaly is an isolated signal with a low quality band, its broader impact remains unclear.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2020-04-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": -0.9946469359800348,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.9347053580337857,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.923913575666582,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8946746876810759,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -8,
+            "correlation_score": -0.7334160369906199,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "news_context": [
+          {
+            "title": "IRS: Economic impact payments: What you need to know",
+            "domain": "irs.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "fiscal_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2020-03-30T00:00:00+00:00",
+            "search_query": "macro_timeline:economic_impact_payments_2020",
+            "timing_class": "leading",
+            "context_score": 0.74245,
+            "primary_theme": "fiscal_policy",
+            "ranking_score": 0.74245,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.6175,
+              "specificity": 0.9
+            },
+            "context_window_end": "2020-04-01T00:00:00+00:00",
+            "historical_event_id": "economic_impact_payments_2020",
+            "context_window_start": "2020-04-01T00:00:00+00:00",
+            "historical_event_type": "fiscal_support",
+            "timing_interpretation": "about 2 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Pandemic relief payments temporarily boosted household disposable income during the first COVID shock.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 2,
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.64245,
+            "primary_theme": "market_stress",
+            "ranking_score": 0.64245,
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.6175,
+              "specificity": 0.9
+            },
+            "context_window_end": "2020-04-01T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-04-01T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 9 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          }
+        ],
+        "dataset_symbol": "A229RX0",
+        "severity_score": 3.2857535031147647,
+        "usage_metadata": {
+          "totalTokenCount": 2390,
+          "promptTokenCount": 2287,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2287
+            }
+          ],
+          "candidatesTokenCount": 103
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "_9bwaYrxFdznz7IP_-nxgAg",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:49:15.010441Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Real Disposable Personal Income Per Capita showed an unusual increase on April 01, 2020 with a severity score of 3.29 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IRS: Economic impact payments: What you need to know'. Pandemic relief payments temporarily boosted household disposable income during the first COVID shock. The strongest registry theme here is fiscal policy. This context was matched before the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to Real Disposable Personal Income Per Capita around about 6 day(s) earlier (correlation -0.99).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2020-04-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": -0.9946469359800348,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.9347053580337857,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.923913575666582,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8946746876810759,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -8,
+            "correlation_score": -0.7334160369906199,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "news_context": [
+          {
+            "title": "IRS: Economic impact payments: What you need to know",
+            "domain": "irs.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "fiscal_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2020-03-30T00:00:00+00:00",
+            "search_query": "macro_timeline:economic_impact_payments_2020",
+            "timing_class": "leading",
+            "context_score": 0.832,
+            "primary_theme": "fiscal_policy",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2020-04-01T00:00:00+00:00",
+            "historical_event_id": "economic_impact_payments_2020",
+            "context_window_start": "2020-04-01T00:00:00+00:00",
+            "historical_event_type": "fiscal_support",
+            "timing_interpretation": "about 2 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Pandemic relief payments temporarily boosted household disposable income during the first COVID shock.",
+            "historical_event_confidence": 0.95
+          },
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.707,
+            "primary_theme": "market_stress",
+            "driver_summary": null,
+            "relevance_rank": 2,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2020-04-01T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-04-01T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 9 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          }
+        ],
+        "dataset_symbol": "A229RX0",
+        "severity_score": 3.2857535031147647,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.634039Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.irs.gov/newsroom/economic-impact-payments-what-you-need-to-know",
+      "title": "IRS: Economic impact payments: What you need to know",
+      "domain": "irs.gov",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2020-03-30T00:00:00Z",
+      "search_query": "macro_timeline:economic_impact_payments_2020",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2020-04-01T00:00:00Z",
+      "context_window_end": "2020-04-01T00:00:00Z",
+      "event_themes": [
+        "fiscal_policy",
+        "consumer_demand"
+      ],
+      "primary_theme": "fiscal_policy",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "economic_impact_payments_2020",
+      "historical_event_summary": "Pandemic relief payments temporarily boosted household disposable income during the first COVID shock.",
+      "historical_event_type": "fiscal_support",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.74245,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.74245,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.6175,
+        "specificity": 0.9
+      }
+    },
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+      "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2020-03-23T00:00:00Z",
+      "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+      "relevance_rank": 2,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2020-04-01T00:00:00Z",
+      "context_window_end": "2020-04-01T00:00:00Z",
+      "event_themes": [
+        "market_stress",
+        "consumer_demand",
+        "fed_policy"
+      ],
+      "primary_theme": "market_stress",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "pandemic_crash_and_lockdown_2020",
+      "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+      "historical_event_type": "pandemic_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.64245,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 2,
+      "ranking_score": 0.64245,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.6175,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

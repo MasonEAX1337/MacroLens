@@ -1,0 +1,287 @@
+{
+  "id": 1155,
+  "dataset_id": 4,
+  "timestamp": "2020-04-20T00:00:00Z",
+  "severity_score": 4.862164355376674,
+  "direction": "down",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1918,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "WTI Oil Price",
+  "cluster": {
+    "id": 1918,
+    "start_timestamp": "2020-04-20T00:00:00Z",
+    "end_timestamp": "2020-04-20T00:00:00Z",
+    "anchor_timestamp": "2020-04-20T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 4.862164355376674,
+    "frequency_mix": "daily_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1155,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2020-04-20T00:00:00Z",
+        "severity_score": 4.862164355376674,
+        "direction": "down",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.8389115055974963,
+      "lag_days": 28,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 10,
+      "related_dataset_name": "S&P 500 Index",
+      "correlation_score": 0.4605394041653342,
+      "lag_days": 26,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The collapse in WTI oil prices on April 20, 2020, occurred during the global pandemic and economic lockdown described by the IMF as the worst downturn since the Great Depression. This period was characterized by significant market stress and a sharp decline in global demand for oil. Because this is an isolated, low-quality signal, the evidence remains limited and does not represent a broad macro episode. Correlations with the S&P 500 and mortgage rates are identified only as lagging indicators occurring weeks after this event.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2020-04-20T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 28,
+            "correlation_score": -0.8389115055974963,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 26,
+            "correlation_score": 0.4605394041653342,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.54245,
+            "primary_theme": "market_stress",
+            "ranking_score": 0.54245,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.0,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.6175,
+              "specificity": 0.9
+            },
+            "context_window_end": "2020-04-20T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-04-20T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 28 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 4.862164355376674,
+        "usage_metadata": {
+          "totalTokenCount": 1527,
+          "promptTokenCount": 1420,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1420
+            }
+          ],
+          "candidatesTokenCount": 107
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "-9bwaaS1Mq7qz7IPv7K2mAs",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:49:11.718380Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "WTI Oil Price showed an unusual decline on April 20, 2020 with a severity score of 4.86 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression'. The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand. The strongest registry theme here is market stress. This context was matched before the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to WTI Oil Price around about 28 day(s) later (correlation -0.84).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2020-04-20T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 28,
+            "correlation_score": -0.8389115055974963,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 26,
+            "correlation_score": 0.4605394041653342,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "market_stress",
+              "consumer_demand",
+              "fed_policy"
+            ],
+            "published_at": "2020-03-23T00:00:00+00:00",
+            "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+            "timing_class": "leading",
+            "context_score": 0.582,
+            "primary_theme": "market_stress",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2020-04-20T00:00:00+00:00",
+            "historical_event_id": "pandemic_crash_and_lockdown_2020",
+            "context_window_start": "2020-04-20T00:00:00+00:00",
+            "historical_event_type": "pandemic_shock",
+            "timing_interpretation": "about 28 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+            "historical_event_confidence": 0.95
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 4.862164355376674,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:01.634039Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/News/Articles/2020/03/23/pr2098-imf-managing-director-statement-following-a-g20-ministerial-call-on-the-coronavirus-emergency",
+      "title": "IMF: The Great Lockdown: Worst Economic Downturn Since the Great Depression",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2020-03-23T00:00:00Z",
+      "search_query": "macro_timeline:pandemic_crash_and_lockdown_2020",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2020-04-20T00:00:00Z",
+      "context_window_end": "2020-04-20T00:00:00Z",
+      "event_themes": [
+        "market_stress",
+        "consumer_demand",
+        "fed_policy"
+      ],
+      "primary_theme": "market_stress",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "pandemic_crash_and_lockdown_2020",
+      "historical_event_summary": "The COVID-19 pandemic and lockdown shock triggered a severe global recession, market stress, emergency policy support, and a collapse in oil demand.",
+      "historical_event_type": "pandemic_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.95,
+      "context_score": 0.54245,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.54245,
+      "score_components": {
+        "theme": 0.0,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.6175,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

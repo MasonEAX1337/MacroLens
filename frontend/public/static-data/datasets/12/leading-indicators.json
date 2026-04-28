@@ -1,0 +1,224 @@
+[
+  {
+    "related_dataset_id": 4,
+    "related_dataset_name": "WTI Oil Price",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "weekly",
+    "supporting_cluster_count": 4,
+    "target_cluster_count": 4,
+    "cluster_coverage": 1.0,
+    "average_lead_days": 23,
+    "average_correlation_score": 0.453627,
+    "average_abs_correlation_score": 0.453627,
+    "strongest_correlation_score": 0.562752,
+    "sign_consistency": 1.0,
+    "dominant_direction": "positive",
+    "frequency_alignment": 0.85,
+    "support_confidence": 1.0,
+    "consistency_score": 0.875725,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1928,
+        "target_anomaly_id": 1201,
+        "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "target_timestamp": "2022-03-31T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "change_point",
+        "target_severity_score": 0.38416,
+        "target_cluster_start_timestamp": "2022-03-31T00:00:00Z",
+        "target_cluster_end_timestamp": "2022-03-31T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 0.38416,
+        "target_cluster_frequency_mix": "weekly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.48963039092941035,
+        "lag_days": -23,
+        "cluster_members": [
+          {
+            "anomaly_id": 1201,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2022-03-31T00:00:00Z",
+            "severity_score": 0.38416,
+            "direction": "up",
+            "detection_method": "change_point"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1904,
+        "target_anomaly_id": 1194,
+        "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "target_timestamp": "2016-11-17T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.1345908497707304,
+        "target_cluster_start_timestamp": "2016-11-17T00:00:00Z",
+        "target_cluster_end_timestamp": "2016-12-01T00:00:00Z",
+        "target_cluster_span_days": 14,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1345908497707304,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.5627515941024576,
+        "lag_days": -2,
+        "cluster_members": [
+          {
+            "anomaly_id": 1194,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2016-11-17T00:00:00Z",
+            "severity_score": 3.1345908497707304,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1098,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "2016-12-01T00:00:00Z",
+            "severity_score": 3.040026026470062,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1887,
+        "target_anomaly_id": 1193,
+        "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "target_timestamp": "2009-06-04T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.0348634300939827,
+        "target_cluster_start_timestamp": "2009-06-04T00:00:00Z",
+        "target_cluster_end_timestamp": "2009-06-04T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.0348634300939827,
+        "target_cluster_frequency_mix": "weekly_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.3145885585983675,
+        "lag_days": -36,
+        "cluster_members": [
+          {
+            "anomaly_id": 1193,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2009-06-04T00:00:00Z",
+            "severity_score": 3.0348634300939827,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1838,
+        "target_anomaly_id": 1190,
+        "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "target_timestamp": "1987-04-17T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.127443185246969,
+        "target_cluster_start_timestamp": "1987-04-01T00:00:00Z",
+        "target_cluster_end_timestamp": "1987-04-17T00:00:00Z",
+        "target_cluster_span_days": 16,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1973877781370916,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.44753616167535953,
+        "lag_days": -31,
+        "cluster_members": [
+          {
+            "anomaly_id": 844,
+            "dataset_id": 13,
+            "dataset_name": "Real Disposable Personal Income Per Capita",
+            "timestamp": "1987-04-01T00:00:00Z",
+            "severity_score": 3.1973877781370916,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1190,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "1987-04-17T00:00:00Z",
+            "severity_score": 3.127443185246969,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 10,
+    "related_dataset_name": "S&P 500 Index",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "weekly",
+    "supporting_cluster_count": 1,
+    "target_cluster_count": 4,
+    "cluster_coverage": 0.25,
+    "average_lead_days": 10,
+    "average_correlation_score": 0.576075,
+    "average_abs_correlation_score": 0.576075,
+    "strongest_correlation_score": 0.576075,
+    "sign_consistency": 1.0,
+    "dominant_direction": "positive",
+    "frequency_alignment": 0.85,
+    "support_confidence": 0.2,
+    "consistency_score": 0.472715,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1904,
+        "target_anomaly_id": 1194,
+        "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "target_timestamp": "2016-11-17T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.1345908497707304,
+        "target_cluster_start_timestamp": "2016-11-17T00:00:00Z",
+        "target_cluster_end_timestamp": "2016-12-01T00:00:00Z",
+        "target_cluster_span_days": 14,
+        "target_cluster_anomaly_count": 2,
+        "target_cluster_dataset_count": 2,
+        "target_cluster_peak_severity_score": 3.1345908497707304,
+        "target_cluster_frequency_mix": "mixed",
+        "target_cluster_episode_kind": "cross_dataset_episode",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.5760750093346814,
+        "lag_days": -10,
+        "cluster_members": [
+          {
+            "anomaly_id": 1194,
+            "dataset_id": 12,
+            "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+            "timestamp": "2016-11-17T00:00:00Z",
+            "severity_score": 3.1345908497707304,
+            "direction": "up",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 1098,
+            "dataset_id": 3,
+            "dataset_name": "Federal Funds Rate",
+            "timestamp": "2016-12-01T00:00:00Z",
+            "severity_score": 3.040026026470062,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,272 @@
+{
+  "id": 1145,
+  "dataset_id": 4,
+  "timestamp": "2010-10-01T00:00:00Z",
+  "severity_score": 3.0112511245871363,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1892,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "WTI Oil Price",
+  "cluster": {
+    "id": 1892,
+    "start_timestamp": "2010-10-01T00:00:00Z",
+    "end_timestamp": "2010-10-01T00:00:00Z",
+    "anchor_timestamp": "2010-10-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 3.0112511245871363,
+    "frequency_mix": "mixed",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 1145,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2010-10-01T00:00:00Z",
+        "severity_score": 3.0112511245871363,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1049,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "2010-10-01T00:00:00Z",
+        "severity_score": 2.706115836251186,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.7522403674391026,
+      "lag_days": -6,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The October 2010 rise in WTI oil prices occurred against a backdrop of ongoing recovery efforts following the subprime mortgage crisis, as described by the Federal Reserve History registry. Data indicates a correlation between oil price movements and the 30-year fixed rate mortgage average, which shifted six days prior to the anomaly. Because the cluster quality is medium, this event should be viewed as a limited episode rather than part of a broad macro trend. Evidence linking these specific market movements remains indirect.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2010-10-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": -0.7522403674391026,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: Subprime Mortgage Crisis",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/subprime-mortgage-crisis",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "housing",
+              "banking_stress",
+              "fed_policy"
+            ],
+            "published_at": "2008-09-15T00:00:00+00:00",
+            "search_query": "macro_timeline:subprime_mortgage_crisis",
+            "timing_class": "leading",
+            "context_score": 0.64063,
+            "primary_theme": "housing",
+            "ranking_score": 0.64063,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.6045,
+              "specificity": 0.9
+            },
+            "context_window_end": "2010-10-01T00:00:00+00:00",
+            "historical_event_id": "subprime_mortgage_crisis",
+            "context_window_start": "2010-10-01T00:00:00+00:00",
+            "historical_event_type": "financial_crisis",
+            "timing_interpretation": "about 746 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "The U.S. housing bust, mortgage-credit deterioration, and financial-system stress drove a broader crisis across housing-sensitive assets, credit conditions, and policy expectations.",
+            "historical_event_confidence": 0.93
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.0112511245871363,
+        "usage_metadata": {
+          "totalTokenCount": 1359,
+          "promptTokenCount": 1259,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1259
+            }
+          ],
+          "candidatesTokenCount": 100
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "mixed"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "Ytfwab6bEP7kz7IPyKGB-AU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:50:53.582909Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "WTI Oil Price showed an unusual increase on October 01, 2010 with a severity score of 3.01 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: Subprime Mortgage Crisis'. The U.S. housing bust, mortgage-credit deterioration, and financial-system stress drove a broader crisis across housing-sensitive assets, credit conditions, and policy expectations. The strongest registry theme here is housing. This context was matched before the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 1 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to WTI Oil Price around about 6 day(s) earlier (correlation -0.75).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2010-10-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -6,
+            "correlation_score": -0.7522403674391026,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: Subprime Mortgage Crisis",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/subprime-mortgage-crisis",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "housing",
+              "banking_stress",
+              "fed_policy"
+            ],
+            "published_at": "2008-09-15T00:00:00+00:00",
+            "search_query": "macro_timeline:subprime_mortgage_crisis",
+            "timing_class": "leading",
+            "context_score": 0.707,
+            "primary_theme": "housing",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2010-10-01T00:00:00+00:00",
+            "historical_event_id": "subprime_mortgage_crisis",
+            "context_window_start": "2010-10-01T00:00:00+00:00",
+            "historical_event_type": "financial_crisis",
+            "timing_interpretation": "about 746 day(s) before the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "The U.S. housing bust, mortgage-credit deterioration, and financial-system stress drove a broader crisis across housing-sensitive assets, credit conditions, and policy expectations.",
+            "historical_event_confidence": 0.93
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.0112511245871363,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "mixed"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:01.784950Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/subprime-mortgage-crisis",
+      "title": "Federal Reserve History: Subprime Mortgage Crisis",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2008-09-15T00:00:00Z",
+      "search_query": "macro_timeline:subprime_mortgage_crisis",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2010-10-01T00:00:00Z",
+      "context_window_end": "2010-10-01T00:00:00Z",
+      "event_themes": [
+        "housing",
+        "banking_stress",
+        "fed_policy"
+      ],
+      "primary_theme": "housing",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "subprime_mortgage_crisis",
+      "historical_event_summary": "The U.S. housing bust, mortgage-credit deterioration, and financial-system stress drove a broader crisis across housing-sensitive assets, credit conditions, and policy expectations.",
+      "historical_event_type": "financial_crisis",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.93,
+      "context_score": 0.64063,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.64063,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.6045,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

@@ -1,0 +1,371 @@
+{
+  "id": 1072,
+  "dataset_id": 2,
+  "timestamp": "1991-02-01T00:00:00Z",
+  "severity_score": 1.013488,
+  "direction": "down",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1849,
+  "cluster_anomaly_count": 3,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "high",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1849,
+    "start_timestamp": "1991-01-16T00:00:00Z",
+    "end_timestamp": "1991-02-01T00:00:00Z",
+    "anchor_timestamp": "1991-01-16T00:00:00Z",
+    "span_days": 16,
+    "anomaly_count": 3,
+    "dataset_count": 3,
+    "peak_severity_score": 3.271002923091987,
+    "frequency_mix": "mixed",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "high",
+    "members": [
+      {
+        "anomaly_id": 1126,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "1991-01-16T00:00:00Z",
+        "severity_score": 3.271002923091987,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1072,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "1991-02-01T00:00:00Z",
+        "severity_score": 1.013488,
+        "direction": "down",
+        "detection_method": "change_point"
+      },
+      {
+        "anomaly_id": 1112,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1991-02-01T00:00:00Z",
+        "severity_score": 0.503718,
+        "direction": "down",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9964802184396506,
+      "lag_days": -56,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": 0.9954926065756454,
+      "lag_days": -59,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": -0.8574350824190275,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.756502654825025,
+      "lag_days": 73,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": 0.6785488978073045,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The 1990-1991 recession, noted in the IMF's \"Out of the Ballpark,\" provides the historical backdrop for this CPI decline amidst Gulf War-related geopolitical and financial stress. Leading data indicates this downward shift followed changes in the Federal Funds Rate, 30-year mortgage rates, and real disposable personal income per capita by approximately two months. While these indicators align with the anomaly, the evidence is not sufficient to definitively isolate a single driver.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1991-02-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -56,
+            "correlation_score": 0.9964802184396506,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": 0.9954926065756454,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.8574350824190275,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 73,
+            "correlation_score": 0.756502654825025,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.6785488978073045,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.62075,
+            "primary_theme": "geopolitics",
+            "ranking_score": 0.62075,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.3825,
+              "specificity": 0.9
+            },
+            "context_window_end": "1991-02-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1991-01-16T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6695 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.013488,
+        "usage_metadata": {
+          "totalTokenCount": 1784,
+          "promptTokenCount": 1686,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1686
+            }
+          ],
+          "candidatesTokenCount": 98
+        },
+        "episode_context": {
+          "cluster_span_days": 16,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "high",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 3,
+          "cluster_frequency_mix": "mixed"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "B9jwaZipC_Whz7IPzLmNyAo",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:53:38.744128Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual decline on February 01, 1991 with a severity score of 1.01 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Finance & Development: Out of the Ballpark'. The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop. The strongest registry theme here is geopolitics. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 17 day(s) across 3 dataset(s). The stored episode context is relatively broad for the current evidence graph. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Consumer Price Index around about 56 day(s) earlier (correlation 1.00).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1991-02-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -56,
+            "correlation_score": 0.9964802184396506,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": 0.9954926065756454,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.8574350824190275,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 73,
+            "correlation_score": 0.756502654825025,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": 0.6785488978073045,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "geopolitics",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "1991-02-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1991-01-16T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6695 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 1.013488,
+        "episode_context": {
+          "cluster_span_days": 16,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "high",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 3,
+          "cluster_frequency_mix": "mixed"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:02.058954Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+      "title": "IMF Finance & Development: Out of the Ballpark",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2009-06-01T00:00:00Z",
+      "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "1991-01-16T00:00:00Z",
+      "context_window_end": "1991-02-01T00:00:00Z",
+      "event_themes": [
+        "geopolitics",
+        "energy_shock",
+        "inflation"
+      ],
+      "primary_theme": "geopolitics",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "gulf_war_oil_recession_1990_1991",
+      "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+      "historical_event_type": "oil_recession_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States",
+        "Middle East"
+      ],
+      "historical_event_confidence": 0.85,
+      "context_score": 0.62075,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.62075,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.3825,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

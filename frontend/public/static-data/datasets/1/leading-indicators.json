@@ -1,0 +1,184 @@
+[
+  {
+    "related_dataset_id": 10,
+    "related_dataset_name": "S&P 500 Index",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "daily",
+    "supporting_cluster_count": 3,
+    "target_cluster_count": 3,
+    "cluster_coverage": 1.0,
+    "average_lead_days": 7,
+    "average_correlation_score": 0.546133,
+    "average_abs_correlation_score": 0.546133,
+    "strongest_correlation_score": 0.666327,
+    "sign_consistency": 1.0,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 0.8,
+    "consistency_score": 0.849227,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1941,
+        "target_anomaly_id": 662,
+        "target_dataset_name": "Bitcoin Price",
+        "target_timestamp": "2026-02-06T00:00:00Z",
+        "target_direction": "down",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.239220126934421,
+        "target_cluster_start_timestamp": "2026-02-01T00:00:00Z",
+        "target_cluster_end_timestamp": "2026-02-06T00:00:00Z",
+        "target_cluster_span_days": 5,
+        "target_cluster_anomaly_count": 3,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.239220126934421,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "single_dataset_wave",
+        "target_cluster_quality_band": "medium",
+        "correlation_score": 0.6663266543627329,
+        "lag_days": -1,
+        "cluster_members": [
+          {
+            "anomaly_id": 661,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2026-02-01T00:00:00Z",
+            "severity_score": 3.1370289390012713,
+            "direction": "down",
+            "detection_method": "z_score"
+          },
+          {
+            "anomaly_id": 663,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2026-02-01T00:00:00Z",
+            "severity_score": 1.159228,
+            "direction": "down",
+            "detection_method": "change_point"
+          },
+          {
+            "anomaly_id": 662,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2026-02-06T00:00:00Z",
+            "severity_score": 3.239220126934421,
+            "direction": "down",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1939,
+        "target_anomaly_id": 660,
+        "target_dataset_name": "Bitcoin Price",
+        "target_timestamp": "2025-07-11T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.1997367408869244,
+        "target_cluster_start_timestamp": "2025-07-11T00:00:00Z",
+        "target_cluster_end_timestamp": "2025-07-11T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.1997367408869244,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.502696413111744,
+        "lag_days": -18,
+        "cluster_members": [
+          {
+            "anomaly_id": 660,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2025-07-11T00:00:00Z",
+            "severity_score": 3.1997367408869244,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      },
+      {
+        "target_cluster_id": 1937,
+        "target_anomaly_id": 659,
+        "target_dataset_name": "Bitcoin Price",
+        "target_timestamp": "2025-04-23T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.020295976384246,
+        "target_cluster_start_timestamp": "2025-04-23T00:00:00Z",
+        "target_cluster_end_timestamp": "2025-04-23T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.020295976384246,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.46937689456348364,
+        "lag_days": -1,
+        "cluster_members": [
+          {
+            "anomaly_id": 659,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2025-04-23T00:00:00Z",
+            "severity_score": 3.020295976384246,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "related_dataset_id": 4,
+    "related_dataset_name": "WTI Oil Price",
+    "related_dataset_frequency": "daily",
+    "target_dataset_frequency": "daily",
+    "supporting_cluster_count": 1,
+    "target_cluster_count": 3,
+    "cluster_coverage": 0.333333,
+    "average_lead_days": 1,
+    "average_correlation_score": 0.371486,
+    "average_abs_correlation_score": 0.371486,
+    "strongest_correlation_score": 0.371486,
+    "sign_consistency": 1.0,
+    "dominant_direction": "positive",
+    "frequency_alignment": 1.0,
+    "support_confidence": 0.2,
+    "consistency_score": 0.467631,
+    "supporting_episodes": [
+      {
+        "target_cluster_id": 1937,
+        "target_anomaly_id": 659,
+        "target_dataset_name": "Bitcoin Price",
+        "target_timestamp": "2025-04-23T00:00:00Z",
+        "target_direction": "up",
+        "target_detection_method": "z_score",
+        "target_severity_score": 3.020295976384246,
+        "target_cluster_start_timestamp": "2025-04-23T00:00:00Z",
+        "target_cluster_end_timestamp": "2025-04-23T00:00:00Z",
+        "target_cluster_span_days": 0,
+        "target_cluster_anomaly_count": 1,
+        "target_cluster_dataset_count": 1,
+        "target_cluster_peak_severity_score": 3.020295976384246,
+        "target_cluster_frequency_mix": "daily_only",
+        "target_cluster_episode_kind": "isolated_signal",
+        "target_cluster_quality_band": "low",
+        "correlation_score": 0.3714862933407782,
+        "lag_days": -1,
+        "cluster_members": [
+          {
+            "anomaly_id": 659,
+            "dataset_id": 1,
+            "dataset_name": "Bitcoin Price",
+            "timestamp": "2025-04-23T00:00:00Z",
+            "severity_score": 3.020295976384246,
+            "direction": "up",
+            "detection_method": "z_score"
+          }
+        ]
+      }
+    ]
+  }
+]

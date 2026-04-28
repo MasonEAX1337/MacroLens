@@ -1,0 +1,315 @@
+{
+  "id": 1188,
+  "dataset_id": 11,
+  "timestamp": "2025-03-01T00:00:00Z",
+  "severity_score": 1.003073,
+  "direction": "down",
+  "detection_method": "change_point",
+  "episode_filter_status": "suppressed",
+  "episode_filter_reason": "weak_monthly_isolated_change_point",
+  "cluster_id": null,
+  "cluster_anomaly_count": null,
+  "cluster_episode_kind": null,
+  "cluster_quality_band": null,
+  "dataset_name": "Case-Shiller U.S. National Home Price Index",
+  "cluster": null,
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9743580424274143,
+      "lag_days": 5,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 1,
+      "related_dataset_name": "Bitcoin Price",
+      "correlation_score": 0.9650195708782685,
+      "lag_days": -89,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": -0.8078170439914271,
+      "lag_days": 55,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.7619081060671401,
+      "lag_days": -30,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 10,
+      "related_dataset_name": "S&P 500 Index",
+      "correlation_score": -0.7271254378149924,
+      "lag_days": -38,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The Case-Shiller U.S. National Home Price Index experienced a downward shift in March 2025, a move likely influenced by pressures on affordability, credit availability, and broader housing demand as described in the \"Likely macro drivers for home prices\" dataset backdrop. This isolated anomaly has limited evidence supporting a clear driver, as the associated cluster quality is low. Leading indicators suggest that shifts in the Federal Funds Rate 30 days prior and the S&P 500 Index 38 days prior preceded the price change. Bitcoin price movements 89 days before the anomaly also show a high correlation, though the evidence remains weak.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2025-03-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 5,
+            "correlation_score": 0.9743580424274143,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -89,
+            "correlation_score": 0.9650195708782685,
+            "related_dataset_id": 1,
+            "related_dataset_name": "Bitcoin Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 55,
+            "correlation_score": -0.8078170439914271,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": -0.7619081060671401,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -38,
+            "correlation_score": -0.7271254378149924,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for home prices",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CSUSHPISA",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "housing",
+              "fed_policy"
+            ],
+            "published_at": "2025-03-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CSUSHPISA",
+            "timing_class": "concurrent",
+            "context_score": 0.6312,
+            "primary_theme": "housing",
+            "ranking_score": 0.6312,
+            "driver_summary": "This housing-price move most likely reflects mortgage-rate pressure, affordability, credit availability, labor and income conditions, and broader housing demand shifts. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.333333,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "2025-03-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "2025-03-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CSUSHPISA",
+        "severity_score": 1.003073,
+        "usage_metadata": {
+          "totalTokenCount": 1731,
+          "promptTokenCount": 1598,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1598
+            }
+          ],
+          "candidatesTokenCount": 133
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "r9bwafP0F-mlqtsP4JndqQ4",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:47:56.600665Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Case-Shiller U.S. National Home Price Index showed an unusual decline on March 01, 2025 with a severity score of 1.00 using change_point detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This housing-price move most likely reflects mortgage-rate pressure, affordability, credit availability, labor and income conditions, and broader housing demand shifts. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is housing. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Case-Shiller U.S. National Home Price Index around about 5 day(s) later (correlation 0.97).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2025-03-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 5,
+            "correlation_score": 0.9743580424274143,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -89,
+            "correlation_score": 0.9650195708782685,
+            "related_dataset_id": 1,
+            "related_dataset_name": "Bitcoin Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 55,
+            "correlation_score": -0.8078170439914271,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": -0.7619081060671401,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -38,
+            "correlation_score": -0.7271254378149924,
+            "related_dataset_id": 10,
+            "related_dataset_name": "S&P 500 Index"
+          }
+        ],
+        "dataset_name": "Case-Shiller U.S. National Home Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for home prices",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CSUSHPISA",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "housing",
+              "fed_policy"
+            ],
+            "published_at": "2025-03-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CSUSHPISA",
+            "timing_class": "concurrent",
+            "context_score": 0.823333,
+            "primary_theme": "housing",
+            "driver_summary": "This housing-price move most likely reflects mortgage-rate pressure, affordability, credit availability, labor and income conditions, and broader housing demand shifts. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "2025-03-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "2025-03-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CSUSHPISA",
+        "severity_score": 1.003073,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:56:08.586679Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/CSUSHPISA",
+      "title": "Likely macro drivers for home prices",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2025-03-01T00:00:00Z",
+      "search_query": "dataset_backdrop:CSUSHPISA",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "2025-03-01T00:00:00Z",
+      "context_window_end": "2025-03-01T00:00:00Z",
+      "event_themes": [
+        "housing",
+        "fed_policy"
+      ],
+      "primary_theme": "housing",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This housing-price move most likely reflects mortgage-rate pressure, affordability, credit availability, labor and income conditions, and broader housing demand shifts. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6312,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6312,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.333333,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}

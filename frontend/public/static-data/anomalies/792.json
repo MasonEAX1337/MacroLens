@@ -1,0 +1,293 @@
+{
+  "id": 792,
+  "dataset_id": 10,
+  "timestamp": "2016-09-09T00:00:00Z",
+  "severity_score": 4.075085061457291,
+  "direction": "down",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1903,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "single_dataset_wave",
+  "cluster_quality_band": "low",
+  "dataset_name": "S&P 500 Index",
+  "cluster": {
+    "id": 1903,
+    "start_timestamp": "2016-09-09T00:00:00Z",
+    "end_timestamp": "2016-09-13T00:00:00Z",
+    "anchor_timestamp": "2016-09-09T00:00:00Z",
+    "span_days": 4,
+    "anomaly_count": 2,
+    "dataset_count": 1,
+    "peak_severity_score": 4.075085061457291,
+    "frequency_mix": "daily_only",
+    "episode_kind": "single_dataset_wave",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 792,
+        "dataset_id": 10,
+        "dataset_name": "S&P 500 Index",
+        "timestamp": "2016-09-09T00:00:00Z",
+        "severity_score": 4.075085061457291,
+        "direction": "down",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 793,
+        "dataset_id": 10,
+        "dataset_name": "S&P 500 Index",
+        "timestamp": "2016-09-13T00:00:00Z",
+        "severity_score": 3.1386015268823515,
+        "direction": "down",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.8967218920744874,
+      "lag_days": 3,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": -0.49476642540380944,
+      "lag_days": -5,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The 2014-2016 oil price collapse, documented by the IMF as a period of energy-related market shifts, provides historical context for the market environment surrounding this anomaly. This index decline occurs within a limited, low-quality cluster of two daily anomalies. While WTI oil price fluctuations preceded the event by five days, the evidence for a specific driver is weak. Mortgage rate movements are excluded as a driver as they were recorded as a lagging result of the anomaly.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2016-09-09T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 3,
+            "correlation_score": 0.8967218920744874,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -5,
+            "correlation_score": -0.49476642540380944,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "S&P 500 Index",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+            "driver_role": "primary_driver_candidate",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "energy_shock",
+              "inflation",
+              "consumer_demand"
+            ],
+            "published_at": "2015-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:oil_collapse_2014_2016",
+            "timing_class": "leading",
+            "context_score": 0.53244,
+            "primary_theme": "energy_shock",
+            "ranking_score": 0.53244,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "before",
+            "score_components": {
+              "theme": 0.0,
+              "source": 0.84,
+              "timing": 0.82,
+              "keyword": 0.0,
+              "directness": 0.546,
+              "specificity": 0.9
+            },
+            "context_window_end": "2016-09-13T00:00:00+00:00",
+            "historical_event_id": "oil_collapse_2014_2016",
+            "context_window_start": "2016-09-09T00:00:00+00:00",
+            "historical_event_type": "oil_price_collapse",
+            "timing_interpretation": "about 283 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global"
+            ],
+            "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "SP500",
+        "severity_score": 4.075085061457291,
+        "usage_metadata": {
+          "totalTokenCount": 1495,
+          "promptTokenCount": 1396,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1396
+            }
+          ],
+          "candidatesTokenCount": 99
+        },
+        "episode_context": {
+          "cluster_span_days": 4,
+          "cluster_episode_kind": "single_dataset_wave",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "NtfwadzrAa7qz7IPi4-2yAg",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:50:08.977401Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "S&P 500 Index showed an unusual decline on September 09, 2016 with a severity score of 4.08 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Blog: How Low Oil Prices Can Help the Global Economy'. The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations. The strongest registry theme here is energy shock. This context was matched before the episode window. This anomaly is part of a single-dataset wave spanning about 5 day(s). The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as S&P 500 Index around about 3 day(s) later (correlation 0.90).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2016-09-09T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 3,
+            "correlation_score": 0.8967218920744874,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -5,
+            "correlation_score": -0.49476642540380944,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          }
+        ],
+        "dataset_name": "S&P 500 Index",
+        "news_context": [
+          {
+            "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "energy_shock",
+              "inflation",
+              "consumer_demand"
+            ],
+            "published_at": "2015-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:oil_collapse_2014_2016",
+            "timing_class": "leading",
+            "context_score": 0.582,
+            "primary_theme": "energy_shock",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "before",
+            "context_window_end": "2016-09-13T00:00:00+00:00",
+            "historical_event_id": "oil_collapse_2014_2016",
+            "context_window_start": "2016-09-09T00:00:00+00:00",
+            "historical_event_type": "oil_price_collapse",
+            "timing_interpretation": "about 283 day(s) before the anomaly",
+            "historical_event_regions": [
+              "Global"
+            ],
+            "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "SP500",
+        "severity_score": 4.075085061457291,
+        "episode_context": {
+          "cluster_span_days": 4,
+          "cluster_episode_kind": "single_dataset_wave",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:01.737621Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/en/Blogs/Articles/2015/09/28/04/53/how-low-oil-prices-can-help-the-global-economy",
+      "title": "IMF Blog: How Low Oil Prices Can Help the Global Economy",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2015-12-01T00:00:00Z",
+      "search_query": "macro_timeline:oil_collapse_2014_2016",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "before",
+      "context_window_start": "2016-09-09T00:00:00Z",
+      "context_window_end": "2016-09-13T00:00:00Z",
+      "event_themes": [
+        "energy_shock",
+        "inflation",
+        "consumer_demand"
+      ],
+      "primary_theme": "energy_shock",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "oil_collapse_2014_2016",
+      "historical_event_summary": "The 2014-2016 oil price collapse reflected weak demand and oversupply, reshaping inflation dynamics and policy expectations.",
+      "historical_event_type": "oil_price_collapse",
+      "historical_event_regions": [
+        "Global"
+      ],
+      "historical_event_confidence": 0.84,
+      "context_score": 0.53244,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "primary_driver_candidate",
+      "context_rank": 1,
+      "ranking_score": 0.53244,
+      "score_components": {
+        "theme": 0.0,
+        "source": 0.84,
+        "timing": 0.82,
+        "keyword": 0.0,
+        "directness": 0.546,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

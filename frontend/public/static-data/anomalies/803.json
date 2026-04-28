@@ -1,0 +1,317 @@
+{
+  "id": 803,
+  "dataset_id": 10,
+  "timestamp": "2025-04-04T00:00:00Z",
+  "severity_score": 3.473646393147435,
+  "direction": "down",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1936,
+  "cluster_anomaly_count": 2,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "medium",
+  "dataset_name": "S&P 500 Index",
+  "cluster": {
+    "id": 1936,
+    "start_timestamp": "2025-04-04T00:00:00Z",
+    "end_timestamp": "2025-04-04T00:00:00Z",
+    "anchor_timestamp": "2025-04-04T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 2,
+    "dataset_count": 2,
+    "peak_severity_score": 3.473646393147435,
+    "frequency_mix": "daily_only",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "medium",
+    "members": [
+      {
+        "anomaly_id": 803,
+        "dataset_id": 10,
+        "dataset_name": "S&P 500 Index",
+        "timestamp": "2025-04-04T00:00:00Z",
+        "severity_score": 3.473646393147435,
+        "direction": "down",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1164,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "2025-04-04T00:00:00Z",
+        "severity_score": 3.0637344287851365,
+        "direction": "down",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9466223563972213,
+      "lag_days": -29,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.6719183373230228,
+      "lag_days": 0,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 1,
+      "related_dataset_name": "Bitcoin Price",
+      "correlation_score": 0.5799465682223495,
+      "lag_days": 1,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The S&P 500 decline on April 4, 2025, occurred alongside a concurrent drop in WTI Oil prices, which historical registry data from the EIA attributes to an oil market shock driven by tariff-related recession fears and OPEC+ supply increases. While this downturn coincided with a shift in oil prices, the evidence linking these movements to the broader market index remains limited. The 30-year fixed-rate mortgage average showed a strong correlation with the anomaly, though this trend preceded the event by approximately 29 days. Due to the limited nature of the current episode, these factors should be viewed as contextual rather than definitive drivers of the market index movement.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2025-04-04T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -29,
+            "correlation_score": 0.9466223563972213,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 0,
+            "correlation_score": 0.6719183373230228,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 1,
+            "correlation_score": 0.5799465682223495,
+            "related_dataset_id": 1,
+            "related_dataset_name": "Bitcoin Price"
+          }
+        ],
+        "dataset_name": "S&P 500 Index",
+        "news_context": [
+          {
+            "title": "EIA: Crude oil prices fell sharply as tariffs and faster OPEC+ supply hit demand expectations",
+            "domain": "eia.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.eia.gov/outlooks/steo/archives/apr25.pdf",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "energy_shock",
+              "market_stress",
+              "geopolitics"
+            ],
+            "published_at": "2025-04-08T00:00:00+00:00",
+            "search_query": "macro_timeline:trade_war_and_opec_supply_shock_2025",
+            "timing_class": "lagging",
+            "context_score": 0.62201,
+            "primary_theme": "energy_shock",
+            "ranking_score": 0.62201,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.3915,
+              "specificity": 0.9
+            },
+            "context_window_end": "2025-04-04T00:00:00+00:00",
+            "historical_event_id": "trade_war_and_opec_supply_shock_2025",
+            "context_window_start": "2025-04-04T00:00:00+00:00",
+            "historical_event_type": "oil_market_shock",
+            "timing_interpretation": "about 4 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Early-April 2025 oil prices fell sharply as new U.S. tariff measures raised recession fears while OPEC+ accelerated planned output increases, weakening demand expectations and risk sentiment.",
+            "historical_event_confidence": 0.87
+          }
+        ],
+        "dataset_symbol": "SP500",
+        "severity_score": 3.473646393147435,
+        "usage_metadata": {
+          "totalTokenCount": 1627,
+          "promptTokenCount": 1487,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1487
+            }
+          ],
+          "candidatesTokenCount": 140
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "rdbwafnXGYb6qtsP9LSfiQE",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:47:54.450917Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "S&P 500 Index showed an unusual decline on April 04, 2025 with a severity score of 3.47 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'EIA: Crude oil prices fell sharply as tariffs and faster OPEC+ supply hit demand expectations'. Early-April 2025 oil prices fell sharply as new U.S. tariff measures raised recession fears while OPEC+ accelerated planned output increases, weakening demand expectations and risk sentiment. The strongest registry theme here is energy shock. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 1 day(s) across 2 dataset(s). The stored episode context is moderate, which gives broader context without making this a strong regime-level episode. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as S&P 500 Index around about 29 day(s) earlier (correlation 0.95).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "2025-04-04T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -29,
+            "correlation_score": 0.9466223563972213,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 0,
+            "correlation_score": 0.6719183373230228,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 1,
+            "correlation_score": 0.5799465682223495,
+            "related_dataset_id": 1,
+            "related_dataset_name": "Bitcoin Price"
+          }
+        ],
+        "dataset_name": "S&P 500 Index",
+        "news_context": [
+          {
+            "title": "EIA: Crude oil prices fell sharply as tariffs and faster OPEC+ supply hit demand expectations",
+            "domain": "eia.gov",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.eia.gov/outlooks/steo/archives/apr25.pdf",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "energy_shock",
+              "market_stress",
+              "geopolitics"
+            ],
+            "published_at": "2025-04-08T00:00:00+00:00",
+            "search_query": "macro_timeline:trade_war_and_opec_supply_shock_2025",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "energy_shock",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2025-04-04T00:00:00+00:00",
+            "historical_event_id": "trade_war_and_opec_supply_shock_2025",
+            "context_window_start": "2025-04-04T00:00:00+00:00",
+            "historical_event_type": "oil_market_shock",
+            "timing_interpretation": "about 4 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States"
+            ],
+            "historical_event_summary": "Early-April 2025 oil prices fell sharply as new U.S. tariff measures raised recession fears while OPEC+ accelerated planned output increases, weakening demand expectations and risk sentiment.",
+            "historical_event_confidence": 0.87
+          }
+        ],
+        "dataset_symbol": "SP500",
+        "severity_score": 3.473646393147435,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "medium",
+          "cluster_anomaly_count": 2,
+          "cluster_dataset_count": 2,
+          "cluster_frequency_mix": "daily_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:01.478893Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.eia.gov/outlooks/steo/archives/apr25.pdf",
+      "title": "EIA: Crude oil prices fell sharply as tariffs and faster OPEC+ supply hit demand expectations",
+      "domain": "eia.gov",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2025-04-08T00:00:00Z",
+      "search_query": "macro_timeline:trade_war_and_opec_supply_shock_2025",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2025-04-04T00:00:00Z",
+      "context_window_end": "2025-04-04T00:00:00Z",
+      "event_themes": [
+        "energy_shock",
+        "market_stress",
+        "geopolitics"
+      ],
+      "primary_theme": "energy_shock",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "trade_war_and_opec_supply_shock_2025",
+      "historical_event_summary": "Early-April 2025 oil prices fell sharply as new U.S. tariff measures raised recession fears while OPEC+ accelerated planned output increases, weakening demand expectations and risk sentiment.",
+      "historical_event_type": "oil_market_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States"
+      ],
+      "historical_event_confidence": 0.87,
+      "context_score": 0.62201,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.62201,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.3915,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

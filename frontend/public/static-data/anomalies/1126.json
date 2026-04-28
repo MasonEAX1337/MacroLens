@@ -1,0 +1,287 @@
+{
+  "id": 1126,
+  "dataset_id": 4,
+  "timestamp": "1991-01-16T00:00:00Z",
+  "severity_score": 3.271002923091987,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1849,
+  "cluster_anomaly_count": 3,
+  "cluster_episode_kind": "cross_dataset_episode",
+  "cluster_quality_band": "high",
+  "dataset_name": "WTI Oil Price",
+  "cluster": {
+    "id": 1849,
+    "start_timestamp": "1991-01-16T00:00:00Z",
+    "end_timestamp": "1991-02-01T00:00:00Z",
+    "anchor_timestamp": "1991-01-16T00:00:00Z",
+    "span_days": 16,
+    "anomaly_count": 3,
+    "dataset_count": 3,
+    "peak_severity_score": 3.271002923091987,
+    "frequency_mix": "mixed",
+    "episode_kind": "cross_dataset_episode",
+    "quality_band": "high",
+    "members": [
+      {
+        "anomaly_id": 1126,
+        "dataset_id": 4,
+        "dataset_name": "WTI Oil Price",
+        "timestamp": "1991-01-16T00:00:00Z",
+        "severity_score": 3.271002923091987,
+        "direction": "up",
+        "detection_method": "z_score"
+      },
+      {
+        "anomaly_id": 1072,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "1991-02-01T00:00:00Z",
+        "severity_score": 1.013488,
+        "direction": "down",
+        "detection_method": "change_point"
+      },
+      {
+        "anomaly_id": 1112,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1991-02-01T00:00:00Z",
+        "severity_score": 0.503718,
+        "direction": "down",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.7043935522682974,
+      "lag_days": -19,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The 1990-1991 Gulf War oil recession created a global backdrop of geopolitical uncertainty and energy shocks during this period. The WTI oil price increase aligns with this volatile historical environment, which involved broader financial stress. Changes in 30-year fixed-rate mortgage averages preceded this anomaly by approximately 19 days, providing secondary supporting evidence of shifting financial conditions.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1991-01-16T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -19,
+            "correlation_score": 0.7043935522682974,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.62075,
+            "primary_theme": "geopolitics",
+            "ranking_score": 0.62075,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.0,
+              "directness": 0.3825,
+              "specificity": 0.9
+            },
+            "context_window_end": "1991-02-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1991-01-16T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6711 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.271002923091987,
+        "usage_metadata": {
+          "totalTokenCount": 1393,
+          "promptTokenCount": 1314,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1314
+            }
+          ],
+          "candidatesTokenCount": 79
+        },
+        "episode_context": {
+          "cluster_span_days": 16,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "high",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 3,
+          "cluster_frequency_mix": "mixed"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "daily",
+        "provider_response_id": "CtjwabCyJ_Whz7IPv7mNyAo",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:53:42.535999Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "WTI Oil Price showed an unusual increase on January 16, 1991 with a severity score of 3.27 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'IMF Finance & Development: Out of the Ballpark'. The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop. The strongest registry theme here is geopolitics. This context was matched after the episode window. This anomaly sits inside a broader cross-dataset episode spanning about 17 day(s) across 3 dataset(s). The stored episode context is relatively broad for the current evidence graph. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as WTI Oil Price around about 19 day(s) earlier (correlation 0.70).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1991-01-16T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -19,
+            "correlation_score": 0.7043935522682974,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          }
+        ],
+        "dataset_name": "WTI Oil Price",
+        "news_context": [
+          {
+            "title": "IMF Finance & Development: Out of the Ballpark",
+            "domain": "imf.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "geopolitics",
+              "energy_shock",
+              "inflation"
+            ],
+            "published_at": "2009-06-01T00:00:00+00:00",
+            "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+            "timing_class": "lagging",
+            "context_score": 0.727,
+            "primary_theme": "geopolitics",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "1991-02-01T00:00:00+00:00",
+            "historical_event_id": "gulf_war_oil_recession_1990_1991",
+            "context_window_start": "1991-01-16T00:00:00+00:00",
+            "historical_event_type": "oil_recession_shock",
+            "timing_interpretation": "about 6711 day(s) after the anomaly",
+            "historical_event_regions": [
+              "Global",
+              "United States",
+              "Middle East"
+            ],
+            "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+            "historical_event_confidence": 0.85
+          }
+        ],
+        "dataset_symbol": "DCOILWTICO",
+        "severity_score": 3.271002923091987,
+        "episode_context": {
+          "cluster_span_days": 16,
+          "cluster_episode_kind": "cross_dataset_episode",
+          "cluster_quality_band": "high",
+          "cluster_anomaly_count": 3,
+          "cluster_dataset_count": 3,
+          "cluster_frequency_mix": "mixed"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "daily"
+      },
+      "created_at": "2026-03-30T19:49:02.058954Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.imf.org/external/pubs/ft/fandd/2009/06/kose.htm",
+      "title": "IMF Finance & Development: Out of the Ballpark",
+      "domain": "imf.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2009-06-01T00:00:00Z",
+      "search_query": "macro_timeline:gulf_war_oil_recession_1990_1991",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "1991-01-16T00:00:00Z",
+      "context_window_end": "1991-02-01T00:00:00Z",
+      "event_themes": [
+        "geopolitics",
+        "energy_shock",
+        "inflation"
+      ],
+      "primary_theme": "geopolitics",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "gulf_war_oil_recession_1990_1991",
+      "historical_event_summary": "The 1990-1991 recession combined Gulf War uncertainty, higher oil prices, and broader financial stress into a mixed inflation, growth, and policy backdrop.",
+      "historical_event_type": "oil_recession_shock",
+      "historical_event_regions": [
+        "Global",
+        "United States",
+        "Middle East"
+      ],
+      "historical_event_confidence": 0.85,
+      "context_score": 0.62075,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.62075,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.0,
+        "directness": 0.3825,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "id": 1199,
+  "dataset_id": 12,
+  "timestamp": "1985-05-24T00:00:00Z",
+  "severity_score": 0.282323,
+  "direction": "down",
+  "detection_method": "change_point",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1835,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+  "cluster": {
+    "id": 1835,
+    "start_timestamp": "1985-05-24T00:00:00Z",
+    "end_timestamp": "1985-05-24T00:00:00Z",
+    "anchor_timestamp": "1985-05-24T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 0.282323,
+    "frequency_mix": "weekly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1199,
+        "dataset_id": 12,
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "timestamp": "1985-05-24T00:00:00Z",
+        "severity_score": 0.282323,
+        "direction": "down",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The downward movement in the 30-year fixed mortgage rate on May 24, 1985, likely reflects broad market factors including changes in Treasury yields, Federal Reserve policy expectations, and fluctuations in banking conditions. As this is an isolated signal with a low quality band, the evidence regarding specific drivers for this individual data point is limited. There is no direct external event confirmed to have caused this specific shift.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1985-05-24T00:00:00+00:00",
+        "correlations": [],
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for mortgage rates",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/MORTGAGE30US",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "housing",
+              "fed_policy",
+              "banking_stress"
+            ],
+            "published_at": "1985-05-24T00:00:00+00:00",
+            "search_query": "dataset_backdrop:MORTGAGE30US",
+            "timing_class": "concurrent",
+            "context_score": 0.6712,
+            "primary_theme": "housing",
+            "ranking_score": 0.6712,
+            "driver_summary": "This mortgage-rate move most likely reflects Treasury-yield moves, Fed policy expectations, mortgage-spread changes, banking conditions, and housing demand pressure. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.666667,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "1985-05-24T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1985-05-24T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "MORTGAGE30US",
+        "severity_score": 0.282323,
+        "usage_metadata": {
+          "totalTokenCount": 1222,
+          "promptTokenCount": 1136,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1136
+            }
+          ],
+          "candidatesTokenCount": 86
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "weekly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "weekly",
+        "provider_response_id": "UNjwaYmdLPmfz7IPxfq02QU",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:54:53.334270Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "30-Year Fixed Rate Mortgage Average in the United States showed an unusual decline on May 24, 1985 with a severity score of 0.28 using change_point detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This mortgage-rate move most likely reflects Treasury-yield moves, Fed policy expectations, mortgage-spread changes, banking conditions, and housing demand pressure. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is housing. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. No strong cross-dataset relationship was stored for this anomaly, so the explanation is based only on the detected move itself.  Confidence is limited because the event does not yet have strong supporting correlations.",
+      "evidence": {
+        "direction": "down",
+        "timestamp": "1985-05-24T00:00:00+00:00",
+        "correlations": [],
+        "dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for mortgage rates",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/MORTGAGE30US",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "housing",
+              "fed_policy",
+              "banking_stress"
+            ],
+            "published_at": "1985-05-24T00:00:00+00:00",
+            "search_query": "dataset_backdrop:MORTGAGE30US",
+            "timing_class": "concurrent",
+            "context_score": 0.856667,
+            "primary_theme": "housing",
+            "driver_summary": "This mortgage-rate move most likely reflects Treasury-yield moves, Fed policy expectations, mortgage-spread changes, banking conditions, and housing demand pressure. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "1985-05-24T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1985-05-24T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "MORTGAGE30US",
+        "severity_score": 0.282323,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "weekly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "weekly"
+      },
+      "created_at": "2026-03-30T19:56:08.586679Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/MORTGAGE30US",
+      "title": "Likely macro drivers for mortgage rates",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1985-05-24T00:00:00Z",
+      "search_query": "dataset_backdrop:MORTGAGE30US",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "1985-05-24T00:00:00Z",
+      "context_window_end": "1985-05-24T00:00:00Z",
+      "event_themes": [
+        "housing",
+        "fed_policy",
+        "banking_stress"
+      ],
+      "primary_theme": "housing",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This mortgage-rate move most likely reflects Treasury-yield moves, Fed policy expectations, mortgage-spread changes, banking conditions, and housing demand pressure. The stored anomaly direction here was downward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6712,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6712,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.666667,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}

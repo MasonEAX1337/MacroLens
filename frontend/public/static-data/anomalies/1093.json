@@ -1,0 +1,347 @@
+{
+  "id": 1093,
+  "dataset_id": 3,
+  "timestamp": "2004-07-01T00:00:00Z",
+  "severity_score": 3.2603159318386115,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1877,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Federal Funds Rate",
+  "cluster": {
+    "id": 1877,
+    "start_timestamp": "2004-07-01T00:00:00Z",
+    "end_timestamp": "2004-07-01T00:00:00Z",
+    "anchor_timestamp": "2004-07-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 3.2603159318386115,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1093,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "2004-07-01T00:00:00Z",
+        "severity_score": 3.2603159318386115,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.9964084598839115,
+      "lag_days": -85,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": -0.8931360565588524,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.7413410404841903,
+      "lag_days": -30,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.6202920359675358,
+      "lag_days": -14,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": 0.40424205915231626,
+      "lag_days": 30,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "This anomaly occurred within a broader historical regime of a housing boom supported by low interest rates, as noted by the Federal Reserve History registry. Leading up to this interest rate shift, the 30-Year Fixed Rate Mortgage and Consumer Price Index moved in the months prior. The Case-Shiller U.S. National Home Price Index and WTI Oil Price also showed leading movements in the weeks preceding the event. Because this is an isolated signal with a low quality band, evidence regarding the specific drivers of this individual anomaly is limited.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2004-07-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -85,
+            "correlation_score": -0.9964084598839115,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8931360565588524,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.7413410404841903,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -14,
+            "correlation_score": 0.6202920359675358,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 30,
+            "correlation_score": 0.40424205915231626,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Recession and Its Aftermath",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "housing",
+              "fed_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2013-11-22T00:00:00+00:00",
+            "search_query": "macro_timeline:housing_boom_low_rates_2001_2006",
+            "timing_class": "lagging",
+            "context_score": 0.5576,
+            "primary_theme": "housing",
+            "ranking_score": 0.5576,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 0.5,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.333333,
+              "directness": 0.36,
+              "specificity": 0.9
+            },
+            "context_window_end": "2004-07-01T00:00:00+00:00",
+            "historical_event_id": "housing_boom_low_rates_2001_2006",
+            "context_window_start": "2004-07-01T00:00:00+00:00",
+            "historical_event_type": "housing_regime",
+            "timing_interpretation": "about 3431 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Low rates, strong mortgage credit, and rising housing demand supported a long housing expansion before the later bust.",
+            "historical_event_confidence": 0.8
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 3.2603159318386115,
+        "usage_metadata": {
+          "totalTokenCount": 1764,
+          "promptTokenCount": 1657,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1657
+            }
+          ],
+          "candidatesTokenCount": 107
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "qdfwaZjpD9CJz7IP_ZOYgQY",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:52:06.626762Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Federal Funds Rate showed an unusual increase on July 01, 2004 with a severity score of 3.26 using z_score detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: The Great Recession and Its Aftermath'. Low rates, strong mortgage credit, and rising housing demand supported a long housing expansion before the later bust. The strongest registry theme here is housing. This context was matched after the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to Federal Funds Rate around about 85 day(s) earlier (correlation -1.00).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "2004-07-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -85,
+            "correlation_score": -0.9964084598839115,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.8931360565588524,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -30,
+            "correlation_score": 0.7413410404841903,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -14,
+            "correlation_score": 0.6202920359675358,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 30,
+            "correlation_score": 0.40424205915231626,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Recession and Its Aftermath",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "housing",
+              "fed_policy",
+              "consumer_demand"
+            ],
+            "published_at": "2013-11-22T00:00:00+00:00",
+            "search_query": "macro_timeline:housing_boom_low_rates_2001_2006",
+            "timing_class": "lagging",
+            "context_score": 0.635333,
+            "primary_theme": "housing",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "2004-07-01T00:00:00+00:00",
+            "historical_event_id": "housing_boom_low_rates_2001_2006",
+            "context_window_start": "2004-07-01T00:00:00+00:00",
+            "historical_event_type": "housing_regime",
+            "timing_interpretation": "about 3431 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "Low rates, strong mortgage credit, and rising housing demand supported a long housing expansion before the later bust.",
+            "historical_event_confidence": 0.8
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 3.2603159318386115,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:01.872230Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath",
+      "title": "Federal Reserve History: The Great Recession and Its Aftermath",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "2013-11-22T00:00:00Z",
+      "search_query": "macro_timeline:housing_boom_low_rates_2001_2006",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "2004-07-01T00:00:00Z",
+      "context_window_end": "2004-07-01T00:00:00Z",
+      "event_themes": [
+        "housing",
+        "fed_policy",
+        "consumer_demand"
+      ],
+      "primary_theme": "housing",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "housing_boom_low_rates_2001_2006",
+      "historical_event_summary": "Low rates, strong mortgage credit, and rising housing demand supported a long housing expansion before the later bust.",
+      "historical_event_type": "housing_regime",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.8,
+      "context_score": 0.5576,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.5576,
+      "score_components": {
+        "theme": 0.5,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.333333,
+        "directness": 0.36,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

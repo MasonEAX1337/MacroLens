@@ -1,0 +1,356 @@
+{
+  "id": 1103,
+  "dataset_id": 3,
+  "timestamp": "1973-06-01T00:00:00Z",
+  "severity_score": 0.957017,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1813,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Federal Funds Rate",
+  "cluster": {
+    "id": 1813,
+    "start_timestamp": "1973-06-01T00:00:00Z",
+    "end_timestamp": "1973-06-01T00:00:00Z",
+    "anchor_timestamp": "1973-06-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 0.957017,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1103,
+        "dataset_id": 3,
+        "dataset_name": "Federal Funds Rate",
+        "timestamp": "1973-06-01T00:00:00Z",
+        "severity_score": 0.957017,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [
+    {
+      "source_cluster_id": 1813,
+      "target_cluster_id": 1814,
+      "target_start_timestamp": "1973-08-01T00:00:00Z",
+      "target_end_timestamp": "1973-08-10T00:00:00Z",
+      "target_anchor_timestamp": "1973-08-01T00:00:00Z",
+      "target_anchor_anomaly_id": 1063,
+      "target_anchor_dataset_id": 2,
+      "target_span_days": 9,
+      "target_anomaly_count": 2,
+      "target_dataset_count": 2,
+      "target_peak_severity_score": 1.118817,
+      "target_frequency_mix": "mixed",
+      "target_episode_kind": "cross_dataset_episode",
+      "target_quality_band": "medium",
+      "average_lag_days": 83,
+      "strongest_correlation_score": 0.997,
+      "supporting_link_count": 1,
+      "evidence_strength": 0.66,
+      "evidence_strength_components": {
+        "correlation_strength": 0.997,
+        "support_density": 0.5,
+        "temporal_alignment": 0.071,
+        "target_scale": 0.667,
+        "episode_quality": 0.8,
+        "overall": 0.66
+      },
+      "source_dataset_names": [
+        "Federal Funds Rate"
+      ],
+      "target_dataset_names": [
+        "30-Year Fixed Rate Mortgage Average in the United States"
+      ],
+      "evidence": [
+        {
+          "source_anomaly_id": 1103,
+          "source_dataset_name": "Federal Funds Rate",
+          "source_timestamp": "1973-06-01T00:00:00Z",
+          "target_anomaly_id": 1195,
+          "target_dataset_id": 12,
+          "target_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+          "target_timestamp": "1973-08-10T00:00:00Z",
+          "correlation_score": 0.9970057131171214,
+          "lag_days": 83,
+          "method": "pearson_pct_change",
+          "match_gap_days": 13.0,
+          "tolerance_days": 14
+        }
+      ]
+    }
+  ],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9970057131171214,
+      "lag_days": 83,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.7626345848611306,
+      "lag_days": -59,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": -0.7179495670937306,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The increase in the federal funds rate occurred during a period of persistent price pressure and inflationary instability, as described in the Federal Reserve History entry \"The Great Inflation.\" Prior to this rate hike, shifts in the Consumer Price Index and Real Disposable Personal Income per capita were observed, indicating these factors preceded the policy adjustment. Evidence for this event is limited, as it appears as an isolated, low-quality signal within the data.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1973-06-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 83,
+            "correlation_score": 0.9970057131171214,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.7626345848611306,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.7179495670937306,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "driver_role": "backdrop_context",
+            "source_kind": "historical_event_registry",
+            "source_type": "historical_registry",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1978-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation_build_up_1964_1978",
+            "timing_class": "lagging",
+            "context_score": 0.66012,
+            "primary_theme": "inflation",
+            "ranking_score": 0.66012,
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "source_category": "curated_backdrop",
+            "timing_relation": "after",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.84,
+              "timing": 0.45,
+              "keyword": 0.333333,
+              "directness": 0.378,
+              "specificity": 0.9
+            },
+            "context_window_end": "1973-06-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation_build_up_1964_1978",
+            "context_window_start": "1973-06-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 2009 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "The buildup to the Great Inflation combined persistent price pressure, recurring energy shocks, and uneven policy tightening well before the Volcker-era peak.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 0.957017,
+        "usage_metadata": {
+          "totalTokenCount": 1535,
+          "promptTokenCount": 1451,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1451
+            }
+          ],
+          "candidatesTokenCount": 84
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "oNjwaY6qIffQz7IP9ZaIqQc",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:56:12.195298Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Federal Funds Rate showed an unusual increase on June 01, 1973 with a severity score of 0.96 using change_point detection. Likely real-world context around this episode includes the broader historical backdrop 'Federal Reserve History: The Great Inflation'. The buildup to the Great Inflation combined persistent price pressure, recurring energy shocks, and uneven policy tightening well before the Volcker-era peak. The strongest registry theme here is inflation. This context was matched after the episode window. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved in the same direction as Federal Funds Rate around about 83 day(s) later (correlation 1.00).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1973-06-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 83,
+            "correlation_score": 0.9970057131171214,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.7626345848611306,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.7179495670937306,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          }
+        ],
+        "dataset_name": "Federal Funds Rate",
+        "news_context": [
+          {
+            "title": "Federal Reserve History: The Great Inflation",
+            "domain": "federalreservehistory.org",
+            "language": "English",
+            "provider": "macro_timeline",
+            "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+            "source_kind": "historical_event_registry",
+            "event_themes": [
+              "inflation",
+              "fed_policy",
+              "energy_shock"
+            ],
+            "published_at": "1978-12-01T00:00:00+00:00",
+            "search_query": "macro_timeline:great_inflation_build_up_1964_1978",
+            "timing_class": "lagging",
+            "context_score": 0.760333,
+            "primary_theme": "inflation",
+            "driver_summary": null,
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "curated_timeline",
+            "timing_relation": "after",
+            "context_window_end": "1973-06-01T00:00:00+00:00",
+            "historical_event_id": "great_inflation_build_up_1964_1978",
+            "context_window_start": "1973-06-01T00:00:00+00:00",
+            "historical_event_type": "inflation_regime",
+            "timing_interpretation": "about 2009 day(s) after the anomaly",
+            "historical_event_regions": [
+              "United States"
+            ],
+            "historical_event_summary": "The buildup to the Great Inflation combined persistent price pressure, recurring energy shocks, and uneven policy tightening well before the Volcker-era peak.",
+            "historical_event_confidence": 0.84
+          }
+        ],
+        "dataset_symbol": "FEDFUNDS",
+        "severity_score": 0.957017,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:02.295391Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "macro_timeline",
+      "article_url": "https://www.federalreservehistory.org/essays/great-inflation",
+      "title": "Federal Reserve History: The Great Inflation",
+      "domain": "federalreservehistory.org",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1978-12-01T00:00:00Z",
+      "search_query": "macro_timeline:great_inflation_build_up_1964_1978",
+      "relevance_rank": 1,
+      "retrieval_scope": "curated_timeline",
+      "timing_relation": "after",
+      "context_window_start": "1973-06-01T00:00:00Z",
+      "context_window_end": "1973-06-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "fed_policy",
+        "energy_shock"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "historical_event_registry",
+      "driver_summary": null,
+      "historical_event_id": "great_inflation_build_up_1964_1978",
+      "historical_event_summary": "The buildup to the Great Inflation combined persistent price pressure, recurring energy shocks, and uneven policy tightening well before the Volcker-era peak.",
+      "historical_event_type": "inflation_regime",
+      "historical_event_regions": [
+        "United States"
+      ],
+      "historical_event_confidence": 0.84,
+      "context_score": 0.66012,
+      "source_type": "historical_registry",
+      "source_category": "curated_backdrop",
+      "driver_role": "backdrop_context",
+      "context_rank": 1,
+      "ranking_score": 0.66012,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.84,
+        "timing": 0.45,
+        "keyword": 0.333333,
+        "directness": 0.378,
+        "specificity": 0.9
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "macro_timeline",
+    "status": "available",
+    "note": "Stored citations are available from the curated macro timeline."
+  }
+}

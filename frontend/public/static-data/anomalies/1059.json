@@ -1,0 +1,257 @@
+{
+  "id": 1059,
+  "dataset_id": 2,
+  "timestamp": "1956-03-01T00:00:00Z",
+  "severity_score": 0.558745,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1799,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1799,
+    "start_timestamp": "1956-03-01T00:00:00Z",
+    "end_timestamp": "1956-03-01T00:00:00Z",
+    "anchor_timestamp": "1956-03-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 0.558745,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1059,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "1956-03-01T00:00:00Z",
+        "severity_score": 0.558745,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.5442187566169576,
+      "lag_days": 31,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The upward move in the Consumer Price Index on March 1, 1956, occurred during a period shaped by general inflation pressures, including potential impacts from energy costs, shelter expenses, and wage levels as described in the \"Likely macro drivers for inflation\" dataset backdrop. Because this event appears as an isolated signal with a low quality band, the evidence linking these drivers to the specific price movement remains limited. The Federal Funds Rate moved approximately 31 days after the anomaly, but this lagging correlation does not explain the initial driver of the price increase.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1956-03-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 31,
+            "correlation_score": -0.5442187566169576,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for inflation",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "1956-03-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CPIAUCSL",
+            "timing_class": "concurrent",
+            "context_score": 0.6312,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6312,
+            "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.333333,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "1956-03-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1956-03-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.558745,
+        "usage_metadata": {
+          "totalTokenCount": 1332,
+          "promptTokenCount": 1219,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1219
+            }
+          ],
+          "candidatesTokenCount": 113
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "29jwaeTaJ_2Fz7IPnv_V0Qg",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:57:13.193265Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual increase on March 01, 1956 with a severity score of 0.56 using change_point detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is inflation. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included Federal Funds Rate, which moved opposite to Consumer Price Index around about 31 day(s) later (correlation -0.54).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1956-03-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 31,
+            "correlation_score": -0.5442187566169576,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for inflation",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "1956-03-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CPIAUCSL",
+            "timing_class": "concurrent",
+            "context_score": 0.823333,
+            "primary_theme": "inflation",
+            "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "1956-03-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1956-03-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.558745,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:38.286580Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+      "title": "Likely macro drivers for inflation",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1956-03-01T00:00:00Z",
+      "search_query": "dataset_backdrop:CPIAUCSL",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "1956-03-01T00:00:00Z",
+      "context_window_end": "1956-03-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6312,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6312,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.333333,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "id": 1066,
+  "dataset_id": 2,
+  "timestamp": "1979-02-01T00:00:00Z",
+  "severity_score": 0.931264,
+  "direction": "up",
+  "detection_method": "change_point",
+  "episode_filter_status": "eligible",
+  "episode_filter_reason": null,
+  "cluster_id": 1819,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Consumer Price Index",
+  "cluster": {
+    "id": 1819,
+    "start_timestamp": "1979-02-01T00:00:00Z",
+    "end_timestamp": "1979-02-01T00:00:00Z",
+    "anchor_timestamp": "1979-02-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 0.931264,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 1066,
+        "dataset_id": 2,
+        "dataset_name": "Consumer Price Index",
+        "timestamp": "1979-02-01T00:00:00Z",
+        "severity_score": 0.931264,
+        "direction": "up",
+        "detection_method": "change_point"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": -0.9849095884530171,
+      "lag_days": -27,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.9712849033790031,
+      "lag_days": -59,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 13,
+      "related_dataset_name": "Real Disposable Personal Income Per Capita",
+      "correlation_score": -0.9156780892005131,
+      "lag_days": 62,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "The February 1979 Consumer Price Index increase likely reflects broad inflationary pressures, including energy price volatility, wage demands, and housing costs as noted in the \"Likely macro drivers for inflation\" structured context. This limited, isolated signal coincides with shifts in monetary policy indicators, as the Federal Funds Rate and 30-Year Fixed Rate Mortgage averages moved inversely to the CPI prior to the anomaly. Because this event is categorized as an isolated signal with a low quality band, the evidence supporting a specific driver remains weak.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-02-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -27,
+            "correlation_score": -0.9849095884530171,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.9712849033790031,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.9156780892005131,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for inflation",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "1979-02-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CPIAUCSL",
+            "timing_class": "concurrent",
+            "context_score": 0.6312,
+            "primary_theme": "inflation",
+            "ranking_score": 0.6312,
+            "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.333333,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "1979-02-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1979-02-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.931264,
+        "usage_metadata": {
+          "totalTokenCount": 1519,
+          "promptTokenCount": 1414,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1414
+            }
+          ],
+          "candidatesTokenCount": 105
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "gdjwaeKnJ5Gsz7IPnJz1uAQ",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:55:41.778029Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Consumer Price Index showed an unusual increase on February 01, 1979 with a severity score of 0.93 using change_point detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is inflation. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included 30-Year Fixed Rate Mortgage Average in the United States, which moved opposite to Consumer Price Index around about 27 day(s) earlier (correlation -0.98).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1979-02-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -27,
+            "correlation_score": -0.9849095884530171,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -59,
+            "correlation_score": -0.9712849033790031,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 62,
+            "correlation_score": -0.9156780892005131,
+            "related_dataset_id": 13,
+            "related_dataset_name": "Real Disposable Personal Income Per Capita"
+          }
+        ],
+        "dataset_name": "Consumer Price Index",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for inflation",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "inflation",
+              "energy_shock",
+              "fed_policy"
+            ],
+            "published_at": "1979-02-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:CPIAUCSL",
+            "timing_class": "concurrent",
+            "context_score": 0.823333,
+            "primary_theme": "inflation",
+            "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "1979-02-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1979-02-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "CPIAUCSL",
+        "severity_score": 0.931264,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "change_point",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:38.286580Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+      "title": "Likely macro drivers for inflation",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1979-02-01T00:00:00Z",
+      "search_query": "dataset_backdrop:CPIAUCSL",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "1979-02-01T00:00:00Z",
+      "context_window_end": "1979-02-01T00:00:00Z",
+      "event_themes": [
+        "inflation",
+        "energy_shock",
+        "fed_policy"
+      ],
+      "primary_theme": "inflation",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This inflation move most likely reflects some combination of energy prices, shelter and housing costs, wage pressure, goods supply conditions, and broader demand or policy spillovers. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6312,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6312,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.333333,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}

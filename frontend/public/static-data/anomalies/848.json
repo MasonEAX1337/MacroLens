@@ -1,0 +1,341 @@
+{
+  "id": 848,
+  "dataset_id": 13,
+  "timestamp": "1999-12-01T00:00:00Z",
+  "severity_score": 2.5610960824287132,
+  "direction": "up",
+  "detection_method": "z_score",
+  "episode_filter_status": null,
+  "episode_filter_reason": null,
+  "cluster_id": 1866,
+  "cluster_anomaly_count": 1,
+  "cluster_episode_kind": "isolated_signal",
+  "cluster_quality_band": "low",
+  "dataset_name": "Real Disposable Personal Income Per Capita",
+  "cluster": {
+    "id": 1866,
+    "start_timestamp": "1999-12-01T00:00:00Z",
+    "end_timestamp": "1999-12-01T00:00:00Z",
+    "anchor_timestamp": "1999-12-01T00:00:00Z",
+    "span_days": 0,
+    "anomaly_count": 1,
+    "dataset_count": 1,
+    "peak_severity_score": 2.5610960824287132,
+    "frequency_mix": "monthly_only",
+    "episode_kind": "isolated_signal",
+    "quality_band": "low",
+    "members": [
+      {
+        "anomaly_id": 848,
+        "dataset_id": 13,
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "timestamp": "1999-12-01T00:00:00Z",
+        "severity_score": 2.5610960824287132,
+        "direction": "up",
+        "detection_method": "z_score"
+      }
+    ]
+  },
+  "propagation_timeline": [],
+  "correlations": [
+    {
+      "related_dataset_id": 3,
+      "related_dataset_name": "Federal Funds Rate",
+      "correlation_score": -0.9762371923109663,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 12,
+      "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States",
+      "correlation_score": 0.9644173218587386,
+      "lag_days": -80,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 2,
+      "related_dataset_name": "Consumer Price Index",
+      "correlation_score": -0.9496003075966185,
+      "lag_days": -62,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 4,
+      "related_dataset_name": "WTI Oil Price",
+      "correlation_score": 0.6365968960534064,
+      "lag_days": 33,
+      "method": "pearson_pct_change"
+    },
+    {
+      "related_dataset_id": 11,
+      "related_dataset_name": "Case-Shiller U.S. National Home Price Index",
+      "correlation_score": 0.2848012274953565,
+      "lag_days": 61,
+      "method": "pearson_pct_change"
+    }
+  ],
+  "explanations": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite-preview",
+      "generated_text": "This anomaly in real disposable personal income per capita likely reflects fluctuations in wages, employment conditions, and inflation-adjusted purchasing power, as noted in the dataset's structured fallback context. The increase occurred alongside a period where changes in the Federal Funds Rate, 30-year fixed mortgage rates, and the Consumer Price Index preceded the anomaly by approximately 62 to 80 days. Given the low quality of the cluster, this event represents an isolated signal with limited evidence for broader macroeconomic conclusions.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1999-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.9762371923109663,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -80,
+            "correlation_score": 0.9644173218587386,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.9496003075966185,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 33,
+            "correlation_score": 0.6365968960534064,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 61,
+            "correlation_score": 0.2848012274953565,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          }
+        ],
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for household income",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/A229RX0",
+            "driver_role": "fallback_context",
+            "source_kind": "dataset_driver_fallback",
+            "source_type": "structured_fallback",
+            "context_rank": 1,
+            "event_themes": [
+              "consumer_demand",
+              "fiscal_policy",
+              "labor_market"
+            ],
+            "published_at": "1999-12-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:A229RX0",
+            "timing_class": "concurrent",
+            "context_score": 0.6312,
+            "primary_theme": "consumer_demand",
+            "ranking_score": 0.6312,
+            "driver_summary": "This disposable-income move most likely reflects wages, employment conditions, fiscal transfers, taxes and benefits, and inflation-adjusted purchasing-power changes. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "source_category": "structured_fallback",
+            "timing_relation": "during",
+            "score_components": {
+              "theme": 1.0,
+              "source": 0.4,
+              "timing": 1.0,
+              "keyword": 0.333333,
+              "directness": 0.18,
+              "specificity": 0.45
+            },
+            "context_window_end": "1999-12-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1999-12-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "A229RX0",
+        "severity_score": 2.5610960824287132,
+        "usage_metadata": {
+          "totalTokenCount": 1723,
+          "promptTokenCount": 1623,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1623
+            }
+          ],
+          "candidatesTokenCount": 100
+        },
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "generation_mode": "llm",
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly",
+        "provider_response_id": "wtfwabqJL5Otz7IP9PTNqQc",
+        "provider_model_version": "gemini-3.1-flash-lite-preview"
+      },
+      "created_at": "2026-04-28T15:52:32.490723Z"
+    },
+    {
+      "provider": "rules_based",
+      "model": "macro-template-v1",
+      "generated_text": "Real Disposable Personal Income Per Capita showed an unusual increase on December 01, 1999 with a severity score of 2.56 using z_score detection. No cited article or curated historical event was matched for this anomaly. The best available structured fallback suggests: This disposable-income move most likely reflects wages, employment conditions, fiscal transfers, taxes and benefits, and inflation-adjusted purchasing-power changes. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event. The strongest fallback theme here is consumer demand. This should be treated as plausible driver context rather than a confirmed event. This is currently an isolated stored signal rather than a broader cross-dataset episode. The stored episode context is low quality, so broad macro interpretation should be treated cautiously. Supporting market structure included Federal Funds Rate, which moved opposite to Real Disposable Personal Income Per Capita around about 62 day(s) earlier (correlation -0.98).  This is a correlation-based explanation rather than proof of causality, so it should be read as supporting evidence.",
+      "evidence": {
+        "direction": "up",
+        "timestamp": "1999-12-01T00:00:00+00:00",
+        "correlations": [
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.9762371923109663,
+            "related_dataset_id": 3,
+            "related_dataset_name": "Federal Funds Rate"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -80,
+            "correlation_score": 0.9644173218587386,
+            "related_dataset_id": 12,
+            "related_dataset_name": "30-Year Fixed Rate Mortgage Average in the United States"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": -62,
+            "correlation_score": -0.9496003075966185,
+            "related_dataset_id": 2,
+            "related_dataset_name": "Consumer Price Index"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 33,
+            "correlation_score": 0.6365968960534064,
+            "related_dataset_id": 4,
+            "related_dataset_name": "WTI Oil Price"
+          },
+          {
+            "method": "pearson_pct_change",
+            "lag_days": 61,
+            "correlation_score": 0.2848012274953565,
+            "related_dataset_id": 11,
+            "related_dataset_name": "Case-Shiller U.S. National Home Price Index"
+          }
+        ],
+        "dataset_name": "Real Disposable Personal Income Per Capita",
+        "news_context": [
+          {
+            "title": "Likely macro drivers for household income",
+            "domain": "structured-fallback",
+            "language": "English",
+            "provider": "dataset_backdrop",
+            "article_url": "https://fred.stlouisfed.org/series/A229RX0",
+            "source_kind": "dataset_driver_fallback",
+            "event_themes": [
+              "consumer_demand",
+              "fiscal_policy",
+              "labor_market"
+            ],
+            "published_at": "1999-12-01T00:00:00+00:00",
+            "search_query": "dataset_backdrop:A229RX0",
+            "timing_class": "concurrent",
+            "context_score": 0.823333,
+            "primary_theme": "consumer_demand",
+            "driver_summary": "This disposable-income move most likely reflects wages, employment conditions, fiscal transfers, taxes and benefits, and inflation-adjusted purchasing-power changes. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+            "relevance_rank": 1,
+            "source_country": "United States",
+            "retrieval_scope": "dataset_backdrop",
+            "timing_relation": "during",
+            "context_window_end": "1999-12-01T00:00:00+00:00",
+            "historical_event_id": null,
+            "context_window_start": "1999-12-01T00:00:00+00:00",
+            "historical_event_type": null,
+            "timing_interpretation": "on the same day as the anomaly",
+            "historical_event_regions": [],
+            "historical_event_summary": null,
+            "historical_event_confidence": null
+          }
+        ],
+        "dataset_symbol": "A229RX0",
+        "severity_score": 2.5610960824287132,
+        "episode_context": {
+          "cluster_span_days": 0,
+          "cluster_episode_kind": "isolated_signal",
+          "cluster_quality_band": "low",
+          "cluster_anomaly_count": 1,
+          "cluster_dataset_count": 1,
+          "cluster_frequency_mix": "monthly_only"
+        },
+        "detection_method": "z_score",
+        "dataset_frequency": "monthly"
+      },
+      "created_at": "2026-03-30T19:49:38.081755Z"
+    }
+  ],
+  "news_context": [
+    {
+      "provider": "dataset_backdrop",
+      "article_url": "https://fred.stlouisfed.org/series/A229RX0",
+      "title": "Likely macro drivers for household income",
+      "domain": "structured-fallback",
+      "language": "English",
+      "source_country": "United States",
+      "published_at": "1999-12-01T00:00:00Z",
+      "search_query": "dataset_backdrop:A229RX0",
+      "relevance_rank": 1,
+      "retrieval_scope": "dataset_backdrop",
+      "timing_relation": "during",
+      "context_window_start": "1999-12-01T00:00:00Z",
+      "context_window_end": "1999-12-01T00:00:00Z",
+      "event_themes": [
+        "consumer_demand",
+        "fiscal_policy",
+        "labor_market"
+      ],
+      "primary_theme": "consumer_demand",
+      "source_kind": "dataset_driver_fallback",
+      "driver_summary": "This disposable-income move most likely reflects wages, employment conditions, fiscal transfers, taxes and benefits, and inflation-adjusted purchasing-power changes. The stored anomaly direction here was upward. Treat this as structured fallback context rather than a cited event.",
+      "historical_event_id": null,
+      "historical_event_summary": null,
+      "historical_event_type": null,
+      "historical_event_regions": [],
+      "historical_event_confidence": null,
+      "context_score": 0.6312,
+      "source_type": "structured_fallback",
+      "source_category": "structured_fallback",
+      "driver_role": "fallback_context",
+      "context_rank": 1,
+      "ranking_score": 0.6312,
+      "score_components": {
+        "theme": 1.0,
+        "source": 0.4,
+        "timing": 1.0,
+        "keyword": 0.333333,
+        "directness": 0.18,
+        "specificity": 0.45
+      }
+    }
+  ],
+  "news_context_status": {
+    "provider": "dataset_backdrop",
+    "status": "available",
+    "note": "Stored driver context is available from a structured fallback backdrop rather than a cited article or curated historical event."
+  }
+}
