@@ -18,24 +18,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_DB: macrolens
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d macrolens"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
     env:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/macrolens
-      PYTHONPATH: backend
       VITE_USE_STATIC_DATA: "true"
 
     steps:
@@ -49,32 +32,12 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install backend dependencies
-        run: pip install -r backend/requirements.txt
-
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Apply schema
-        run: psql postgresql://postgres:postgres@localhost:5432/macrolens -f database/schema.sql
-
-      - name: Ingest Bitcoin dataset
-        run: python scripts/ingest/run_ingestion.py --dataset bitcoin
-
-      - name: Recompute evidence graph (local-only context)
-        run: python scripts/pipeline/recompute_evidence.py --dataset BTC-USD --skip-news-context
-
-      - name: Export static API data
-        run: python scripts/export_static_site_data.py --details-limit 500
+      - name: Verify static data snapshot exists
+        run: test -f frontend/public/static-data/datasets.json
 
       - name: Build frontend
         run: npm run build
