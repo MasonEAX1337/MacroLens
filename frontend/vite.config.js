@@ -1,7 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const isGitHubPagesBuild = process.env.GITHUB_ACTIONS === "true";
+const base = isGitHubPagesBuild ? "/MacroLens/" : "/";
+
 export default defineConfig({
+  base,
   plugins: [react()],
   build: {
     rollupOptions: {

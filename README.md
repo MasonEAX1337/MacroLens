@@ -2,6 +2,8 @@
 
 MacroLens is an AI-powered economic event explorer.
 
+This project is built as part of the [Codex Creator Challenge](https://joinhandshake.com/students/codex-creator-challenge/).
+
 It ingests economic and market datasets, detects unusual events in those datasets, finds related movements in other series, and presents an explanation workflow through a web UI.
 
 The core idea is simple:
