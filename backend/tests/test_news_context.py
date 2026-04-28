@@ -7,6 +7,7 @@ from app.services.news_context import (
     MacroTimelineNewsContextProvider,
     NewsContextRequest,
     NewsArticleRecord,
+    annotate_articles_for_request,
     article_match_score,
     build_dataset_driver_fallback_article,
     build_news_query,
@@ -588,6 +589,69 @@ def test_context_score_prefers_thematic_registry_context_over_generic_article() 
     )
 
     assert registry_score > generic_score
+
+
+def test_annotated_context_metadata_makes_live_driver_rank_explicit() -> None:
+    request = NewsContextRequest(
+        anomaly_id=310,
+        dataset_name="Federal Funds Rate",
+        dataset_symbol="FEDFUNDS",
+        dataset_frequency="monthly",
+        timestamp=datetime(2024, 3, 1, tzinfo=timezone.utc),
+        cluster_id=77,
+        cluster_start_timestamp=datetime(2024, 2, 29, tzinfo=timezone.utc),
+        cluster_end_timestamp=datetime(2024, 3, 3, tzinfo=timezone.utc),
+        cluster_episode_kind="cross_dataset_episode",
+        cluster_dataset_symbols=("FEDFUNDS", "SP500"),
+    )
+
+    annotated = annotate_articles_for_request(
+        [
+            NewsArticleRecord(
+                provider="macro_timeline",
+                article_url="https://example.com/timeline",
+                title="Broad historical policy backdrop",
+                domain="example.com",
+                language="English",
+                source_country="United States",
+                published_at=datetime(2024, 3, 10, tzinfo=timezone.utc),
+                search_query="macro_timeline:test",
+                relevance_rank=1,
+                metadata={
+                    "source_kind": "historical_event_registry",
+                    "historical_event_summary": "Broad historical context for policy tightening cycles.",
+                    "event_themes": ["fed_policy"],
+                    "historical_event_confidence": 0.35,
+                },
+            ),
+            NewsArticleRecord(
+                provider="gdelt",
+                article_url="https://example.com/live",
+                title="Federal Reserve weighs rate path after banking stress",
+                domain="example.com",
+                language="English",
+                source_country="United States",
+                published_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                search_query='("federal reserve" AND "banking stress")',
+                relevance_rank=2,
+                metadata={},
+            ),
+        ],
+        request,
+    )
+
+    live_article = next(article for article in annotated if article.provider == "gdelt")
+    backdrop_article = next(article for article in annotated if article.provider == "macro_timeline")
+
+    assert live_article.metadata["source_type"] == "live_article"
+    assert live_article.metadata["source_category"] == "direct_reporting"
+    assert live_article.metadata["driver_role"] == "primary_driver_candidate"
+    assert live_article.metadata["context_rank"] == 1
+    assert live_article.metadata["ranking_score"] > backdrop_article.metadata["ranking_score"]
+    assert live_article.metadata["score_components"]["directness"] > backdrop_article.metadata["score_components"]["directness"]
+    assert backdrop_article.metadata["source_type"] == "historical_registry"
+    assert backdrop_article.metadata["source_category"] == "curated_backdrop"
+    assert backdrop_article.metadata["driver_role"] in {"supporting_context", "backdrop_context"}
 
 
 def test_household_macro_uses_wider_frequency_aware_windows() -> None:

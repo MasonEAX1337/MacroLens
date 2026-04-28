@@ -96,6 +96,7 @@ class ExplanationRecord(BaseModel):
     provider: str
     model: str
     generated_text: str
+    evidence: dict[str, object] | None = None
     created_at: datetime
 
 
@@ -123,6 +124,12 @@ class NewsContextRecord(BaseModel):
     historical_event_regions: list[str] = []
     historical_event_confidence: float | None = None
     context_score: float | None = None
+    source_type: str | None = None
+    source_category: str | None = None
+    driver_role: str | None = None
+    context_rank: int | None = None
+    ranking_score: float | None = None
+    score_components: dict[str, float] | None = None
 
 
 class NewsContextStatus(BaseModel):

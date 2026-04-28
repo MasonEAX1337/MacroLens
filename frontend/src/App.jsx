@@ -53,6 +53,16 @@ function formatDate(timestamp) {
   }).format(new Date(timestamp));
 }
 
+function formatDateTime(timestamp) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+}
+
 function formatValue(value) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: value >= 1000 ? 0 : 2,
@@ -206,31 +216,213 @@ function formatEventTheme(theme) {
   return theme.replace(/_/g, " ");
 }
 
-function splitContextEvidence(detail) {
-  if (!detail || detail.news_context.length === 0) {
-    return { likelyDrivers: [], supportingArticles: [] };
+function formatProviderLabel(provider) {
+  if (!provider) {
+    return "unknown provider";
+  }
+  return provider.replace(/_/g, " ");
+}
+
+function getContextRoleHint(item) {
+  const explicitRole =
+    item?.driver_role ??
+    item?.context_role ??
+    item?.evidence_role ??
+    item?.role ??
+    item?.presentation_role ??
+    null;
+  if (!explicitRole) {
+    return null;
   }
 
-  const likelyDrivers = [];
-  const supportingArticles = [];
+  if (
+    [
+      "likely_driver",
+      "primary_driver",
+      "driver",
+      "primary_driver_candidate",
+      "backdrop_context",
+    ].includes(explicitRole)
+  ) {
+    return "likely_driver";
+  }
 
-  detail.news_context.forEach((item, index) => {
-    const timingRelation = item.timing_relation ?? "unknown";
-    const isLikelyDriver =
-      index === 0 ||
-      item.provider === "macro_timeline" ||
-      item.source_kind === "dataset_driver_fallback" ||
-      timingRelation === "during" ||
-      timingRelation === "before";
+  if (
+    [
+      "supporting",
+      "supporting_article",
+      "support",
+      "supporting_context",
+      "retrospective_context",
+      "fallback_driver",
+    ].includes(explicitRole)
+  ) {
+    return "supporting";
+  }
 
-    if (isLikelyDriver && likelyDrivers.length < 2) {
-      likelyDrivers.push(item);
-      return;
+  return null;
+}
+
+function getContextEvidenceKind(item) {
+  const explicitKind =
+    item?.source_type ??
+    item?.source_category ??
+    item?.evidence_kind ??
+    item?.context_category ??
+    item?.category ??
+    null;
+  if (explicitKind === "structured_fallback") {
+    return "structured_fallback";
+  }
+  if (
+    [
+      "curated_historical_context",
+      "curated_timeline",
+      "historical_event_registry",
+      "historical_registry",
+      "curated_backdrop",
+    ].includes(explicitKind)
+  ) {
+    return "curated_evidence";
+  }
+  if (["live_article", "live_reporting", "news_article", "direct_reporting"].includes(explicitKind)) {
+    return "live_evidence";
+  }
+
+  if (item?.source_kind === "dataset_driver_fallback" || item?.provider === "dataset_backdrop") {
+    return "structured_fallback";
+  }
+
+  if (
+    item?.source_kind === "historical_event_registry" ||
+    item?.retrieval_scope === "curated_timeline" ||
+    item?.provider === "macro_timeline"
+  ) {
+    return "curated_evidence";
+  }
+
+  return "live_evidence";
+}
+
+function formatContextEvidenceKind(kind) {
+  if (kind === "structured_fallback") {
+    return "Structured fallback";
+  }
+  if (kind === "curated_evidence") {
+    return "Curated context";
+  }
+  return "Live reporting";
+}
+
+function formatContextSource(item) {
+  if (getContextEvidenceKind(item) === "structured_fallback") {
+    return "dataset backdrop";
+  }
+
+  if (item.domain && item.provider) {
+    return item.domain === item.provider ? item.domain : `${item.domain} via ${formatProviderLabel(item.provider)}`;
+  }
+
+  return item.domain ?? formatProviderLabel(item.provider);
+}
+
+function describeContextWindow(item) {
+  if (!item?.context_window_start || !item?.context_window_end) {
+    return null;
+  }
+
+  if (item.context_window_start === item.context_window_end) {
+    return formatDate(item.context_window_start);
+  }
+
+  return `${formatDate(item.context_window_start)} to ${formatDate(item.context_window_end)}`;
+}
+
+function isCitedDriverCandidate(item) {
+  const explicitRole = getContextRoleHint(item);
+  if (explicitRole === "likely_driver") {
+    return true;
+  }
+  if (explicitRole === "supporting") {
+    return false;
+  }
+  if (getContextEvidenceKind(item) === "structured_fallback") {
+    return false;
+  }
+
+  return (
+    item?.timing_relation === "during" ||
+    item?.timing_relation === "before" ||
+    item?.source_kind === "historical_event_registry"
+  );
+}
+
+function compareContextItems(a, b) {
+  const roleRank = (item) => {
+    const explicitRole = getContextRoleHint(item);
+    if (explicitRole === "likely_driver") {
+      return 0;
     }
-    supportingArticles.push(item);
-  });
+    if (explicitRole === "supporting") {
+      return 2;
+    }
+    return 1;
+  };
+  const kindRank = (item) => {
+    const kind = getContextEvidenceKind(item);
+    if (kind === "live_evidence") {
+      return 0;
+    }
+    if (kind === "curated_evidence") {
+      return 1;
+    }
+    return 2;
+  };
+  const timingRank = (item) => {
+    if (item?.timing_relation === "during") {
+      return 0;
+    }
+    if (item?.timing_relation === "before") {
+      return 1;
+    }
+    if (item?.timing_relation === "after") {
+      return 2;
+    }
+    return 3;
+  };
+  const scoreA = a?.context_score ?? -1;
+  const scoreB = b?.context_score ?? -1;
+  const rankingScoreA = a?.ranking_score ?? scoreA;
+  const rankingScoreB = b?.ranking_score ?? scoreB;
+  const rankA = a?.context_rank ?? a?.relevance_rank ?? Number.MAX_SAFE_INTEGER;
+  const rankB = b?.context_rank ?? b?.relevance_rank ?? Number.MAX_SAFE_INTEGER;
 
-  return { likelyDrivers, supportingArticles };
+  return (
+    roleRank(a) - roleRank(b) ||
+    kindRank(a) - kindRank(b) ||
+    timingRank(a) - timingRank(b) ||
+    rankingScoreB - rankingScoreA ||
+    rankA - rankB
+  );
+}
+
+function splitContextEvidence(detail) {
+  if (!detail || detail.news_context.length === 0) {
+    return { likelyDrivers: [], supportingEvidence: [], fallbackContext: [] };
+  }
+
+  const rankedItems = [...detail.news_context].sort(compareContextItems);
+  const citedContext = rankedItems.filter((item) => getContextEvidenceKind(item) !== "structured_fallback");
+  const fallbackContext = rankedItems.filter((item) => getContextEvidenceKind(item) === "structured_fallback");
+  const likelyDrivers = citedContext.filter(isCitedDriverCandidate).slice(0, 2);
+  const likelyDriverKeys = new Set(
+    likelyDrivers.map((item) => `${item.provider}-${item.article_url}-${item.relevance_rank}`),
+  );
+  const supportingEvidence = citedContext.filter(
+    (item) => !likelyDriverKeys.has(`${item.provider}-${item.article_url}-${item.relevance_rank}`),
+  );
+
+  return { likelyDrivers, supportingEvidence, fallbackContext };
 }
 
 function describeClusterSpan(cluster) {
@@ -293,6 +485,10 @@ function formatShare(value) {
   return `${Math.round(value * 100)}%`;
 }
 
+function pluralize(count, singular, plural = `${singular}s`) {
+  return count === 1 ? singular : plural;
+}
+
 function buildEvidenceSummary(detail) {
   if (!detail) {
     return null;
@@ -303,13 +499,196 @@ function buildEvidenceSummary(detail) {
     timingCounts[classifyLagDays(item.lag_days)] += 1;
   }
 
+  const contextCounts = {
+    liveEvidence: 0,
+    curatedEvidence: 0,
+    structuredFallback: 0,
+  };
+  for (const item of detail.news_context) {
+    const kind = getContextEvidenceKind(item);
+    if (kind === "structured_fallback") {
+      contextCounts.structuredFallback += 1;
+    } else if (kind === "curated_evidence") {
+      contextCounts.curatedEvidence += 1;
+    } else {
+      contextCounts.liveEvidence += 1;
+    }
+  }
+
   return {
     correlationCount: detail.correlations.length,
     newsCount: detail.news_context.length,
-    explanationProviders: detail.explanations.map((item) => item.provider),
+    explanationProviders: [...new Set(detail.explanations.map((item) => item.provider))],
     strongestCorrelation: detail.correlations[0] ?? null,
+    contextCounts,
     timingCounts,
   };
+}
+
+function buildExplanationGrounding(explanation) {
+  const evidence = explanation?.evidence;
+  if (!evidence || typeof evidence !== "object") {
+    return null;
+  }
+
+  const newsContext = Array.isArray(evidence.news_context) ? evidence.news_context : [];
+  const correlations = Array.isArray(evidence.correlations) ? evidence.correlations : [];
+  const episodeContext =
+    evidence.episode_context && typeof evidence.episode_context === "object"
+      ? evidence.episode_context
+      : null;
+
+  if (newsContext.length === 0 && correlations.length === 0 && !episodeContext) {
+    return null;
+  }
+
+  const contextCounts = {
+    liveEvidence: 0,
+    curatedEvidence: 0,
+    structuredFallback: 0,
+  };
+
+  for (const item of newsContext) {
+    const kind = getContextEvidenceKind(item);
+    if (kind === "structured_fallback") {
+      contextCounts.structuredFallback += 1;
+    } else if (kind === "curated_evidence") {
+      contextCounts.curatedEvidence += 1;
+    } else {
+      contextCounts.liveEvidence += 1;
+    }
+  }
+
+  const primaryContext =
+    [...newsContext].sort(compareContextItems).find(Boolean) ?? null;
+
+  return {
+    contextCounts,
+    correlationCount: correlations.length,
+    episodeContext,
+    primaryContext,
+    strongestCorrelation: correlations[0] ?? null,
+  };
+}
+
+function ContextEvidenceCard({ item, anomalyTimestamp }) {
+  const evidenceKind = getContextEvidenceKind(item);
+  const contextWindow = describeContextWindow(item);
+  const summary = item.driver_summary ?? item.historical_event_summary;
+
+  return (
+    <article className={`news-card context-card ${evidenceKind}`}>
+      <div className="news-card-copy">
+        <div className="news-card-provenance">
+          <span className={`context-kind-badge ${evidenceKind}`}>
+            {formatContextEvidenceKind(evidenceKind)}
+          </span>
+          <span className="context-chip">{formatContextSource(item)}</span>
+          {item.published_at ? (
+            <span className="context-chip">Published {formatDateTime(item.published_at)}</span>
+          ) : null}
+        </div>
+
+        <h3>
+          <a href={item.article_url} target="_blank" rel="noreferrer">
+            {item.title}
+          </a>
+        </h3>
+
+        {summary ? <p>{summary}</p> : null}
+
+        <div className="news-card-tags">
+          {item.primary_theme ? (
+            <span className="context-theme-badge">{formatEventTheme(item.primary_theme)}</span>
+          ) : null}
+          <span className={`timing-badge ${getContextTimingClass(item, anomalyTimestamp)}`}>
+            {describeContextTiming(item, anomalyTimestamp)}
+          </span>
+          <span className="timing-note">{formatRetrievalScope(item.retrieval_scope)}</span>
+          {contextWindow ? <span className="timing-note">window {contextWindow}</span> : null}
+          {item.historical_event_type ? (
+            <span className="timing-note">{formatEventTheme(item.historical_event_type)}</span>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="news-card-meta">
+        <strong>
+          {item.ranking_score !== null && item.ranking_score !== undefined
+            ? item.ranking_score.toFixed(2)
+            : item.context_score !== null && item.context_score !== undefined
+              ? item.context_score.toFixed(2)
+              : `#${item.relevance_rank}`}
+        </strong>
+        <span>
+          {item.ranking_score !== null && item.ranking_score !== undefined
+            ? "Ranking score"
+            : item.context_score !== null && item.context_score !== undefined
+              ? "Context score"
+            : "Relevance rank"}
+        </span>
+        <small>
+          {formatProviderLabel(item.provider)}
+          {item.context_rank ? ` / context #${item.context_rank}` : ""}
+          {item.relevance_rank ? ` / provider #${item.relevance_rank}` : ""}
+        </small>
+      </div>
+    </article>
+  );
+}
+
+function ExplanationGrounding({ explanation }) {
+  const grounding = buildExplanationGrounding(explanation);
+
+  if (!grounding) {
+    return null;
+  }
+
+  return (
+    <div className="explanation-grounding">
+      <p className="explanation-grounding-label">Grounded in</p>
+      <div className="explanation-grounding-badges">
+        {grounding.contextCounts.liveEvidence > 0 ? (
+          <span className="context-kind-badge live_evidence">
+            {grounding.contextCounts.liveEvidence} live context
+          </span>
+        ) : null}
+        {grounding.contextCounts.curatedEvidence > 0 ? (
+          <span className="context-kind-badge curated_evidence">
+            {grounding.contextCounts.curatedEvidence} curated context
+          </span>
+        ) : null}
+        {grounding.contextCounts.structuredFallback > 0 ? (
+          <span className="context-kind-badge structured_fallback">
+            {grounding.contextCounts.structuredFallback} structured fallback
+          </span>
+        ) : null}
+        {grounding.correlationCount > 0 ? <span className="context-chip">correlation evidence</span> : null}
+        {grounding.episodeContext ? <span className="context-chip">episode structure</span> : null}
+      </div>
+
+      <div className="explanation-grounding-list">
+        {grounding.primaryContext ? (
+          <p>
+            <strong>Context:</strong> {grounding.primaryContext.title}
+          </p>
+        ) : null}
+        {grounding.strongestCorrelation ? (
+          <p>
+            <strong>Relationship:</strong> {grounding.strongestCorrelation.related_dataset_name} (
+            {formatCorrelation(grounding.strongestCorrelation.correlation_score)} /{" "}
+            {describeLagDays(grounding.strongestCorrelation.lag_days)})
+          </p>
+        ) : null}
+        {grounding.episodeContext ? (
+          <p>
+            <strong>Episode:</strong> {formatEpisodeKind(grounding.episodeContext.cluster_episode_kind)} /{" "}
+            {formatQualityBand(grounding.episodeContext.cluster_quality_band)}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
 }
 
 function LeadingIndicatorCard({
@@ -452,10 +831,10 @@ function LeadingIndicatorCard({
                           </strong>
                           <p>
                             cluster {episode.target_cluster_id} /{" "}
-                            {episode.target_cluster_anomaly_count} anomaly
-                            {episode.target_cluster_anomaly_count === 1 ? "" : "ies"} /{" "}
-                            {episode.target_cluster_dataset_count} dataset
-                            {episode.target_cluster_dataset_count === 1 ? "" : "s"}
+                            {episode.target_cluster_anomaly_count}{" "}
+                            {pluralize(episode.target_cluster_anomaly_count, "anomaly", "anomalies")} /{" "}
+                            {episode.target_cluster_dataset_count}{" "}
+                            {pluralize(episode.target_cluster_dataset_count, "dataset")}
                           </p>
                         </div>
                         <button
@@ -567,10 +946,10 @@ function LeadingIndicatorCard({
                         </strong>
                         <p>
                           cluster {episode.target_cluster_id} /{" "}
-                          {episode.target_cluster_anomaly_count} anomaly
-                          {episode.target_cluster_anomaly_count === 1 ? "" : "ies"} /{" "}
-                          {episode.target_cluster_dataset_count} dataset
-                          {episode.target_cluster_dataset_count === 1 ? "" : "s"}
+                          {episode.target_cluster_anomaly_count}{" "}
+                          {pluralize(episode.target_cluster_anomaly_count, "anomaly", "anomalies")} /{" "}
+                          {episode.target_cluster_dataset_count}{" "}
+                          {pluralize(episode.target_cluster_dataset_count, "dataset")}
                         </p>
                       </div>
                       <div className="leading-indicator-episode-signal">
@@ -1309,8 +1688,16 @@ export default function App() {
                         </strong>
                       </article>
                       <article>
-                        <span>Stored articles</span>
-                        <strong>{evidenceSummary?.newsCount ?? 0}</strong>
+                        <span>Live reporting</span>
+                        <strong>{evidenceSummary?.contextCounts.liveEvidence ?? 0}</strong>
+                      </article>
+                      <article>
+                        <span>Curated context</span>
+                        <strong>{evidenceSummary?.contextCounts.curatedEvidence ?? 0}</strong>
+                      </article>
+                      <article>
+                        <span>Structured fallback</span>
+                        <strong>{evidenceSummary?.contextCounts.structuredFallback ?? 0}</strong>
                       </article>
                     </div>
 
@@ -1435,9 +1822,10 @@ export default function App() {
                                 })}
                               </h3>
                               <p>
-                                {edge.target_dataset_names.join(", ")} / {edge.target_anomaly_count} anomaly
-                                {edge.target_anomaly_count === 1 ? "" : "ies"} / {edge.target_dataset_count} dataset
-                                {edge.target_dataset_count === 1 ? "" : "s"}
+                                {edge.target_dataset_names.join(", ")} / {edge.target_anomaly_count}{" "}
+                                {pluralize(edge.target_anomaly_count, "anomaly", "anomalies")} /{" "}
+                                {edge.target_dataset_count}{" "}
+                                {pluralize(edge.target_dataset_count, "dataset")}
                               </p>
                             </div>
                             <div className="propagation-score">
@@ -1544,45 +1932,16 @@ export default function App() {
                   {contextEvidence.likelyDrivers.length > 0 ? (
                     <div className="news-list">
                       {contextEvidence.likelyDrivers.map((item) => (
-                        <article className="news-card" key={`${item.article_url}-${item.relevance_rank}`}>
-                          <div className="news-card-copy">
-                            <h3>
-                              <a href={item.article_url} target="_blank" rel="noreferrer">
-                                {item.title}
-                              </a>
-                            </h3>
-                            <p>
-                              {item.domain ?? item.provider}
-                              {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
-                            </p>
-                            {item.driver_summary ?? item.historical_event_summary ? (
-                              <p>{item.driver_summary ?? item.historical_event_summary}</p>
-                            ) : null}
-                            <div className="news-card-tags">
-                              {item.primary_theme ? (
-                                <span className="context-theme-badge">
-                                  {formatEventTheme(item.primary_theme)}
-                                </span>
-                              ) : null}
-                              <span
-                                className={`timing-badge ${getContextTimingClass(
-                                  item,
-                                  selectedAnomalyDetail.timestamp,
-                                )}`}
-                              >
-                                {describeContextTiming(item, selectedAnomalyDetail.timestamp)}
-                              </span>
-                              <span className="timing-note">
-                                {formatRetrievalScope(item.retrieval_scope)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="news-card-meta">
-                            <strong>#{item.relevance_rank}</strong>
-                            <span>{item.provider}</span>
-                          </div>
-                        </article>
+                        <ContextEvidenceCard
+                          item={item}
+                          anomalyTimestamp={selectedAnomalyDetail.timestamp}
+                          key={`${item.article_url}-${item.relevance_rank}`}
+                        />
                       ))}
+                    </div>
+                  ) : contextEvidence.fallbackContext.length > 0 ? (
+                    <div className="empty-card">
+                      <p>No cited likely-driver evidence is stored for this event yet.</p>
                     </div>
                   ) : (
                     <div className="empty-card">
@@ -1592,53 +1951,35 @@ export default function App() {
                       </div>
                     </div>
                   )}
+
+                  {contextEvidence.fallbackContext.length > 0 ? (
+                    <div className="context-subsection">
+                      <p className="context-subheading">Structured fallback context</p>
+                      <div className="news-list">
+                        {contextEvidence.fallbackContext.map((item) => (
+                          <ContextEvidenceCard
+                            item={item}
+                            anomalyTimestamp={selectedAnomalyDetail.timestamp}
+                            key={`${item.article_url}-${item.relevance_rank}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </section>
 
-                {contextEvidence.supportingArticles.length > 0 ? (
+                {contextEvidence.supportingEvidence.length > 0 ? (
                   <section className="detail-section">
                     <header>
-                      <p className="panel-label">Supporting articles</p>
+                      <p className="panel-label">Supporting cited evidence</p>
                     </header>
                     <div className="news-list">
-                      {contextEvidence.supportingArticles.map((item) => (
-                        <article className="news-card" key={`${item.article_url}-${item.relevance_rank}`}>
-                          <div className="news-card-copy">
-                            <h3>
-                              <a href={item.article_url} target="_blank" rel="noreferrer">
-                                {item.title}
-                              </a>
-                            </h3>
-                            <p>
-                              {item.domain ?? item.provider}
-                              {item.published_at ? ` / ${formatDate(item.published_at)}` : ""}
-                            </p>
-                            {item.driver_summary ?? item.historical_event_summary ? (
-                              <p>{item.driver_summary ?? item.historical_event_summary}</p>
-                            ) : null}
-                            <div className="news-card-tags">
-                              {item.primary_theme ? (
-                                <span className="context-theme-badge">
-                                  {formatEventTheme(item.primary_theme)}
-                                </span>
-                              ) : null}
-                              <span
-                                className={`timing-badge ${getContextTimingClass(
-                                  item,
-                                  selectedAnomalyDetail.timestamp,
-                                )}`}
-                              >
-                                {describeContextTiming(item, selectedAnomalyDetail.timestamp)}
-                              </span>
-                              <span className="timing-note">
-                                {formatRetrievalScope(item.retrieval_scope)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="news-card-meta">
-                            <strong>#{item.relevance_rank}</strong>
-                            <span>{item.provider}</span>
-                          </div>
-                        </article>
+                      {contextEvidence.supportingEvidence.map((item) => (
+                        <ContextEvidenceCard
+                          item={item}
+                          anomalyTimestamp={selectedAnomalyDetail.timestamp}
+                          key={`${item.article_url}-${item.relevance_rank}`}
+                        />
                       ))}
                     </div>
                   </section>
@@ -1673,8 +2014,10 @@ export default function App() {
                     selectedAnomalyDetail.explanations.map((item) => (
                       <article className="explanation-card" key={`${item.provider}-${item.created_at}`}>
                         <p>{item.generated_text}</p>
+                        <ExplanationGrounding explanation={item} />
                         <footer>
-                          {item.provider} / {item.model}
+                          {formatProviderLabel(item.provider)} / {item.model} /{" "}
+                          {formatDateTime(item.created_at)}
                         </footer>
                       </article>
                     ))

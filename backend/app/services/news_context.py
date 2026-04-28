@@ -759,21 +759,55 @@ def compute_context_score(
     *,
     event_themes: list[str],
 ) -> float:
-    timing_relation = classify_article_timing_for_request(article, request)
-    timing_score = {
-        "during": 1.0,
-        "before": 0.88,
-        "after": 0.58,
-        "unknown": 0.4,
-    }.get(timing_relation, 0.4)
+    return get_ranking_score(
+        compute_context_score_components(article, request, event_themes=event_themes)
+    )
 
+
+def get_source_type(article: NewsArticleRecord) -> str:
     source_kind = article.metadata.get("source_kind")
     if source_kind == "historical_event_registry":
-        source_score = 0.92
-    elif article.provider == "gdelt":
-        source_score = 0.72
-    else:
-        source_score = 0.6
+        return "historical_registry"
+    if source_kind == "dataset_driver_fallback":
+        return "structured_fallback"
+    if article.provider == "macro_timeline":
+        return "historical_registry"
+    if article.provider == "dataset_backdrop":
+        return "structured_fallback"
+    if article.provider == "gdelt":
+        return "live_article"
+    return "live_article"
+
+
+def get_source_category(article: NewsArticleRecord) -> str:
+    source_type = get_source_type(article)
+    if source_type == "historical_registry":
+        return "curated_backdrop"
+    if source_type == "structured_fallback":
+        return "structured_fallback"
+    return "direct_reporting"
+
+
+def compute_context_score_components(
+    article: NewsArticleRecord,
+    request: NewsContextRequest,
+    *,
+    event_themes: list[str],
+) -> dict[str, float]:
+    timing_relation = classify_article_timing_for_request(article, request)
+    timing = {
+        "during": 1.0,
+        "before": 0.82,
+        "after": 0.45,
+        "unknown": 0.35,
+    }.get(timing_relation, 0.35)
+
+    source_type = get_source_type(article)
+    source = {
+        "historical_registry": 0.84,
+        "live_article": 0.78,
+        "structured_fallback": 0.4,
+    }.get(source_type, 0.4)
 
     dataset_theme_priors = set(DATASET_THEME_PRIORS.get(request.dataset_symbol, []))
     cluster_theme_priors: set[str] = set()
@@ -781,27 +815,73 @@ def compute_context_score(
         cluster_theme_priors.update(DATASET_THEME_PRIORS.get(symbol, []))
     combined_theme_priors = dataset_theme_priors | cluster_theme_priors
     theme_overlap_count = len(combined_theme_priors & set(event_themes))
-    theme_score = min(theme_overlap_count / 2.0, 1.0)
+    theme = min(theme_overlap_count / 2.0, 1.0)
 
-    keyword_score = article_match_score(article, request)
-    keyword_component = min(keyword_score / 3.0, 1.0)
+    keyword = min(article_match_score(article, request) / 3.0, 1.0)
 
-    specificity_score = 0.55
-    if source_kind == "historical_event_registry":
-        specificity_score = 0.8
+    specificity = 0.55
+    if source_type == "historical_registry":
+        specificity = 0.75
         if article.metadata.get("historical_event_summary"):
-            specificity_score = 0.9
+            specificity = 0.9
+    elif source_type == "structured_fallback":
+        specificity = 0.45
     elif event_themes:
-        specificity_score = 0.7
+        specificity = 0.78 if len(event_themes) >= 2 else 0.7
 
+    directness = 0.18
+    if source_type == "live_article":
+        directness = (
+            1.0 if timing_relation == "during" else 0.82 if timing_relation == "before" else 0.45
+        )
+    elif source_type == "historical_registry":
+        historical_confidence = article.metadata.get("historical_event_confidence")
+        confidence_component = (
+            float(historical_confidence) if isinstance(historical_confidence, (int, float)) else 0.65
+        )
+        directness = min(max(confidence_component, 0.0), 1.0) * (
+            0.65 if timing_relation in {"during", "before"} else 0.45
+        )
+
+    return {
+        "timing": round(timing, 6),
+        "source": round(source, 6),
+        "theme": round(theme, 6),
+        "keyword": round(keyword, 6),
+        "specificity": round(specificity, 6),
+        "directness": round(directness, 6),
+    }
+
+
+def get_ranking_score(components: dict[str, float]) -> float:
     overall = (
-        timing_score * 0.35
-        + source_score * 0.2
-        + theme_score * 0.25
-        + keyword_component * 0.1
-        + specificity_score * 0.1
+        components["timing"] * 0.24
+        + components["source"] * 0.18
+        + components["theme"] * 0.2
+        + components["keyword"] * 0.12
+        + components["specificity"] * 0.12
+        + components["directness"] * 0.14
     )
     return round(overall, 6)
+
+
+def get_driver_role(
+    article: NewsArticleRecord,
+    *,
+    timing_relation: str,
+    ranking_score: float,
+    context_rank: int,
+) -> str:
+    source_type = get_source_type(article)
+    if source_type == "structured_fallback":
+        return "fallback_context"
+    if context_rank == 1 and timing_relation in {"during", "before"}:
+        return "primary_driver_candidate"
+    if source_type == "historical_registry":
+        return "backdrop_context"
+    if ranking_score >= 0.74 and timing_relation in {"during", "before"}:
+        return "primary_driver_candidate"
+    return "supporting_context"
 
 
 def get_fetch_record_limit(max_articles: int) -> int:
@@ -1135,7 +1215,7 @@ def annotate_articles_for_request(
     request: NewsContextRequest,
 ) -> list[NewsArticleRecord]:
     retrieval_scope, context_start, context_end = get_context_window(request)
-    annotated: list[NewsArticleRecord] = []
+    enriched: list[NewsArticleRecord] = []
     for article in articles:
         if article.provider == "macro_timeline":
             effective_scope = "curated_timeline"
@@ -1144,20 +1224,64 @@ def annotate_articles_for_request(
         else:
             effective_scope = retrieval_scope
         event_themes = extract_event_themes(article, request)
+        score_components = compute_context_score_components(article, request, event_themes=event_themes)
         context_score = compute_context_score(article, request, event_themes=event_themes)
+        ranking_score = get_ranking_score(score_components)
+        timing_relation = classify_article_timing_for_request(article, request)
         metadata = dict(article.metadata)
         metadata.update(
             {
                 "retrieval_scope": effective_scope,
                 "context_window_start": context_start.isoformat(),
                 "context_window_end": context_end.isoformat(),
-                "timing_relation": classify_article_timing_for_request(article, request),
+                "timing_relation": timing_relation,
                 "event_themes": event_themes,
                 "primary_theme": event_themes[0] if event_themes else None,
                 "context_score": context_score,
+                "source_type": get_source_type(article),
+                "source_category": get_source_category(article),
+                "ranking_score": ranking_score,
+                "score_components": score_components,
             }
         )
-        annotated.append(replace(article, metadata=metadata))
+        enriched.append(replace(article, metadata=metadata))
+
+    ranked = sorted(
+        enriched,
+        key=lambda article: (
+            -(float(article.metadata.get("ranking_score", 0.0))),
+            0
+            if article.metadata.get("source_type") == "live_article"
+            else 1
+            if article.metadata.get("source_type") == "historical_registry"
+            else 2,
+            0
+            if article.metadata.get("timing_relation") == "during"
+            else 1
+            if article.metadata.get("timing_relation") == "before"
+            else 2,
+            article.relevance_rank,
+            article.title,
+        ),
+    )
+
+    annotated: list[NewsArticleRecord] = []
+    for index, article in enumerate(ranked, start=1):
+        metadata = dict(article.metadata)
+        timing_relation = str(metadata.get("timing_relation", "unknown"))
+        ranking_score = float(metadata.get("ranking_score", metadata.get("context_score", 0.0)))
+        metadata.update(
+            {
+                "context_rank": index,
+                "driver_role": get_driver_role(
+                    article,
+                    timing_relation=timing_relation,
+                    ranking_score=ranking_score,
+                    context_rank=index,
+                ),
+            }
+        )
+        annotated.append(replace(article, relevance_rank=index, metadata=metadata))
     return annotated
 
 
@@ -1297,10 +1421,39 @@ def run_news_context_for_anomaly(db: Session, anomaly_id: int) -> int:
     request = load_news_context_request(db, anomaly_id)
     if request is None:
         return 0
+    providers = get_news_context_providers(request)
+    fetched_by_provider = {
+        provider.provider_name: provider.fetch(request)
+        for provider in providers
+    }
+    combined_articles = [
+        article
+        for articles in fetched_by_provider.values()
+        for article in articles
+    ]
+
     inserted = 0
-    for provider in get_news_context_providers(request):
-        articles = annotate_articles_for_request(provider.fetch(request), request)
-        inserted += replace_news_context(db, anomaly_id, provider.provider_name, articles)
+    if combined_articles:
+        annotated_articles = annotate_articles_for_request(combined_articles, request)
+        annotated_by_provider = {
+            provider.provider_name: [
+                article
+                for article in annotated_articles
+                if article.provider == provider.provider_name
+            ]
+            for provider in providers
+        }
+        for provider in providers:
+            inserted += replace_news_context(
+                db,
+                anomaly_id,
+                provider.provider_name,
+                annotated_by_provider.get(provider.provider_name, []),
+            )
+        replace_news_context(db, anomaly_id, "dataset_backdrop", [])
+    else:
+        for provider in providers:
+            replace_news_context(db, anomaly_id, provider.provider_name, [])
     if inserted == 0:
         fallback_article = annotate_articles_for_request(
             [build_dataset_driver_fallback_article(request)],

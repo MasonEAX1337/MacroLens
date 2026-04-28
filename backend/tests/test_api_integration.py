@@ -42,6 +42,69 @@ def test_anomaly_detail_returns_news_context_and_explanations(client, seeded_eve
     assert payload["news_context"][0]["context_score"] is not None
     assert payload["news_context_status"]["status"] == "available"
     assert payload["explanations"][0]["provider"] == "gemini"
+    assert payload["explanations"][0]["evidence"] == {}
+
+
+def test_anomaly_detail_exposes_stored_explanation_evidence(client, db_session) -> None:  # noqa: ANN001
+    from datetime import datetime, timezone
+
+    from sqlalchemy import text
+
+    from app.services.ingestion import DatasetDefinition, upsert_dataset
+
+    dataset_id = upsert_dataset(
+        db_session,
+        DatasetDefinition(
+            key="fed_funds",
+            name="Federal Funds Rate",
+            symbol="FEDFUNDS",
+            source="FRED",
+            description="Effective Federal Funds Rate.",
+            frequency="monthly",
+        ),
+    )
+    anomaly_id = int(
+        db_session.execute(
+            text(
+                """
+                INSERT INTO anomalies (dataset_id, timestamp, severity_score, direction, detection_method)
+                VALUES (:dataset_id, :timestamp, :severity_score, :direction, :detection_method)
+                RETURNING id
+                """
+            ),
+            {
+                "dataset_id": dataset_id,
+                "timestamp": datetime(2024, 3, 1, tzinfo=timezone.utc),
+                "severity_score": 3.0,
+                "direction": "up",
+                "detection_method": "z_score",
+            },
+        ).scalar_one()
+    )
+    db_session.execute(
+        text(
+            """
+            INSERT INTO explanations (anomaly_id, provider, model, generated_text, evidence)
+            VALUES (:anomaly_id, :provider, :model, :generated_text, CAST(:evidence AS JSONB))
+            """
+        ),
+        {
+            "anomaly_id": anomaly_id,
+            "provider": "rules_based",
+            "model": "macro-template-v1",
+            "generated_text": "Stored explanation text.",
+            "evidence": '{"news_context":[{"title":"Federal Reserve weighs rate path after banking stress","source_type":"live_article","driver_role":"primary_driver_candidate","context_rank":1}],"correlations":[]}',
+        },
+    )
+    db_session.commit()
+
+    response = client.get(f"/api/v1/anomalies/{anomaly_id}")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["explanations"][0]["evidence"]["news_context"][0]["title"] == "Federal Reserve weighs rate path after banking stress"
+    assert payload["explanations"][0]["evidence"]["news_context"][0]["source_type"] == "live_article"
+    assert payload["explanations"][0]["evidence"]["news_context"][0]["driver_role"] == "primary_driver_candidate"
 
 
 def test_dataset_leading_indicators_endpoint_returns_cluster_aggregates(client, seeded_leading_indicators) -> None:  # noqa: ANN001
