@@ -1,5 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
-const STATIC_DATA_BASE_URL = import.meta.env.VITE_STATIC_DATA_BASE_URL ?? "/static-data";
+const STATIC_DATA_BASE_URL =
+  import.meta.env.VITE_STATIC_DATA_BASE_URL ?? `${import.meta.env.BASE_URL}static-data`;
 const FORCE_STATIC_DATA = import.meta.env.VITE_USE_STATIC_DATA === "true";
 
 async function request(path, options = {}) {
