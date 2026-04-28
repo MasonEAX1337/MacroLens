@@ -71,7 +71,7 @@ jobs:
         run: python scripts/ingest/run_ingestion.py --dataset bitcoin
 
       - name: Recompute evidence graph (local-only context)
-        run: python scripts/pipeline/recompute_evidence.py --dataset bitcoin --skip-news-context
+        run: python scripts/pipeline/recompute_evidence.py --dataset BTC-USD --skip-news-context
 
       - name: Export static API data
         run: python scripts/export_static_site_data.py --details-limit 500
