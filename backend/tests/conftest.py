@@ -17,6 +17,7 @@ from app.services.ingestion import DataPointRecord, DatasetDefinition, upsert_da
 
 TEST_DATABASE_NAME = "macrolens_integration_test"
 SCHEMA_PATH = Path(__file__).resolve().parents[2] / "database" / "schema.sql"
+POSTGRES_CONNECT_TIMEOUT_SECONDS = 5
 
 
 def _admin_url() -> URL:
@@ -37,7 +38,12 @@ def _apply_schema(engine) -> None:  # noqa: ANN001
 
 @pytest.fixture(scope="session")
 def integration_engine():
-    admin_engine = create_engine(_admin_url(), future=True, isolation_level="AUTOCOMMIT")
+    admin_engine = create_engine(
+        _admin_url(),
+        future=True,
+        isolation_level="AUTOCOMMIT",
+        connect_args={"connect_timeout": POSTGRES_CONNECT_TIMEOUT_SECONDS},
+    )
     try:
         with admin_engine.connect() as connection:
             exists = connection.execute(
@@ -49,7 +55,12 @@ def integration_engine():
     except SQLAlchemyError as exc:  # noqa: BLE001
         pytest.skip(f"PostgreSQL not available for integration tests: {exc}")
 
-    engine = create_engine(_test_url(), future=True, pool_pre_ping=True)
+    engine = create_engine(
+        _test_url(),
+        future=True,
+        pool_pre_ping=True,
+        connect_args={"connect_timeout": POSTGRES_CONNECT_TIMEOUT_SECONDS},
+    )
     _apply_schema(engine)
     yield engine
     engine.dispose()
