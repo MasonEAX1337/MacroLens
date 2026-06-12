@@ -13,6 +13,7 @@ The current implementation uses:
 - a provider abstraction
 - a rules-based provider
 - an OpenAI-backed provider path
+- a DeepSeek-backed provider path using DeepSeek V4 Flash
 - a Gemini-backed provider path
 - provider fallback behavior
 - persisted evidence payloads
@@ -72,7 +73,9 @@ That is a real product step, even if the generation quality is still transitiona
 
 ### Near-term goal
 
-Validate and refine the implemented live OpenAI and Gemini provider paths behind the existing abstraction.
+Validate and refine the implemented live DeepSeek, OpenAI, and Gemini provider paths behind the existing abstraction.
+
+DeepSeek V4 Flash is the default hosted provider. Gemini remains an alternative provider, and rules-based generation remains the fallback for deterministic local operation and provider failures.
 
 ### Required pieces
 

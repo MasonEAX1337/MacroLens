@@ -92,17 +92,17 @@ MacroLens currently has a working end-to-end MVP slice.
 
 ### Current explanation model
 
-The current default explanation provider is `rules_based`.
+The current default explanation provider is `deepseek` using `deepseek-v4-flash`.
 
-MacroLens now also includes `openai` and `gemini` provider paths behind the same provider abstraction.
+MacroLens also includes `openai`, `gemini`, and `rules_based` provider paths behind the same provider abstraction.
 
 That means:
 
-- the default local workflow remains deterministic and cheap
-- a live hosted model can be enabled through environment variables
+- the default hosted workflow uses DeepSeek V4 Flash
+- Gemini remains available as an alternative hosted provider
 - the system keeps the rules-based provider as fallback
 
-The hosted-provider paths are implemented and have been validated on live anomalies, but they should still be treated as staged integrations rather than production-ready defaults. Prompt quality, comparative evaluation, and failure-handling polish are still part of the next phase.
+The hosted-provider paths are implemented and have been validated on live anomalies, but explanation quality still depends on prompt discipline, comparative evaluation, and failure-handling polish. DeepSeek is the default because it is the preferred low-latency hosted path, not because model output should be treated as causal truth.
 
 ### Current news context model
 
@@ -204,9 +204,11 @@ Important variables in `.env`:
 - `DATABASE_URL`: PostgreSQL connection string
 - `FRED_API_KEY`: required for FRED datasets
 - `CORS_ALLOWED_ORIGINS`: frontend origins allowed to call the API
-- `EXPLANATION_PROVIDER`: `rules_based`, `openai`, or `gemini`
+- `EXPLANATION_PROVIDER`: `deepseek`, `rules_based`, `openai`, or `gemini`
 - `EXPLANATION_FALLBACK_PROVIDER`: fallback provider if the primary provider fails
 - `EXPLANATION_MODEL`: provider/model label stored with generated explanations
+- `DEEPSEEK_MODEL`: model used when `EXPLANATION_PROVIDER=deepseek`; default is `deepseek-v4-flash`
+- `DEEPSEEK_API_KEY`: required when using the DeepSeek provider
 - `OPENAI_MODEL`: model used when `EXPLANATION_PROVIDER=openai`
 - `OPENAI_API_KEY`: required when using the OpenAI provider
 - `GEMINI_MODEL`: model used when `EXPLANATION_PROVIDER=gemini`
@@ -351,6 +353,12 @@ To inspect explanations without raw API output:
 
 ```powershell
 .\.venv\Scripts\python scripts\explanations\view_explanations.py --anomaly-id 91
+```
+
+To compare only DeepSeek-generated explanations:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\view_explanations.py --provider deepseek --limit 5
 ```
 
 To compare only Gemini-generated explanations:
@@ -544,7 +552,7 @@ Useful entry points:
 
 ## Current Limitations
 
-- explanations are rules-based by default even though OpenAI-backed and Gemini-backed provider paths now exist
+- explanations use DeepSeek V4 Flash by default with rules-based fallback, but hosted model output still needs rigorous grounding checks
 - correlations are useful but should not be interpreted as causal proof
 - anomaly clustering is now frequency-aware, but it is still an event envelope rather than proof of shared causation
 - change-point detection is now backfilled into the live evidence graph, but its configs are still first-pass and should be treated as an auxiliary detector rather than a mature default
@@ -565,7 +573,7 @@ Useful entry points:
 
 The next highest-value steps are:
 
-1. evaluate OpenAI and Gemini explanation quality more systematically
+1. evaluate DeepSeek, OpenAI, and Gemini explanation quality more systematically
 2. expand curated macro-timeline coverage beyond the first household regimes
 3. improve article ranking and filtering quality for live news retrieval
 4. continue detector evaluation dataset by dataset, especially where anomaly supply is still starving the episode graph

@@ -86,7 +86,7 @@ This is deliberately a separate evidence layer from correlations. News is contex
 
 The explanation layer reads stored anomaly, correlation, and news-context evidence and generates persisted explanation text.
 
-The current implementation uses a provider abstraction with rules-based, OpenAI, and Gemini-backed generation paths. That keeps the architecture stable while explanation quality continues to be tuned.
+The current implementation uses a provider abstraction with DeepSeek, rules-based, OpenAI, and Gemini-backed generation paths. DeepSeek V4 Flash is the default hosted provider, Gemini is an alternative, and rules-based generation remains the fallback. That keeps the architecture stable while explanation quality continues to be tuned.
 
 ### 9. Delivery
 

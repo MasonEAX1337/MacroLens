@@ -62,6 +62,15 @@ When solving a problem or implementing a feature:
 
 MacroLens should be developed as an evidence pipeline, not just a UI demo.
 
+## Default LLM Provider
+
+Use DeepSeek V4 Flash as the default hosted explanation model.
+
+- Prefer `EXPLANATION_PROVIDER=deepseek`.
+- Prefer `DEEPSEEK_MODEL=deepseek-v4-flash`.
+- Treat Gemini as an alternative provider, not the default.
+- Keep `rules_based` available as the fallback provider for missing keys, failed provider calls, and deterministic local debugging.
+
 Agents should preserve and reinforce the following design intent:
 
 - raw data should be traceable to stored system state

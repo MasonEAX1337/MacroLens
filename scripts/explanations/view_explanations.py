@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--provider",
         default=None,
-        help="Optional provider filter such as rules_based, openai, or gemini.",
+        help="Optional provider filter such as deepseek, rules_based, openai, or gemini.",
     )
     parser.add_argument(
         "--limit",
