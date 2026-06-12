@@ -79,3 +79,37 @@ The live evidence supports a narrow dataset-specific tuning layer.
 
 The next question is not whether overrides are allowed.
 The next question is whether the new anomalies produce better cross-dataset episodes or only inflate raw counts.
+
+## Follow-Up: Episode Outcome Auditability
+
+The original audit measured anomaly density, but its unresolved risk was downstream usefulness:
+
+- a new anomaly is useful when it becomes part of a meaningful episode, bridge, or same-dataset wave
+- a new anomaly is weaker when it remains an isolated low-quality signal
+- a new anomaly is actively suspect when it is later suppressed by the episode filter
+
+To make that distinction auditable, the graph-quality report now includes episode outcomes by dataset and detection method.
+
+The added report section tracks:
+
+- total anomalies
+- clustered anomalies
+- suppressed anomalies
+- isolated signals
+- single-dataset waves
+- cross-dataset episodes
+- medium-or-high-quality cluster membership
+
+That makes the detector audit stricter. Future override changes should not be justified by raw anomaly counts alone.
+
+### Current Verification Limitation
+
+The live graph-quality snapshot could not be refreshed during this follow-up because the local PostgreSQL instance was unavailable from the current shell.
+
+The report command now fails fast with an explicit PostgreSQL availability message instead of hanging on connection attempts. Once the local database is running, rerun:
+
+```powershell
+.\.venv\Scripts\python scripts\evaluation\report_graph_quality.py
+```
+
+The generated `documentation/research/latest_graph_quality_snapshot.json` should then include `anomaly_episode_outcomes`.

@@ -387,6 +387,8 @@ To inspect anomaly supply, cluster quality, and context coverage in one report:
 .\.venv\Scripts\python scripts\evaluation\report_graph_quality.py
 ```
 
+The report also breaks anomaly outcomes down by dataset and detection method so detector tuning can be audited against episode formation, not only raw anomaly counts.
+
 This also saves the latest JSON snapshot to:
 
 - [documentation/research/latest_graph_quality_snapshot.json](documentation/research/latest_graph_quality_snapshot.json)

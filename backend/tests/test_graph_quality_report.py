@@ -22,6 +22,20 @@ def test_render_report_includes_key_sections() -> None:
                 "change_point_count": 1,
             }
         ],
+        "anomaly_episode_outcomes": [
+            {
+                "symbol": "CPIAUCSL",
+                "frequency": "monthly",
+                "detection_method": "change_point",
+                "anomaly_count": 5,
+                "clustered_count": 3,
+                "suppressed_count": 2,
+                "isolated_signal_count": 1,
+                "single_dataset_wave_count": 1,
+                "cross_dataset_episode_count": 1,
+                "medium_or_high_quality_count": 2,
+            }
+        ],
         "context_coverage": [
             {"symbol": "CPIAUCSL", "anomaly_count": 5, "anomalies_with_context": 3}
         ],
@@ -34,4 +48,6 @@ def test_render_report_includes_key_sections() -> None:
     assert "MacroLens Graph Quality Report" in output
     assert "Cluster quality distribution" in output
     assert "CPIAUCSL" in output
+    assert "Episode outcomes by dataset and detection method" in output
+    assert "cross_dataset_episode=1" in output
     assert "bridge_preserved_change_points: 2" in output
