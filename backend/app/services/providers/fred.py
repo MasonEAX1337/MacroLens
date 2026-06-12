@@ -73,16 +73,22 @@ class FredClient:
         self.timeout = timeout
 
     def fetch_series(self, dataset: DatasetDefinition) -> list[DataPointRecord]:
-        response = httpx.get(
-            f"{self.base_url}/series/observations",
-            params={
-                "series_id": dataset.symbol,
-                "api_key": self.api_key,
-                "file_type": "json",
-            },
-            timeout=self.timeout,
-        )
-        response.raise_for_status()
+        try:
+            response = httpx.get(
+                f"{self.base_url}/series/observations",
+                params={
+                    "series_id": dataset.symbol,
+                    "api_key": self.api_key,
+                    "file_type": "json",
+                },
+                timeout=self.timeout,
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            status_code = exc.response.status_code if exc.response is not None else "unknown"
+            raise RuntimeError(f"FRED request failed for {dataset.symbol}: HTTP {status_code}") from None
+        except httpx.RequestError:
+            raise RuntimeError(f"FRED request failed for {dataset.symbol}: transport error") from None
         payload = response.json()
 
         points: list[DataPointRecord] = []
