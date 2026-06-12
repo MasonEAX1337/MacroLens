@@ -1,12 +1,12 @@
 {
   "summary": {
     "datasets": 8,
-    "data_points": 18942,
-    "anomalies": 199,
+    "data_points": 19030,
+    "anomalies": 200,
     "clusters": 152,
-    "correlations": 559,
-    "news_context_rows": 247,
-    "explanations": 358
+    "correlations": 562,
+    "news_context_rows": 213,
+    "explanations": 200
   },
   "quality_distribution": [
     {
@@ -25,7 +25,7 @@
   "episode_kind_distribution": [
     {
       "episode_kind": "isolated_signal",
-      "count": 118
+      "count": 117
     },
     {
       "episode_kind": "cross_dataset_episode",
@@ -33,7 +33,7 @@
     },
     {
       "episode_kind": "single_dataset_wave",
-      "count": 7
+      "count": 8
     }
   ],
   "anomaly_supply": [
@@ -68,9 +68,9 @@
     {
       "symbol": "CSUSHPISA",
       "frequency": "monthly",
-      "anomaly_count": 20,
+      "anomaly_count": 21,
       "z_score_count": 6,
-      "change_point_count": 14
+      "change_point_count": 15
     },
     {
       "symbol": "MORTGAGE30US",
@@ -92,6 +92,176 @@
       "anomaly_count": 5,
       "z_score_count": 4,
       "change_point_count": 1
+    }
+  ],
+  "anomaly_episode_outcomes": [
+    {
+      "symbol": "A229RX0",
+      "frequency": "monthly",
+      "detection_method": "z_score",
+      "anomaly_count": 21,
+      "suppressed_count": 0,
+      "clustered_count": 21,
+      "isolated_signal_count": 14,
+      "single_dataset_wave_count": 0,
+      "cross_dataset_episode_count": 7,
+      "medium_or_high_quality_count": 7
+    },
+    {
+      "symbol": "BTC",
+      "frequency": "daily",
+      "detection_method": "z_score",
+      "anomaly_count": 4,
+      "suppressed_count": 0,
+      "clustered_count": 4,
+      "isolated_signal_count": 2,
+      "single_dataset_wave_count": 2,
+      "cross_dataset_episode_count": 0,
+      "medium_or_high_quality_count": 2
+    },
+    {
+      "symbol": "BTC",
+      "frequency": "daily",
+      "detection_method": "change_point",
+      "anomaly_count": 1,
+      "suppressed_count": 0,
+      "clustered_count": 1,
+      "isolated_signal_count": 0,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 0,
+      "medium_or_high_quality_count": 1
+    },
+    {
+      "symbol": "CPIAUCSL",
+      "frequency": "monthly",
+      "detection_method": "z_score",
+      "anomaly_count": 11,
+      "suppressed_count": 0,
+      "clustered_count": 11,
+      "isolated_signal_count": 8,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 2,
+      "medium_or_high_quality_count": 2
+    },
+    {
+      "symbol": "CPIAUCSL",
+      "frequency": "monthly",
+      "detection_method": "change_point",
+      "anomaly_count": 27,
+      "suppressed_count": 3,
+      "clustered_count": 24,
+      "isolated_signal_count": 13,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 10,
+      "medium_or_high_quality_count": 10
+    },
+    {
+      "symbol": "CSUSHPISA",
+      "frequency": "monthly",
+      "detection_method": "z_score",
+      "anomaly_count": 6,
+      "suppressed_count": 0,
+      "clustered_count": 6,
+      "isolated_signal_count": 2,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 3,
+      "medium_or_high_quality_count": 3
+    },
+    {
+      "symbol": "CSUSHPISA",
+      "frequency": "monthly",
+      "detection_method": "change_point",
+      "anomaly_count": 15,
+      "suppressed_count": 6,
+      "clustered_count": 9,
+      "isolated_signal_count": 1,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 7,
+      "medium_or_high_quality_count": 7
+    },
+    {
+      "symbol": "DCOILWTICO",
+      "frequency": "daily",
+      "detection_method": "z_score",
+      "anomaly_count": 52,
+      "suppressed_count": 0,
+      "clustered_count": 52,
+      "isolated_signal_count": 39,
+      "single_dataset_wave_count": 4,
+      "cross_dataset_episode_count": 9,
+      "medium_or_high_quality_count": 9
+    },
+    {
+      "symbol": "DCOILWTICO",
+      "frequency": "daily",
+      "detection_method": "change_point",
+      "anomaly_count": 1,
+      "suppressed_count": 0,
+      "clustered_count": 1,
+      "isolated_signal_count": 0,
+      "single_dataset_wave_count": 0,
+      "cross_dataset_episode_count": 1,
+      "medium_or_high_quality_count": 1
+    },
+    {
+      "symbol": "FEDFUNDS",
+      "frequency": "monthly",
+      "detection_method": "z_score",
+      "anomaly_count": 23,
+      "suppressed_count": 0,
+      "clustered_count": 23,
+      "isolated_signal_count": 15,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 7,
+      "medium_or_high_quality_count": 7
+    },
+    {
+      "symbol": "FEDFUNDS",
+      "frequency": "monthly",
+      "detection_method": "change_point",
+      "anomaly_count": 14,
+      "suppressed_count": 0,
+      "clustered_count": 14,
+      "isolated_signal_count": 7,
+      "single_dataset_wave_count": 1,
+      "cross_dataset_episode_count": 6,
+      "medium_or_high_quality_count": 6
+    },
+    {
+      "symbol": "MORTGAGE30US",
+      "frequency": "weekly",
+      "detection_method": "z_score",
+      "anomaly_count": 6,
+      "suppressed_count": 0,
+      "clustered_count": 6,
+      "isolated_signal_count": 3,
+      "single_dataset_wave_count": 0,
+      "cross_dataset_episode_count": 3,
+      "medium_or_high_quality_count": 3
+    },
+    {
+      "symbol": "MORTGAGE30US",
+      "frequency": "weekly",
+      "detection_method": "change_point",
+      "anomaly_count": 7,
+      "suppressed_count": 0,
+      "clustered_count": 7,
+      "isolated_signal_count": 6,
+      "single_dataset_wave_count": 0,
+      "cross_dataset_episode_count": 1,
+      "medium_or_high_quality_count": 1
+    },
+    {
+      "symbol": "SP500",
+      "frequency": "daily",
+      "detection_method": "z_score",
+      "anomaly_count": 12,
+      "suppressed_count": 0,
+      "clustered_count": 12,
+      "isolated_signal_count": 7,
+      "single_dataset_wave_count": 4,
+      "cross_dataset_episode_count": 1,
+      "medium_or_high_quality_count": 1
     }
   ],
   "context_coverage": [
@@ -117,8 +287,8 @@
     },
     {
       "symbol": "CSUSHPISA",
-      "anomaly_count": 20,
-      "anomalies_with_context": 20
+      "anomaly_count": 21,
+      "anomalies_with_context": 21
     },
     {
       "symbol": "MORTGAGE30US",
@@ -136,6 +306,6 @@
       "anomalies_with_context": 5
     }
   ],
-  "bridge_preserved_change_points": 32,
+  "bridge_preserved_change_points": 33,
   "suppressed_anomalies": 9
 }

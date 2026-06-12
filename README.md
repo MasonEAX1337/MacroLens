@@ -347,6 +347,12 @@ To regenerate only one anomaly:
 .\.venv\Scripts\python scripts\explanations\generate_explanations.py --anomaly-id 91
 ```
 
+To force a deterministic local provider for a refresh:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\generate_explanations.py --provider rules_based --quiet
+```
+
 ### View stored explanations from PostgreSQL
 
 To inspect explanations without raw API output:
