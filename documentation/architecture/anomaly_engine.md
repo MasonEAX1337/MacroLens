@@ -143,6 +143,11 @@ For `change_point`, the current implementation also stores:
 - before mean
 - after mean
 - delta mean
+- before standard deviation
+- after standard deviation
+- delta standard deviation
+- mean-shift score
+- volatility-shift score
 - overall series standard deviation
 - observed value
 - transformed value
@@ -155,13 +160,14 @@ This is a strong design choice because it preserves the detector's reasoning rat
 - sharp crashes
 - abrupt movements in daily datasets
 - first-pass structural level shifts
+- first-pass volatility-regime shifts when the segmentation path finds a breakpoint
 
 ## What the Engine Does Poorly
 
 - trend-heavy series
 - seasonal macro series
 - slow regime changes without clean level shifts
-- anomalies that manifest as volatility clusters rather than single-point deviations
+- volatility clusters that do not produce a clear segmentation breakpoint
 
 ## Real Blind Spot
 
