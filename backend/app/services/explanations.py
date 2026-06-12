@@ -488,6 +488,28 @@ def extract_openai_output_text(payload: dict[str, object]) -> str:
     raise ValueError("OpenAI response did not contain output text.")
 
 
+def extract_chat_completion_output_text(payload: dict[str, object], provider_label: str) -> str:
+    choices = payload.get("choices")
+    if not isinstance(choices, list) or not choices:
+        raise ValueError(f"{provider_label} response did not contain choices.")
+
+    texts: list[str] = []
+    for choice in choices:
+        if not isinstance(choice, dict):
+            continue
+        message = choice.get("message")
+        if not isinstance(message, dict):
+            continue
+        content = message.get("content")
+        if isinstance(content, str) and content.strip():
+            texts.append(content.strip())
+
+    if texts:
+        return "\n".join(texts)
+
+    raise ValueError(f"{provider_label} response did not contain message content.")
+
+
 def build_gemini_system_instruction() -> str:
     return (
         "Explain the supplied economic anomaly using only the provided evidence. "
@@ -569,6 +591,65 @@ class OpenAIExplanationProvider:
         evidence = build_explanation_evidence(context)
         evidence["generation_mode"] = "llm"
         evidence["provider_response_id"] = payload.get("id")
+
+        return GeneratedExplanation(
+            provider=self.provider_name,
+            model=self.model_name,
+            generated_text=generated_text,
+            evidence=evidence,
+        )
+
+
+class DeepSeekExplanationProvider:
+    provider_name = "deepseek"
+
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str,
+        *,
+        base_url: str,
+        timeout_seconds: float,
+    ) -> None:
+        self.api_key = api_key
+        self.model_name = model_name
+        self.base_url = base_url.rstrip("/")
+        self.timeout_seconds = timeout_seconds
+
+    def generate(self, context: ExplanationContext) -> GeneratedExplanation:
+        if not self.api_key:
+            raise ValueError("DEEPSEEK_API_KEY is required for the DeepSeek explanation provider.")
+
+        response = httpx.post(
+            f"{self.base_url}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": self.model_name,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": build_openai_instructions(),
+                    },
+                    {
+                        "role": "user",
+                        "content": build_openai_input(context),
+                    },
+                ],
+                "thinking": {"type": "disabled"},
+            },
+            timeout=self.timeout_seconds,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        generated_text = extract_chat_completion_output_text(payload, "DeepSeek")
+        evidence = build_explanation_evidence(context)
+        evidence["generation_mode"] = "llm"
+        evidence["provider_response_id"] = payload.get("id")
+        evidence["provider_model_version"] = payload.get("model")
+        evidence["usage_metadata"] = payload.get("usage")
 
         return GeneratedExplanation(
             provider=self.provider_name,
@@ -673,6 +754,13 @@ def create_provider_by_name(provider_name: str) -> ExplanationProvider:
             model_name=settings.openai_model,
             base_url=settings.openai_base_url,
             timeout_seconds=settings.openai_timeout_seconds,
+        )
+    if normalized == "deepseek":
+        return DeepSeekExplanationProvider(
+            api_key=settings.deepseek_api_key,
+            model_name=settings.deepseek_model,
+            base_url=settings.deepseek_base_url,
+            timeout_seconds=settings.deepseek_timeout_seconds,
         )
     if normalized == "gemini":
         return GeminiExplanationProvider(

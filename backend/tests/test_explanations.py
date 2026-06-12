@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from app.services.explanations import (
     CorrelationEvidence,
+    DeepSeekExplanationProvider,
     ExplanationContext,
     FallbackExplanationProvider,
     GeminiExplanationProvider,
@@ -354,6 +355,75 @@ def test_fallback_provider_handles_missing_openai_key() -> None:
             model_name="gpt-4.1-mini",
             base_url="https://api.openai.com/v1",
             timeout_seconds=15.0,
+        ),
+        RulesBasedExplanationProvider(),
+    )
+
+    result = provider.generate(build_context([]))
+
+    assert result.provider == "rules_based"
+    assert result.evidence["fallback"]["reason"] == "ValueError"
+
+
+def test_deepseek_provider_builds_chat_completion_request(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class MockResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return {
+                "id": "deepseek_resp_123",
+                "model": "deepseek-v4-flash",
+                "choices": [
+                    {
+                        "message": {
+                            "content": "Bitcoin moved sharply lower and the strongest stored evidence points to adjacent cross-market stress. The correlation evidence is suggestive rather than causal.",
+                        }
+                    }
+                ],
+                "usage": {"prompt_tokens": 123, "completion_tokens": 44},
+            }
+
+    def mock_post(url, headers, json, timeout):  # noqa: ANN001
+        captured["url"] = url
+        captured["headers"] = headers
+        captured["json"] = json
+        captured["timeout"] = timeout
+        return MockResponse()
+
+    monkeypatch.setattr("app.services.explanations.httpx.post", mock_post)
+
+    provider = DeepSeekExplanationProvider(
+        api_key="deepseek-key",
+        model_name="deepseek-v4-flash",
+        base_url="https://api.deepseek.com",
+        timeout_seconds=10.0,
+    )
+    result = provider.generate(build_context([]))
+
+    assert captured["url"] == "https://api.deepseek.com/chat/completions"
+    assert captured["headers"]["Authorization"] == "Bearer deepseek-key"
+    assert captured["json"]["model"] == "deepseek-v4-flash"
+    assert captured["json"]["messages"][0]["role"] == "system"
+    assert "supplied evidence" in captured["json"]["messages"][0]["content"]
+    assert '"dataset_name": "Bitcoin Price"' in captured["json"]["messages"][1]["content"]
+    assert captured["json"]["thinking"]["type"] == "disabled"
+    assert captured["timeout"] == 10.0
+    assert result.provider == "deepseek"
+    assert result.model == "deepseek-v4-flash"
+    assert result.evidence["provider_response_id"] == "deepseek_resp_123"
+    assert result.evidence["provider_model_version"] == "deepseek-v4-flash"
+
+
+def test_fallback_provider_handles_missing_deepseek_key() -> None:
+    provider = FallbackExplanationProvider(
+        DeepSeekExplanationProvider(
+            api_key="",
+            model_name="deepseek-v4-flash",
+            base_url="https://api.deepseek.com",
+            timeout_seconds=10.0,
         ),
         RulesBasedExplanationProvider(),
     )

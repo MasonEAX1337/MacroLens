@@ -64,8 +64,8 @@ As of March 12, 2026, the repository contains a working end-to-end vertical slic
 
 ### What is not fully implemented yet
 
-- the current default explanation provider is still rules-based
-- OpenAI-backed and Gemini-backed provider paths now exist and have been validated on live anomalies, but are not yet treated as production-ready defaults
+- the current default explanation provider is DeepSeek V4 Flash with rules-based fallback
+- OpenAI-backed and Gemini-backed provider paths also exist and have been validated on live anomalies, but Gemini is now an alternative rather than the default hosted path
 - frontend now supports range and anomaly filtering plus explanation regeneration, but still lacks dataset-comparison controls
 - the current news layer is keyword-based retrieval, so ranking quality and timing interpretation are still limited
 
@@ -300,13 +300,14 @@ the explainer should interpret evidence, not invent it.
 ### Current implementation
 
 - provider abstraction is implemented
-- default provider is rules-based
+- default provider is DeepSeek V4 Flash
+- rules-based provider remains the fallback path for missing keys, provider failures, and deterministic local debugging
 - explanation text references anomaly severity, direction, and strongest correlations
 - explanation output explicitly warns that correlation is not proof
 
 ### Planned upgrade
 
-- continue comparative validation of OpenAI and Gemini provider paths
+- continue comparative validation of DeepSeek, OpenAI, and Gemini provider paths
 - improve prompt templating over structured evidence
 - improve event context retrieval quality
 - support higher-quality regeneration when evidence changes

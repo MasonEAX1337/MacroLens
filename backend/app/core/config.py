@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     cors_allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/macrolens"
     fred_api_key: str = ""
-    explanation_provider: str = "rules_based"
+    explanation_provider: str = "deepseek"
     explanation_fallback_provider: str = "rules_based"
     explanation_allow_fallback: bool = True
     explanation_model: str = "macro-template-v1"
@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5-mini"
     openai_timeout_seconds: float = 30.0
     openai_api_key: str = ""
+    deepseek_base_url: str = "https://api.deepseek.com"
+    deepseek_model: str = "deepseek-v4-flash"
+    deepseek_timeout_seconds: float = 30.0
+    deepseek_api_key: str = ""
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta"
     gemini_model: str = "gemini-3.1-flash-lite-preview"
     gemini_timeout_seconds: float = 30.0

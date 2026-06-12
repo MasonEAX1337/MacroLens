@@ -56,7 +56,7 @@ The system is functionally coherent, but it is not yet finished.
 
 The two biggest gaps are:
 
-1. the hosted-provider path is usable, but not yet compared rigorously enough to justify a default change
+1. DeepSeek V4 Flash is now the default hosted-provider path, but it still needs rigorous comparison against OpenAI, Gemini, and rules-based fallback output
 2. change-point detection is now live, but it still needs deeper comparative evaluation and tuning
 3. contextual retrieval now has a hybrid path by default, but curated macro-timeline coverage is still sparse
 
@@ -154,6 +154,7 @@ Completed in staged form.
 - provider abstraction implemented
 - rules-based provider implemented
 - OpenAI-backed provider path implemented
+- DeepSeek-backed provider path implemented and set as the default hosted provider
 - Gemini-backed provider path implemented
 - fallback behavior implemented
 - explanation persistence implemented
@@ -245,10 +246,10 @@ The explanation path is now usable, which changes the task. The problem is no lo
 
 #### Required work
 
-1. run side-by-side evaluations of OpenAI and Gemini on the same anomaly set
+1. run side-by-side evaluations of DeepSeek, OpenAI, and Gemini on the same anomaly set
 2. define an explanation quality rubric
 3. measure fallback behavior under missing-key and HTTP-failure conditions
-4. decide whether a hosted provider should become the default
+4. verify whether DeepSeek should remain the default as evidence coverage and prompts evolve
 5. surface provider provenance more clearly in the UI
 
 #### Main risk
@@ -392,7 +393,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 
 #### Evaluation
 
-- compare Gemini and OpenAI outputs on the same anomaly sample
+- compare DeepSeek, Gemini, and OpenAI outputs on the same anomaly sample
 - document provider selection criteria
 - decide whether the rules-based provider should remain the default
 
@@ -423,7 +424,7 @@ Upgrade MacroLens from a working vertical slice to a more believable intelligenc
 MacroLens can be called MVP-complete when all of the following are true:
 
 1. at least five meaningful datasets are supported
-2. the explanation layer can run through a live LLM provider with acceptable grounding and fallback behavior
+2. the explanation layer can run through DeepSeek V4 Flash with acceptable grounding and fallback behavior
 3. the frontend supports interactive event investigation beyond static selection
 4. the backend has integration-level verification, not only unit tests
 5. the product can retrieve and display contextual evidence with acceptable relevance quality
