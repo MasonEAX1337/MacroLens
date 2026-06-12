@@ -147,6 +147,43 @@ def test_detect_change_point_anomalies_flags_level_shift() -> None:
     assert anomalies[0].severity_score > 0.75
 
 
+def test_detect_change_point_anomalies_scores_volatility_shift(monkeypatch) -> None:
+    class MockAlgo:
+        def __init__(self, *args, **kwargs):  # noqa: ANN002, ANN003
+            self.signal_length = 0
+
+        def fit(self, signal):  # noqa: ANN001
+            self.signal_length = len(signal)
+            return self
+
+        def predict(self, pen):  # noqa: ANN001
+            return [20, self.signal_length]
+
+    monkeypatch.setattr(
+        "app.services.anomaly_detection.get_change_point_config",
+        lambda frequency, dataset_symbol=None: ChangePointConfig(
+            algorithm="binseg",
+            model="l2",
+            penalty=0.1,
+            min_size=10,
+            jump=1,
+            smoothing_window=1,
+            severity_threshold=0.2,
+            transform="raw_level",
+        ),
+    )
+    monkeypatch.setattr("app.services.anomaly_detection.rpt.Binseg", MockAlgo)
+
+    values = [99.0, 101.0] * 10 + [80.0, 120.0] * 10
+    anomalies = detect_change_point_anomalies(build_points(values), "daily", penalty=0.1)
+
+    assert len(anomalies) == 1
+    assert anomalies[0].metadata["event_type"] == "volatility_shift"
+    assert anomalies[0].metadata["volatility_shift_score"] > anomalies[0].metadata["mean_shift_score"]
+    assert anomalies[0].metadata["delta_std"] > 0
+    assert anomalies[0].direction == "up"
+
+
 def test_detect_change_point_anomalies_uses_monthly_defaults() -> None:
     values = [100.0] * 18 + [125.0] * 18
     anomalies = detect_change_point_anomalies(build_points(values), "monthly")
@@ -352,4 +389,3 @@ def test_transformed_change_point_detection_ignores_small_noisy_months(monkeypat
     )
 
     assert anomalies == []
-

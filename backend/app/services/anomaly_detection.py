@@ -329,22 +329,28 @@ def detect_change_point_anomalies(
         before_mean = float(before_values.mean())
         after_mean = float(after_values.mean())
         delta_mean = after_mean - before_mean
+        before_std = float(before_values.std(ddof=0))
+        after_std = float(after_values.std(ddof=0))
+        delta_std = after_std - before_std
         event_type = classify_change_point_event_type(
             before_values=before_values,
             after_values=after_values,
         )
-        severity_score = abs(delta_mean) / overall_std
+        mean_shift_score = abs(delta_mean) / overall_std
+        volatility_shift_score = abs(delta_std) / overall_std
+        severity_score = max(mean_shift_score, volatility_shift_score)
         if severity_score < config.severity_threshold:
             continue
 
         timestamp = transformed_frame.iloc[breakpoint]["timestamp"].to_pydatetime()
         raw_value = float(frame.loc[frame["timestamp"] == transformed_frame.iloc[breakpoint]["timestamp"], "value"].iloc[-1])
         transformed_value = float(transformed_frame.iloc[breakpoint]["signal_value"])
+        direction_basis = delta_std if event_type == "volatility_shift" else delta_mean
         anomalies.append(
             PersistedAnomaly(
                 timestamp=timestamp,
                 severity_score=round(severity_score, 6),
-                direction="up" if delta_mean >= 0 else "down",
+                direction="up" if direction_basis >= 0 else "down",
                 detection_method="change_point",
                 metadata={
                     "event_type": event_type,
@@ -359,6 +365,11 @@ def detect_change_point_anomalies(
                     "before_mean": round(before_mean, 6),
                     "after_mean": round(after_mean, 6),
                     "delta_mean": round(delta_mean, 6),
+                    "before_std": round(before_std, 6),
+                    "after_std": round(after_std, 6),
+                    "delta_std": round(delta_std, 6),
+                    "mean_shift_score": round(mean_shift_score, 6),
+                    "volatility_shift_score": round(volatility_shift_score, 6),
                     "overall_std": round(overall_std, 6),
                     "value": round(raw_value, 6),
                     "transformed_value": round(transformed_value, 6),

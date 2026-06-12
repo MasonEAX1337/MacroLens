@@ -347,6 +347,12 @@ To regenerate only one anomaly:
 .\.venv\Scripts\python scripts\explanations\generate_explanations.py --anomaly-id 91
 ```
 
+To force a deterministic local provider for a refresh:
+
+```powershell
+.\.venv\Scripts\python scripts\explanations\generate_explanations.py --provider rules_based --quiet
+```
+
 ### View stored explanations from PostgreSQL
 
 To inspect explanations without raw API output:
@@ -386,6 +392,8 @@ To inspect anomaly supply, cluster quality, and context coverage in one report:
 ```powershell
 .\.venv\Scripts\python scripts\evaluation\report_graph_quality.py
 ```
+
+The report also breaks anomaly outcomes down by dataset and detection method so detector tuning can be audited against episode formation, not only raw anomaly counts.
 
 This also saves the latest JSON snapshot to:
 
